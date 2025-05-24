@@ -1,0 +1,66 @@
+# Archivos de configuración con datos sensibles
+config.php
+
+# Archivos de sesión
+sessions/*
+!sessions/.gitkeep
+
+# Logs y archivos temporales
+*.log
+php_errors.log
+*.tmp
+
+# Dependencias
+/vendor/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de caché
+*.cache
+
+# XAMPP files
+/xampp/
+*.sql
+*.sqlite
+
+# Node modules
+/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache and temp files
+*.cache
+*.tmp
+*.temp
+
+# Large media files
+*.mp3
+*.mp4
+*.wav
+*.flac
+*.m4a
+
+# Backup files
+*.bak
+*.backup
+*~ 
