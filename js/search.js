@@ -59,7 +59,13 @@ class SearchManager {
             `;
 
             const addButton = trackDiv.querySelector('.add-track');
-            addButton.addEventListener('click', () => this.addTrack(track));
+            addButton.addEventListener('click', () => {
+                if (window.playlistManager) {
+                    window.playlistManager.addSpecificTrack(track);
+                }
+                suggestionsDiv.innerHTML = '';
+                document.getElementById('track-search').value = '';
+            });
 
             suggestionsDiv.appendChild(trackDiv);
         });

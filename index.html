@@ -38,6 +38,14 @@
             transform: none;
             box-shadow: none;
         }
+        .artist-inputs { margin-bottom: 10px; }
+        .artist-row { display: flex; align-items: center; margin-bottom: 5px; }
+        .artist-row input { flex: 1; margin-right: 5px; }
+        .artist-row button { background: #e74c3c; color: #fff; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; }
+        .selected-track { display: flex; align-items: center; margin-bottom: 5px; background: #222; padding: 5px; border-radius: 4px; }
+        .selected-track img { width: 40px; height: 40px; object-fit: cover; border-radius: 3px; margin-right: 10px; }
+        .selected-track .remove-track { background: #e74c3c; color: #fff; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; margin-left: auto; }
+        #success-message { background: #1DB954; color: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -52,22 +60,33 @@
         </div>
 
         <div id="playlist-section" class="playlist-section" style="display: none;">
-            <div class="search-container">
+            <form id="playlist-form">
+                <label for="playlist-name">Nombre de la playlist:</label>
+                <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada">
+                <br><br>
+                <label>Artistas:</label>
+                <div id="artist-inputs" class="artist-inputs"></div>
+                <button type="button" id="add-artist" class="spotify-button secondary"><i class="fas fa-plus"></i> Agregar artista</button>
+                <br><br>
+                <label for="songs-per-artist">Canciones por artista:</label>
+                <select id="songs-per-artist">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                </select>
+                <br><br>
+                <label for="track-search">Agregar canciones específicas:</label>
                 <input type="text" id="track-search" placeholder="Buscar canciones...">
                 <div id="search-suggestions"></div>
-            </div>
-
-            <div id="selected-tracks"></div>
-
-            <input type="hidden" id="playlist-id" value="">
-            
-            <div class="playlist-form">
-                <input type="text" id="playlist-name" placeholder="Nombre de la playlist" required>
-                <textarea id="playlist-description" placeholder="Descripción de la playlist"></textarea>
-                <button id="create-playlist" class="spotify-button">
-                    <i class="fas fa-plus"></i> Crear Playlist
-                </button>
-            </div>
+                <br>
+                <h3>Canciones seleccionadas:</h3>
+                <div id="selected-tracks"></div>
+                <br>
+                <button type="submit" class="spotify-button"><i class="fas fa-plus"></i> Crear Playlist</button>
+            </form>
 
             <div id="loading" class="loading-spinner" style="display: none;">
                 <div class="spinner"></div>
