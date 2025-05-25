@@ -13,7 +13,6 @@ class PlaylistManager {
         const artistInputsDiv = document.getElementById('artist-inputs');
         artistInputsDiv.innerHTML = '';
         this.artistInputs = [];
-        this.addArtistInput();
     }
 
     addArtistInput(value = '') {
@@ -22,7 +21,8 @@ class PlaylistManager {
         row.className = 'artist-row';
         const input = document.createElement('input');
         input.type = 'text';
-        input.placeholder = 'Nombre del artista';
+        input.placeholder = 'Nombre del artista adicional';
+        input.setAttribute('aria-label', 'Nombre del artista adicional');
         input.value = value;
         row.appendChild(input);
         const removeBtn = document.createElement('button');
@@ -63,7 +63,8 @@ class PlaylistManager {
     async createPlaylist() {
         const playlistName = document.getElementById('playlist-name').value.trim();
         const songsPerArtist = parseInt(document.getElementById('songs-per-artist').value);
-        const artistNames = this.artistInputs.map(input => input.value.trim()).filter(Boolean);
+        const mainArtist = document.getElementById('artist-main').value.trim();
+        const artistNames = [mainArtist, ...this.artistInputs.map(input => input.value.trim())].filter(Boolean);
         let allTracks = [...this.selectedTracks];
 
         if (!playlistName) {

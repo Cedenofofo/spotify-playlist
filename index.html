@@ -8,44 +8,108 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
     <style>
-        .hidden {
-            display: none !important;
+        body {
+            background: linear-gradient(135deg, #1db954 0%, #191414 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #fff;
         }
-        #export-success {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #1DB954;
-            color: white;
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: rgba(25, 20, 20, 0.85);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 32px 28px 24px 28px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        h1 {
             text-align: center;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
         }
-        #export-spotify {
-            background-color: #1DB954;
-            transition: background-color 0.3s ease;
+        label {
+            font-weight: 500;
+            margin-top: 12px;
+            display: block;
         }
-        #export-spotify:hover {
-            background-color: #1ed760;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
-        }
-        #export-spotify:active {
-            transform: scale(0.98);
-        }
-        #export-spotify:disabled {
-            background-color: #1DB954;
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            margin-top: 4px;
+            margin-bottom: 12px;
+            font-size: 1rem;
         }
         .artist-inputs { margin-bottom: 10px; }
         .artist-row { display: flex; align-items: center; margin-bottom: 5px; }
         .artist-row input { flex: 1; margin-right: 5px; }
         .artist-row button { background: #e74c3c; color: #fff; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; }
+        .add-artist-btn {
+            background: #222;
+            color: #1db954;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .add-artist-btn:hover {
+            background: #1db954;
+            color: #fff;
+        }
         .selected-track { display: flex; align-items: center; margin-bottom: 5px; background: #222; padding: 5px; border-radius: 4px; }
         .selected-track img { width: 40px; height: 40px; object-fit: cover; border-radius: 3px; margin-right: 10px; }
         .selected-track .remove-track { background: #e74c3c; color: #fff; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; margin-left: auto; }
         #success-message { background: #1DB954; color: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; text-align: center; }
+        .spotify-button {
+            background: #1db954;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .spotify-button:hover {
+            background: #1ed760;
+            transform: scale(1.04);
+        }
+        .secondary {
+            background: #222;
+            color: #1db954;
+            border: 1px solid #1db954;
+        }
+        .secondary:hover {
+            background: #1db954;
+            color: #fff;
+        }
+        #loading {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1DB954;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -63,11 +127,11 @@
             <form id="playlist-form">
                 <label for="playlist-name">Nombre de la playlist:</label>
                 <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada">
-                <br><br>
-                <label>Artistas:</label>
+                <label for="artist-main">Artista principal:</label>
+                <input type="text" id="artist-main" name="artist-main" placeholder="Nombre del artista principal" autocomplete="off">
+                <label>Artistas adicionales:</label>
                 <div id="artist-inputs" class="artist-inputs"></div>
-                <button type="button" id="add-artist" class="spotify-button secondary"><i class="fas fa-plus"></i> Agregar artista</button>
-                <br><br>
+                <button type="button" id="add-artist" class="add-artist-btn"><i class="fas fa-plus"></i> Agregar artista</button>
                 <label for="songs-per-artist">Canciones por artista:</label>
                 <select id="songs-per-artist">
                     <option value="1">1</option>
@@ -77,14 +141,11 @@
                     <option value="5" selected>5</option>
                     <option value="10">10</option>
                 </select>
-                <br><br>
                 <label for="track-search">Agregar canciones específicas:</label>
-                <input type="text" id="track-search" placeholder="Buscar canciones...">
+                <input type="text" id="track-search" placeholder="Buscar canciones..." autocomplete="off">
                 <div id="search-suggestions"></div>
-                <br>
                 <h3>Canciones seleccionadas:</h3>
                 <div id="selected-tracks"></div>
-                <br>
                 <button type="submit" class="spotify-button"><i class="fas fa-plus"></i> Crear Playlist</button>
             </form>
 
