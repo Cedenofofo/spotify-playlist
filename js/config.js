@@ -7,6 +7,5 @@ const config = {
         'user-read-private'
     ],
     apiUrl: 'https://api.spotify.com/v1',
-    authUrl: 'https://accounts.spotify.com/authorize',
-    tokenUrl: 'https://accounts.spotify.com/api/token'
+    authUrl: 'https://accounts.spotify.com/authorize'
 }; 
