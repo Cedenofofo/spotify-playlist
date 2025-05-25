@@ -17,6 +17,11 @@ php_errors.log
 .DS_Store
 Thumbs.db
 
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
 # Archivos de IDE
 .idea/
 .vscode/
@@ -34,19 +39,10 @@ Thumbs.db
 # Node modules
 /node_modules/
 
-# Environment files
-.env
-.env.local
-.env.*.local
-
 # IDE files
 .vscode/
 .idea/
 *.sublime-*
-
-# OS files
-.DS_Store
-Thumbs.db
 
 # Cache and temp files
 *.cache
@@ -63,4 +59,14 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
-*~ 
+*~
+
+# Archivos de logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de construcción
+/dist
+/build 

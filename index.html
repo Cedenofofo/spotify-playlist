@@ -4,42 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spotify Playlist Manager</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        button {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1ed760;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
-        <div id="login-container" class="container">
-            <h1>Spotify Playlist Manager</h1>
-            <button id="login-button" class="btn btn-primary">Iniciar Sesión con Spotify</button>
-        </div>
-
-        <div id="main-container" class="container" style="display: none;">
-            <div class="header">
-                <h1>Spotify Playlist Manager</h1>
-                <div class="user-info">
-                    <span id="user-name"></span>
-                    <button id="logout-button" class="btn btn-secondary">Cerrar Sesión</button>
-                </div>
-            </div>
-
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Buscar canciones...">
-                <button id="search-button" class="btn btn-primary">Buscar</button>
-            </div>
-
-            <div id="search-results" class="results-container"></div>
-
-            <div class="playlist-container">
-                <h2>Mi Playlist</h2>
-                <div id="playlist-tracks" class="tracks-container"></div>
-                <button id="export-button" class="btn btn-primary">Exportar a Spotify</button>
-            </div>
-        </div>
+        <h1>Spotify Playlist Manager</h1>
+        <button onclick="new Auth().login()">Iniciar sesión con Spotify</button>
     </div>
-
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/app.js"></script>
 </body>
 </html> 
