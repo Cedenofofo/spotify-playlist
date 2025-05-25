@@ -95,16 +95,33 @@ class PlaylistManager {
 
     async searchArtists(query) {
         try {
+            const token = this.auth.getAccessToken();
+            if (!token) {
+                alert('Tu sesión de Spotify ha expirado o no es válida. Por favor, inicia sesión de nuevo.');
+                window.location.reload();
+                return [];
+            }
             const response = await fetch(`${this.config.apiUrl}/search?q=${encodeURIComponent(query)}&type=artist&limit=5`, {
                 headers: {
-                    'Authorization': `Bearer ${this.auth.getAccessToken()}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
+            if (response.status === 401) {
+                alert('Tu sesión de Spotify ha expirado o no es válida. Por favor, inicia sesión de nuevo.');
+                window.location.reload();
+                return [];
+            }
+            if (!response.ok) {
+                alert('Error de red o de autenticación con Spotify. Intenta recargar la página.');
+                return [];
+            }
             const data = await response.json();
             if (data.artists && data.artists.items) {
                 return data.artists.items;
             }
-        } catch (e) { }
+        } catch (e) {
+            alert('Error de red o de autenticación con Spotify. Intenta recargar la página.');
+        }
         return [];
     }
 
