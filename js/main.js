@@ -111,6 +111,11 @@ class PlaylistManager {
                 window.location.reload();
                 return [];
             }
+            if (response.status === 403) {
+                alert('No tienes permisos para usar la API de Spotify.\nAsegúrate de aceptar todos los permisos al iniciar sesión y de que tu cuenta de Spotify es válida. Si el problema persiste, intenta con otra cuenta.');
+                window.location.reload();
+                return [];
+            }
             if (!response.ok) {
                 alert('Error de red o de autenticación con Spotify. Intenta recargar la página.');
                 return [];
