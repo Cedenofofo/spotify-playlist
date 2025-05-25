@@ -1,5 +1,9 @@
 class Auth {
     constructor() {
+        if (!window.config) {
+            console.error('Configuración no disponible');
+            return;
+        }
         this.config = window.config;
         this.setupEventListeners();
         this.checkAuth();
@@ -39,6 +43,11 @@ class Auth {
     }
 
     login() {
+        if (!this.config) {
+            console.error('Configuración no disponible');
+            return;
+        }
+
         const state = this.generateState();
         localStorage.setItem('spotify_auth_state', state);
 
@@ -75,5 +84,8 @@ class Auth {
     }
 }
 
-// Inicializar la autenticación
-new Auth(); 
+// Esperar a que el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar la autenticación
+    new Auth();
+}); 

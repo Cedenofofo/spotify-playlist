@@ -1,4 +1,4 @@
-const config = {
+window.config = {
     // Detectar si estamos en GitHub Pages o en local
     isGitHubPages: window.location.hostname.includes('github.io'),
     
