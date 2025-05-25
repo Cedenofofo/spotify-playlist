@@ -38,12 +38,22 @@
         }
         input[type="text"], select {
             width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
             padding: 10px;
             border-radius: 6px;
             border: none;
             margin-top: 4px;
             margin-bottom: 12px;
             font-size: 1rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #track-search {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .artist-inputs { margin-bottom: 10px; }
         .artist-row { display: flex; align-items: center; margin-bottom: 5px; }
@@ -109,6 +119,23 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 600px) {
+            .container {
+                max-width: 98vw;
+                padding: 12vw 2vw 8vw 2vw;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+            input[type="text"], select {
+                font-size: 0.98rem;
+                padding: 8px;
+            }
+            .spotify-button, .add-artist-btn {
+                font-size: 0.98rem;
+                padding: 8px 10px;
+            }
         }
     </style>
 </head>
