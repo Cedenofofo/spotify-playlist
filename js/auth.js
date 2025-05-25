@@ -10,7 +10,7 @@ class Auth {
 
         const params = new URLSearchParams({
             client_id: config.clientId,
-            response_type: 'code',
+            response_type: 'token',
             redirect_uri: config.redirectUri,
             state: state,
             scope: config.scopes.join(' '),
@@ -34,68 +34,42 @@ class Auth {
     }
 
     async handleCallback() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const state = urlParams.get('state');
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const expiresIn = params.get('expires_in');
+        const state = params.get('state');
         const storedState = localStorage.getItem('spotify_auth_state');
 
-        console.log('code:', code);
+        console.log('accessToken:', accessToken);
+        console.log('expiresIn:', expiresIn);
         console.log('state:', state);
         console.log('storedState:', storedState);
 
-        if (!code) {
-            console.error('No se recibió el código de autorización');
+        if (!accessToken) {
+            alert('No se recibió access_token de Spotify. Intenta iniciar sesión de nuevo.');
             window.location.href = config.baseUrl + '/';
             return;
         }
-
         if (!state || !storedState) {
-            console.error('Falta el parámetro state');
+            alert('Falta el parámetro state. Intenta iniciar sesión de nuevo.');
             window.location.href = config.baseUrl + '/';
             return;
         }
-
         if (state !== storedState) {
-            console.error('El parámetro state no coincide');
+            alert('El parámetro state no coincide. Intenta iniciar sesión de nuevo.');
             window.location.href = config.baseUrl + '/';
             return;
         }
 
-        try {
-            // Intercambiar el código por un token
-            const response = await fetch('https://accounts.spotify.com/api/token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Basic ' + btoa(config.clientId + ':' + config.clientSecret)
-                },
-                body: new URLSearchParams({
-                    grant_type: 'authorization_code',
-                    code: code,
-                    redirect_uri: config.redirectUri
-                })
-            });
+        this.accessToken = accessToken;
+        this.tokenExpires = Date.now() + (parseInt(expiresIn, 10) * 1000);
 
-            const data = await response.json();
-            console.log('Token response:', data);
+        localStorage.setItem('spotify_access_token', this.accessToken);
+        localStorage.setItem('token_expires', this.tokenExpires);
+        localStorage.removeItem('spotify_auth_state');
 
-            if (data.access_token) {
-                this.accessToken = data.access_token;
-                this.tokenExpires = Date.now() + (data.expires_in * 1000);
-
-                localStorage.setItem('spotify_access_token', this.accessToken);
-                localStorage.setItem('token_expires', this.tokenExpires);
-                localStorage.removeItem('spotify_auth_state');
-
-                window.location.href = config.baseUrl + '/';
-            } else {
-                console.error('Error al obtener el token:', data);
-                window.location.href = config.baseUrl + '/';
-            }
-        } catch (error) {
-            console.error('Error en la solicitud:', error);
-            window.location.href = config.baseUrl + '/';
-        }
+        window.location.href = config.baseUrl + '/';
     }
 
     async getValidToken() {
@@ -110,12 +84,10 @@ class Auth {
     }
 }
 
-// Inicializar la autenticación cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
     const auth = new Auth();
-    
     // Si estamos en la página principal, verificar si hay un token
-    if (!window.location.search) {
+    if (!window.location.hash) {
         const token = auth.getValidToken();
         if (token) {
             console.log('Usuario autenticado');
