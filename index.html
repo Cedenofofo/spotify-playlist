@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Playlist de Spotify</title>
+    <title>Tuneuptify</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
     <style>
         body {
-            background: linear-gradient(135deg, #1db954 0%, #191414 100%);
+            background: linear-gradient(135deg, #1db954 0%, #00cfff 100%);
             min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #fff;
         }
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .logo-tuneuptify {
+            width: 180px;
+            height: auto;
+            margin: 18px auto 0 auto;
+            display: block;
+        }
         .container {
             max-width: 500px;
             margin: 40px auto;
-            background: rgba(25, 20, 20, 0.85);
+            background: rgba(25, 20, 20, 0.90);
             border-radius: 18px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             padding: 32px 28px 24px 28px;
@@ -28,8 +41,10 @@
         h1 {
             text-align: center;
             font-weight: 700;
-            margin-bottom: 24px;
+            margin-bottom: 12px;
             letter-spacing: 1px;
+            font-size: 2rem;
+            color: #00cfff;
         }
         label {
             font-weight: 500;
@@ -120,7 +135,8 @@
             transition: background 0.2s, transform 0.2s;
         }
         .spotify-button:hover {
-            background: #1ed760;
+            background: #00cfff;
+            color: #191414;
             transform: scale(1.04);
         }
         .spotify-black {
@@ -227,46 +243,54 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Generador de Playlist de Spotify</h1>
+    <header role="banner" aria-label="Tuneuptify logo y título">
+        <img src="img/tuneuptify-logo.png" alt="Logo Tuneuptify" class="logo-tuneuptify" width="180" height="auto" />
+        <h1>Tuneuptify</h1>
+    </header>
+    <main id="main-content" tabindex="-1" aria-label="Generador de Playlist de Spotify">
+    <div class="container" role="main">
         <div id="login-section" class="login-section">
             <p>Para comenzar, inicia sesión con tu cuenta de Spotify</p>
-            <button id="login-button" class="spotify-button">
-                <i class="fab fa-spotify"></i> Iniciar sesión con Spotify
+            <button id="login-button" class="spotify-button" aria-label="Iniciar sesión con Spotify">
+                <i class="fab fa-spotify" aria-hidden="true"></i> Iniciar sesión con Spotify
             </button>
         </div>
         <div id="playlist-section" class="playlist-section" style="display: none;">
-            <form id="playlist-form">
+            <form id="playlist-form" aria-label="Formulario para crear playlist">
                 <label for="playlist-name">Nombre de la playlist:</label>
-                <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada">
+                <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada" aria-required="true">
                 <label for="artist-main">Artista principal:</label>
                 <div style="position:relative;">
-                  <input type="text" id="artist-main" name="artist-main" class="artist-autocomplete" placeholder="Nombre del artista principal" autocomplete="off">
-                  <div id="artist-main-suggestions" class="autocomplete-suggestions"></div>
+                  <input type="text" id="artist-main" name="artist-main" class="artist-autocomplete" placeholder="Nombre del artista principal" autocomplete="off" aria-autocomplete="list" aria-label="Buscar artista principal">
+                  <div id="artist-main-suggestions" class="autocomplete-suggestions" role="listbox"></div>
                 </div>
                 <label>Artistas adicionales:</label>
                 <div id="artist-inputs" class="artist-inputs"></div>
-                <button type="button" id="add-artist" class="add-artist-btn"><i class="fas fa-plus"></i> Agregar artista</button>
+                <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional"><i class="fas fa-plus" aria-hidden="true"></i> Agregar artista</button>
                 <label for="songs-per-artist">Canciones por artista:</label>
-                <input type="number" id="songs-per-artist" min="1" max="50" value="5" step="1" required>
+                <input type="number" id="songs-per-artist" min="1" max="50" value="5" step="1" required aria-required="true">
                 <label for="track-search">Agregar canciones específicas:</label>
                 <div style="position:relative;">
-                  <input type="text" id="track-search" placeholder="Buscar canciones..." autocomplete="off">
-                  <div id="search-suggestions" class="autocomplete-suggestions"></div>
+                  <input type="text" id="track-search" placeholder="Buscar canciones..." autocomplete="off" aria-autocomplete="list" aria-label="Buscar canciones específicas">
+                  <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
                 </div>
                 <h3>Canciones seleccionadas:</h3>
                 <div id="selected-tracks"></div>
-                <button type="button" id="preview-playlist" class="spotify-button"><i class="fas fa-eye"></i> Vista previa</button>
+                <button type="button" id="preview-playlist" class="spotify-button" aria-label="Vista previa de la playlist"><i class="fas fa-eye" aria-hidden="true"></i> Vista previa</button>
             </form>
             <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
-            <button id="export-spotify" class="spotify-button spotify-black" style="display:none;"><i class="fab fa-spotify"></i> Exportar a Spotify</button>
+            <button id="export-spotify" class="spotify-button spotify-black" style="display:none;"><i class="fab fa-spotify" aria-hidden="true"></i> Exportar a Spotify</button>
             <div id="loading" class="loading-spinner" style="display: none;">
-                <div class="spinner"></div>
+                <div class="spinner" aria-hidden="true"></div>
                 <p>Creando playlist...</p>
             </div>
             <div id="success-message" class="success-message" style="display: none;"></div>
         </div>
     </div>
+    </main>
+    <footer style="text-align:center; margin-top:32px; color:#b3b3b3; font-size:0.95em;" aria-label="Pie de página">
+        <p>&copy; 2024 Tuneuptify. Todos los derechos reservados.</p>
+    </footer>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/search.js"></script>
