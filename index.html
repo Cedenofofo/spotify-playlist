@@ -123,6 +123,15 @@
             background: #1ed760;
             transform: scale(1.04);
         }
+        .spotify-black {
+            background: #191414 !important;
+            color: #fff !important;
+            border: none;
+        }
+        .spotify-black:hover {
+            background: #333 !important;
+            color: #1db954 !important;
+        }
         .secondary {
             background: #222;
             color: #1db954;
@@ -174,6 +183,17 @@
             border-radius: 4px;
             margin-right: 10px;
         }
+        .playlist-preview .track-name {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .playlist-preview .track-artist {
+            font-size: 0.85em;
+            color: #b3b3b3;
+            margin-right: 8px;
+            margin-left: auto;
+            white-space: nowrap;
+        }
         .playlist-preview .remove-track-preview {
             background: #e74c3c;
             color: #fff;
@@ -181,7 +201,7 @@
             border-radius: 3px;
             padding: 0 8px;
             cursor: pointer;
-            margin-left: auto;
+            margin-left: 8px;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -239,7 +259,7 @@
                 <button type="button" id="preview-playlist" class="spotify-button"><i class="fas fa-eye"></i> Vista previa</button>
             </form>
             <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
-            <button id="export-spotify" class="spotify-button" style="display:none;"><i class="fab fa-spotify"></i> Exportar a Spotify</button>
+            <button id="export-spotify" class="spotify-button spotify-black" style="display:none;"><i class="fab fa-spotify"></i> Exportar a Spotify</button>
             <div id="loading" class="loading-spinner" style="display: none;">
                 <div class="spinner"></div>
                 <p>Creando playlist...</p>

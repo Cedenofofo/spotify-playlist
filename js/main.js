@@ -149,7 +149,8 @@ class PlaylistManager {
         const previewDiv = document.getElementById('playlist-preview');
         previewDiv.innerHTML = `<h3>${playlistName}</h3><ul>${tracks.map((track, idx) => `
             <li><img src='${track.album.image || 'https://via.placeholder.com/40?text=🎵'}' alt='${track.album.name}'>
-            <b>${track.name}</b> <span style='color:#1db954;'>${track.artist}</span>
+            <span class='track-name'>${track.name}</span>
+            <span class='track-artist'>${track.artist}</span>
             <button class='remove-track-preview' data-idx='${idx}' title='Eliminar canción'><i class='fas fa-times'></i></button></li>`).join('')}</ul>`;
         // Botones para eliminar canciones en la vista previa
         previewDiv.querySelectorAll('.remove-track-preview').forEach(btn => {
