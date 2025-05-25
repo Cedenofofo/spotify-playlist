@@ -135,6 +135,27 @@
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
+        .playlist-preview {
+            background: #181818;
+            border-radius: 10px;
+            padding: 18px 12px;
+            margin-top: 18px;
+            margin-bottom: 18px;
+        }
+        .playlist-preview h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .playlist-preview ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .playlist-preview li {
+            margin-bottom: 6px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 4px;
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -161,14 +182,12 @@
 <body>
     <div class="container">
         <h1>Generador de Playlist de Spotify</h1>
-        
         <div id="login-section" class="login-section">
             <p>Para comenzar, inicia sesión con tu cuenta de Spotify</p>
             <button id="login-button" class="spotify-button">
                 <i class="fab fa-spotify"></i> Iniciar sesión con Spotify
             </button>
         </div>
-
         <div id="playlist-section" class="playlist-section" style="display: none;">
             <form id="playlist-form">
                 <label for="playlist-name">Nombre de la playlist:</label>
@@ -190,35 +209,17 @@
                 </div>
                 <h3>Canciones seleccionadas:</h3>
                 <div id="selected-tracks"></div>
-                <button type="submit" class="spotify-button"><i class="fas fa-plus"></i> Crear Playlist</button>
+                <button type="button" id="preview-playlist" class="spotify-button"><i class="fas fa-eye"></i> Vista previa</button>
             </form>
-
+            <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
+            <button id="export-spotify" class="spotify-button" style="display:none;"><i class="fab fa-spotify"></i> Exportar a Spotify</button>
             <div id="loading" class="loading-spinner" style="display: none;">
                 <div class="spinner"></div>
                 <p>Creando playlist...</p>
             </div>
-
-            <div id="success-message" class="success-message" style="display: none;">
-                <h3>¡Playlist creada con éxito!</h3>
-                <p>Tu playlist ha sido creada. Puedes:</p>
-                <div class="action-buttons">
-                    <button id="export-spotify" class="spotify-button">
-                        <i class="fab fa-spotify"></i> Exportar a Spotify
-                    </button>
-                    <button id="create-new" class="spotify-button secondary">
-                        <i class="fas fa-plus"></i> Crear otra playlist
-                    </button>
-                </div>
-                <div id="export-success" class="hidden">
-                    <p>¡Playlist exportada con éxito!</p>
-                    <a href="#" id="open-spotify" class="spotify-button" target="_blank">
-                        <i class="fab fa-spotify"></i> Abrir en Spotify
-                    </a>
-                </div>
-            </div>
+            <div id="success-message" class="success-message" style="display: none;"></div>
         </div>
     </div>
-
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/search.js"></script>

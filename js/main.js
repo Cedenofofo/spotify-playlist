@@ -4,6 +4,8 @@ class PlaylistManager {
         this.auth = new Auth();
         this.selectedTracks = [];
         this.artistInputs = [];
+        this.previewTracks = [];
+        this.previewPlaylistId = null;
         this.setupArtistInputs();
         this.setupEventListeners();
         this.renderSelectedTracks();
@@ -25,9 +27,9 @@ class PlaylistManager {
         input.placeholder = 'Nombre del artista adicional';
         input.setAttribute('aria-label', 'Nombre del artista adicional');
         input.value = value;
+        row.appendChild(input);
         const suggestionsDiv = document.createElement('div');
         suggestionsDiv.className = 'autocomplete-suggestions';
-        row.appendChild(input);
         row.appendChild(suggestionsDiv);
         this.setupArtistAutocomplete(input, suggestionsDiv);
         const removeBtn = document.createElement('button');
@@ -44,26 +46,8 @@ class PlaylistManager {
 
     setupEventListeners() {
         document.getElementById('add-artist').onclick = () => this.addArtistInput();
-        document.getElementById('playlist-form').onsubmit = (e) => {
-            e.preventDefault();
-            this.createPlaylist();
-        };
-
-        const createPlaylistButton = document.getElementById('create-playlist');
-        if (createPlaylistButton) {
-            createPlaylistButton.addEventListener('click', () => this.createPlaylist());
-        }
-
-        const exportButton = document.getElementById('export-spotify');
-        if (exportButton) {
-            exportButton.addEventListener('click', () => this.exportToSpotify());
-        }
-
-        const createNewButton = document.getElementById('create-new');
-        if (createNewButton) {
-            createNewButton.addEventListener('click', () => window.location.reload());
-        }
-
+        document.getElementById('preview-playlist').onclick = () => this.previewPlaylist();
+        document.getElementById('export-spotify').onclick = () => this.exportToSpotify();
         // Validar solo números en el input de cantidad de canciones
         const songsInput = document.getElementById('songs-per-artist');
         songsInput.addEventListener('input', function() {
@@ -88,6 +72,12 @@ class PlaylistManager {
                 lastQuery = query;
                 const artists = await this.searchArtists(query);
                 suggestionsDiv.innerHTML = '';
+                if (artists.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-suggestion';
+                    div.textContent = 'No se encontraron artistas';
+                    suggestionsDiv.appendChild(div);
+                }
                 artists.forEach(artist => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-suggestion';
@@ -118,7 +108,7 @@ class PlaylistManager {
         return [];
     }
 
-    async createPlaylist() {
+    async previewPlaylist() {
         const playlistName = document.getElementById('playlist-name').value.trim();
         const songsPerArtist = parseInt(document.getElementById('songs-per-artist').value);
         const mainArtist = document.getElementById('artist-main').value.trim();
@@ -148,6 +138,24 @@ class PlaylistManager {
             return;
         }
 
+        this.previewTracks = allTracks;
+        this.previewPlaylistId = null;
+        this.renderPlaylistPreview(playlistName, allTracks);
+        document.getElementById('playlist-preview').style.display = 'block';
+        document.getElementById('export-spotify').style.display = 'inline-block';
+    }
+
+    renderPlaylistPreview(playlistName, tracks) {
+        const previewDiv = document.getElementById('playlist-preview');
+        previewDiv.innerHTML = `<h3>${playlistName}</h3><ul>${tracks.map(track => `<li><b>${track.name}</b> <span style='color:#1db954;'>${track.artist}</span></li>`).join('')}</ul>`;
+    }
+
+    async exportToSpotify() {
+        if (!this.previewTracks || this.previewTracks.length === 0) {
+            alert('Primero genera la vista previa de la playlist.');
+            return;
+        }
+        const playlistName = document.getElementById('playlist-name').value.trim();
         try {
             document.getElementById('loading').style.display = 'block';
             // Crear la playlist
@@ -165,8 +173,8 @@ class PlaylistManager {
             const playlist = await response.json();
             if (playlist.id) {
                 // Agregar canciones a la playlist (en lotes de 100)
-                for (let i = 0; i < allTracks.length; i += 100) {
-                    const uris = allTracks.slice(i, i + 100).map(t => t.uri);
+                for (let i = 0; i < this.previewTracks.length; i += 100) {
+                    const uris = this.previewTracks.slice(i, i + 100).map(t => t.uri);
                     await fetch(`${this.config.apiUrl}/playlists/${playlist.id}/tracks`, {
                         method: 'POST',
                         headers: {
@@ -177,14 +185,16 @@ class PlaylistManager {
                     });
                 }
                 document.getElementById('success-message').style.display = 'block';
-                document.getElementById('success-message').innerHTML = `¡Playlist creada con éxito!<br><a href='https://open.spotify.com/playlist/${playlist.id}' target='_blank' class='spotify-button'><i class='fab fa-spotify'></i> Abrir en Spotify</a>`;
+                document.getElementById('success-message').innerHTML = `¡Playlist creada y exportada con éxito!<br><a href='https://open.spotify.com/playlist/${playlist.id}' target='_blank' class='spotify-button'><i class='fab fa-spotify'></i> Abrir en Spotify</a>`;
+                document.getElementById('playlist-preview').style.display = 'none';
+                document.getElementById('export-spotify').style.display = 'none';
                 this.selectedTracks = [];
                 this.renderSelectedTracks();
             } else {
                 throw new Error('Error al crear la playlist');
             }
         } catch (error) {
-            alert('Error al crear la playlist: ' + error.message);
+            alert('Error al exportar la playlist: ' + error.message);
         } finally {
             document.getElementById('loading').style.display = 'none';
         }
@@ -252,56 +262,6 @@ class PlaylistManager {
             trackDiv.querySelector('.remove-track').onclick = () => this.removeTrack(track.uri);
             selectedTracksDiv.appendChild(trackDiv);
         });
-    }
-
-    async exportToSpotify() {
-        const playlist = JSON.parse(localStorage.getItem('currentPlaylist'));
-        
-        if (!playlist) {
-            alert('No se encontró la información de la playlist');
-            return;
-        }
-
-        try {
-            const exportButton = document.getElementById('export-spotify');
-            exportButton.disabled = true;
-            exportButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
-
-            // Agregar las canciones a la playlist
-            const trackUris = playlist.tracks.map(track => track.uri);
-            await fetch(`${this.config.apiUrl}/playlists/${playlist.id}/tracks`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.auth.getAccessToken()}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    uris: trackUris
-                })
-            });
-
-            // Mostrar mensaje de éxito y botón para abrir en Spotify
-            document.getElementById('export-success').classList.remove('hidden');
-            document.getElementById('open-spotify').href = `https://open.spotify.com/playlist/${playlist.id}`;
-            exportButton.style.display = 'none';
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al exportar la playlist. Por favor, intenta de nuevo.');
-            exportButton.disabled = false;
-            exportButton.innerHTML = '<i class="fab fa-spotify"></i> Exportar a Spotify';
-        }
-    }
-
-    showLoading() {
-        document.getElementById('loading').style.display = 'block';
-    }
-
-    hideLoading() {
-        document.getElementById('loading').style.display = 'none';
-    }
-
-    showSuccess() {
-        document.getElementById('success-message').style.display = 'block';
     }
 }
 
