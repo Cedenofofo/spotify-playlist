@@ -36,7 +36,7 @@
             margin-top: 12px;
             display: block;
         }
-        input[type="text"], select {
+        input[type="text"], input[type="number"], select {
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
@@ -50,13 +50,32 @@
             margin-left: auto;
             margin-right: auto;
         }
-        #track-search {
+        #track-search, .artist-autocomplete, .artist-row input {
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
         }
+        .autocomplete-suggestions {
+            background: #222;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .autocomplete-suggestion {
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .autocomplete-suggestion:hover, .autocomplete-suggestion.active {
+            background: #1db954;
+            color: #191414;
+        }
         .artist-inputs { margin-bottom: 10px; }
-        .artist-row { display: flex; align-items: center; margin-bottom: 5px; }
+        .artist-row { display: flex; align-items: center; margin-bottom: 5px; position: relative; }
         .artist-row input { flex: 1; margin-right: 5px; }
         .artist-row button { background: #e74c3c; color: #fff; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; }
         .add-artist-btn {
@@ -128,7 +147,7 @@
             h1 {
                 font-size: 1.3rem;
             }
-            input[type="text"], select {
+            input[type="text"], input[type="number"], select {
                 font-size: 0.98rem;
                 padding: 8px;
             }
@@ -155,22 +174,20 @@
                 <label for="playlist-name">Nombre de la playlist:</label>
                 <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada">
                 <label for="artist-main">Artista principal:</label>
-                <input type="text" id="artist-main" name="artist-main" placeholder="Nombre del artista principal" autocomplete="off">
+                <div style="position:relative;">
+                  <input type="text" id="artist-main" name="artist-main" class="artist-autocomplete" placeholder="Nombre del artista principal" autocomplete="off">
+                  <div id="artist-main-suggestions" class="autocomplete-suggestions"></div>
+                </div>
                 <label>Artistas adicionales:</label>
                 <div id="artist-inputs" class="artist-inputs"></div>
                 <button type="button" id="add-artist" class="add-artist-btn"><i class="fas fa-plus"></i> Agregar artista</button>
                 <label for="songs-per-artist">Canciones por artista:</label>
-                <select id="songs-per-artist">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5" selected>5</option>
-                    <option value="10">10</option>
-                </select>
+                <input type="number" id="songs-per-artist" min="1" max="50" value="5" step="1" required>
                 <label for="track-search">Agregar canciones específicas:</label>
-                <input type="text" id="track-search" placeholder="Buscar canciones..." autocomplete="off">
-                <div id="search-suggestions"></div>
+                <div style="position:relative;">
+                  <input type="text" id="track-search" placeholder="Buscar canciones..." autocomplete="off">
+                  <div id="search-suggestions" class="autocomplete-suggestions"></div>
+                </div>
                 <h3>Canciones seleccionadas:</h3>
                 <div id="selected-tracks"></div>
                 <button type="submit" class="spotify-button"><i class="fas fa-plus"></i> Crear Playlist</button>

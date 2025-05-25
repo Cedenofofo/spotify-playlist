@@ -7,6 +7,7 @@ class PlaylistManager {
         this.setupArtistInputs();
         this.setupEventListeners();
         this.renderSelectedTracks();
+        this.setupArtistAutocomplete(document.getElementById('artist-main'), document.getElementById('artist-main-suggestions'));
     }
 
     setupArtistInputs() {
@@ -24,7 +25,11 @@ class PlaylistManager {
         input.placeholder = 'Nombre del artista adicional';
         input.setAttribute('aria-label', 'Nombre del artista adicional');
         input.value = value;
+        const suggestionsDiv = document.createElement('div');
+        suggestionsDiv.className = 'autocomplete-suggestions';
         row.appendChild(input);
+        row.appendChild(suggestionsDiv);
+        this.setupArtistAutocomplete(input, suggestionsDiv);
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.innerHTML = '<i class="fas fa-times"></i>';
@@ -58,6 +63,59 @@ class PlaylistManager {
         if (createNewButton) {
             createNewButton.addEventListener('click', () => window.location.reload());
         }
+
+        // Validar solo números en el input de cantidad de canciones
+        const songsInput = document.getElementById('songs-per-artist');
+        songsInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value === '' || parseInt(this.value) < 1) this.value = 1;
+            if (parseInt(this.value) > 50) this.value = 50;
+        });
+    }
+
+    setupArtistAutocomplete(input, suggestionsDiv) {
+        let lastQuery = '';
+        let debounceTimeout;
+        input.addEventListener('input', async (e) => {
+            const query = input.value.trim();
+            if (query.length < 1) {
+                suggestionsDiv.innerHTML = '';
+                return;
+            }
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(async () => {
+                if (query === lastQuery) return;
+                lastQuery = query;
+                const artists = await this.searchArtists(query);
+                suggestionsDiv.innerHTML = '';
+                artists.forEach(artist => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-suggestion';
+                    div.textContent = artist.name;
+                    div.onclick = () => {
+                        input.value = artist.name;
+                        suggestionsDiv.innerHTML = '';
+                    };
+                    suggestionsDiv.appendChild(div);
+                });
+            }, 300);
+        });
+        input.addEventListener('blur', () => setTimeout(() => suggestionsDiv.innerHTML = '', 200));
+    }
+
+    async searchArtists(query) {
+        try {
+            const response = await fetch(`${this.config.apiUrl}/search?q=${encodeURIComponent(query)}&type=artist&limit=5`, {
+                headers: {
+                    'Authorization': `Bearer ${this.auth.getAccessToken()}`
+                }
+            });
+            const data = await response.json();
+            if (data.artists && data.artists.items) {
+                return data.artists.items;
+            }
+        } catch (e) { }
+        return [];
     }
 
     async createPlaylist() {

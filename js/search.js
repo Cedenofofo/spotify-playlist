@@ -7,21 +7,23 @@ class SearchManager {
 
     setupEventListeners() {
         const searchInput = document.getElementById('track-search');
+        const suggestionsDiv = document.getElementById('search-suggestions');
         if (searchInput) {
-            searchInput.addEventListener('input', this.debounce(() => this.searchTracks(), 500));
+            let debounceTimeout;
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.trim();
+                if (query.length < 1) {
+                    suggestionsDiv.innerHTML = '';
+                    return;
+                }
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => this.searchTracks(query, suggestionsDiv, searchInput), 300);
+            });
+            searchInput.addEventListener('blur', () => setTimeout(() => suggestionsDiv.innerHTML = '', 200));
         }
     }
 
-    async searchTracks() {
-        const searchInput = document.getElementById('track-search');
-        const query = searchInput.value.trim();
-        const suggestionsDiv = document.getElementById('search-suggestions');
-
-        if (query.length < 2) {
-            suggestionsDiv.innerHTML = '';
-            return;
-        }
-
+    async searchTracks(query, suggestionsDiv, searchInput) {
         try {
             const response = await fetch(`${this.config.apiUrl}/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
                 headers: {
@@ -32,7 +34,7 @@ class SearchManager {
             const data = await response.json();
 
             if (data.tracks && data.tracks.items) {
-                this.displayResults(data.tracks.items);
+                this.displayResults(data.tracks.items, suggestionsDiv, searchInput);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -40,33 +42,23 @@ class SearchManager {
         }
     }
 
-    displayResults(tracks) {
-        const suggestionsDiv = document.getElementById('search-suggestions');
+    displayResults(tracks, suggestionsDiv, searchInput) {
         suggestionsDiv.innerHTML = '';
 
         tracks.forEach(track => {
             const trackDiv = document.createElement('div');
-            trackDiv.className = 'track-item';
+            trackDiv.className = 'autocomplete-suggestion';
             trackDiv.innerHTML = `
-                <img src="${track.album.images[2]?.url || ''}" alt="${track.album.name}">
-                <div class="track-info">
-                    <div class="track-name">${track.name}</div>
-                    <div class="track-artist">${track.artists.map(artist => artist.name).join(', ')}</div>
-                </div>
-                <button class="add-track" data-uri="${track.uri}">
-                    <i class="fas fa-plus"></i>
-                </button>
+                <img src="${track.album.images[2]?.url || ''}" alt="${track.album.name}" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;border-radius:3px;">
+                <span>${track.name} <span style="color:#1db954;">${track.artists.map(artist => artist.name).join(', ')}</span></span>
             `;
-
-            const addButton = trackDiv.querySelector('.add-track');
-            addButton.addEventListener('click', () => {
+            trackDiv.addEventListener('click', () => {
                 if (window.playlistManager) {
                     window.playlistManager.addSpecificTrack(track);
                 }
                 suggestionsDiv.innerHTML = '';
-                document.getElementById('track-search').value = '';
+                searchInput.value = '';
             });
-
             suggestionsDiv.appendChild(trackDiv);
         });
     }
