@@ -39,6 +39,9 @@ class Auth {
             } else {
                 this.logout();
             }
+        } else {
+            // No hay token, mostrar solo login
+            this.showLoginSection();
         }
     }
 
@@ -77,6 +80,11 @@ class Auth {
     showPlaylistSection() {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('playlist-section').style.display = 'block';
+    }
+
+    showLoginSection() {
+        document.getElementById('login-section').style.display = 'block';
+        document.getElementById('playlist-section').style.display = 'none';
     }
 
     getAccessToken() {
