@@ -1,72 +1,144 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const createPlaylistButton = document.getElementById('create-playlist');
-    const loadingSpinner = document.getElementById('loading');
-    const successMessage = document.getElementById('success-message');
-    const playlistNameInput = document.getElementById('playlist-name');
-    const selectedTracksDiv = document.getElementById('selected-tracks');
+class PlaylistManager {
+    constructor() {
+        this.config = window.config;
+        this.auth = new Auth();
+        this.setupEventListeners();
+    }
 
-    if (createPlaylistButton) {
-        createPlaylistButton.addEventListener('click', async function() {
-            const playlistName = playlistNameInput.value.trim();
-            if (!playlistName) {
-                alert('Por favor, ingresa un nombre para la playlist');
-                return;
-            }
+    setupEventListeners() {
+        const createPlaylistButton = document.getElementById('create-playlist');
+        if (createPlaylistButton) {
+            createPlaylistButton.addEventListener('click', () => this.createPlaylist());
+        }
 
-            // Obtener las canciones seleccionadas
-            const tracks = Array.from(selectedTracksDiv.children).map(track => ({
-                uri: track.dataset.uri,
-                name: track.dataset.name,
-                artist: track.dataset.artist,
-                duration: track.dataset.duration,
-                preview_url: track.dataset.previewUrl,
-                external_url: track.dataset.externalUrl,
-                album: {
-                    name: track.dataset.albumName,
-                    image: track.dataset.albumImage
-                }
-            }));
+        const exportButton = document.getElementById('export-spotify');
+        if (exportButton) {
+            exportButton.addEventListener('click', () => this.exportToSpotify());
+        }
 
-            if (tracks.length === 0) {
-                alert('Por favor, selecciona al menos una canción');
-                return;
-            }
+        const createNewButton = document.getElementById('create-new');
+        if (createNewButton) {
+            createNewButton.addEventListener('click', () => window.location.reload());
+        }
+    }
 
-            try {
-                loadingSpinner.style.display = 'flex';
-                createPlaylistButton.disabled = true;
+    async createPlaylist() {
+        const playlistName = document.getElementById('playlist-name').value;
+        const playlistDescription = document.getElementById('playlist-description').value;
+        const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
 
-                const response = await fetch('create_playlist.php', {
+        if (!playlistName) {
+            alert('Por favor, ingresa un nombre para la playlist');
+            return;
+        }
+
+        if (selectedTracks.length === 0) {
+            alert('Por favor, agrega al menos una canción a la playlist');
+            return;
+        }
+
+        try {
+            this.showLoading();
+
+            // Crear la playlist
+            const response = await fetch(`${this.config.apiUrl}/me/playlists`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.auth.getAccessToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: playlistName,
+                    description: playlistDescription,
+                    public: false
+                })
+            });
+
+            const playlist = await response.json();
+
+            if (playlist.id) {
+                // Agregar las canciones a la playlist
+                const trackUris = selectedTracks.map(track => track.uri);
+                await fetch(`${this.config.apiUrl}/playlists/${playlist.id}/tracks`, {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${this.auth.getAccessToken()}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        playlistName: playlistName,
-                        tracks: tracks
+                        uris: trackUris
                     })
                 });
 
-                const data = await response.json();
+                // Guardar la información de la playlist
+                localStorage.setItem('currentPlaylist', JSON.stringify({
+                    id: playlist.id,
+                    name: playlistName,
+                    tracks: selectedTracks
+                }));
 
-                if (data.success) {
-                    // Guardar la información de la playlist en sessionStorage
-                    sessionStorage.setItem('currentPlaylist', JSON.stringify({
-                        name: playlistName,
-                        tracks: tracks
-                    }));
-
-                    document.getElementById('playlist-id').value = data.playlistId;
-                    successMessage.style.display = 'block';
-                } else {
-                    throw new Error(data.error || 'Error al crear la playlist');
-                }
-            } catch (error) {
-                alert('Error al crear la playlist: ' + error.message);
-            } finally {
-                loadingSpinner.style.display = 'none';
-                createPlaylistButton.disabled = false;
+                this.showSuccess();
+            } else {
+                throw new Error('Error al crear la playlist');
             }
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al crear la playlist. Por favor, intenta de nuevo.');
+        } finally {
+            this.hideLoading();
+        }
     }
-}); 
+
+    async exportToSpotify() {
+        const playlist = JSON.parse(localStorage.getItem('currentPlaylist'));
+        
+        if (!playlist) {
+            alert('No se encontró la información de la playlist');
+            return;
+        }
+
+        try {
+            const exportButton = document.getElementById('export-spotify');
+            exportButton.disabled = true;
+            exportButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
+
+            // Agregar las canciones a la playlist
+            const trackUris = playlist.tracks.map(track => track.uri);
+            await fetch(`${this.config.apiUrl}/playlists/${playlist.id}/tracks`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.auth.getAccessToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    uris: trackUris
+                })
+            });
+
+            // Mostrar mensaje de éxito y botón para abrir en Spotify
+            document.getElementById('export-success').classList.remove('hidden');
+            document.getElementById('open-spotify').href = `https://open.spotify.com/playlist/${playlist.id}`;
+            exportButton.style.display = 'none';
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al exportar la playlist. Por favor, intenta de nuevo.');
+            exportButton.disabled = false;
+            exportButton.innerHTML = '<i class="fab fa-spotify"></i> Exportar a Spotify';
+        }
+    }
+
+    showLoading() {
+        document.getElementById('loading').style.display = 'block';
+    }
+
+    hideLoading() {
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    showSuccess() {
+        document.getElementById('success-message').style.display = 'block';
+    }
+}
+
+// Inicializar el gestor de playlists
+new PlaylistManager(); 

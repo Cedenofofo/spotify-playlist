@@ -3,41 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Playlist Manager</title>
+    <title>Generador de Playlist de Spotify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #121212;
-            color: #ffffff;
+        .hidden {
+            display: none !important;
         }
-        #app {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        button {
+        #export-success {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
             background-color: #1DB954;
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 20px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            text-align: center;
         }
-        button:hover {
+        #export-spotify {
+            background-color: #1DB954;
+            transition: background-color 0.3s ease;
+        }
+        #export-spotify:hover {
             background-color: #1ed760;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+        }
+        #export-spotify:active {
+            transform: scale(0.98);
+        }
+        #export-spotify:disabled {
+            background-color: #1DB954;
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <h1>Spotify Playlist Manager</h1>
-        <button onclick="new Auth().login()">Iniciar sesión con Spotify</button>
+    <div class="container">
+        <h1>Generador de Playlist de Spotify</h1>
+        
+        <div id="login-section" class="login-section">
+            <p>Para comenzar, inicia sesión con tu cuenta de Spotify</p>
+            <button id="login-button" class="spotify-button">
+                <i class="fab fa-spotify"></i> Iniciar sesión con Spotify
+            </button>
+        </div>
+
+        <div id="playlist-section" class="playlist-section" style="display: none;">
+            <div class="search-container">
+                <input type="text" id="track-search" placeholder="Buscar canciones...">
+                <div id="search-suggestions"></div>
+            </div>
+
+            <div id="selected-tracks"></div>
+
+            <input type="hidden" id="playlist-id" value="">
+            
+            <div class="playlist-form">
+                <input type="text" id="playlist-name" placeholder="Nombre de la playlist" required>
+                <textarea id="playlist-description" placeholder="Descripción de la playlist"></textarea>
+                <button id="create-playlist" class="spotify-button">
+                    <i class="fas fa-plus"></i> Crear Playlist
+                </button>
+            </div>
+
+            <div id="loading" class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Creando playlist...</p>
+            </div>
+
+            <div id="success-message" class="success-message" style="display: none;">
+                <h3>¡Playlist creada con éxito!</h3>
+                <p>Tu playlist ha sido creada. Puedes:</p>
+                <div class="action-buttons">
+                    <button id="export-spotify" class="spotify-button">
+                        <i class="fab fa-spotify"></i> Exportar a Spotify
+                    </button>
+                    <button id="create-new" class="spotify-button secondary">
+                        <i class="fas fa-plus"></i> Crear otra playlist
+                    </button>
+                </div>
+                <div id="export-success" class="hidden">
+                    <p>¡Playlist exportada con éxito!</p>
+                    <a href="#" id="open-spotify" class="spotify-button" target="_blank">
+                        <i class="fab fa-spotify"></i> Abrir en Spotify
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="js/config.js?v=1.0.0"></script>
-    <script src="js/auth.js?v=1.0.0"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html> 

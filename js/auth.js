@@ -1,7 +1,41 @@
 class Auth {
     constructor() {
-        this.accessToken = localStorage.getItem('spotify_access_token');
-        this.tokenExpires = localStorage.getItem('token_expires');
+        this.config = window.config;
+        this.setupEventListeners();
+        this.checkAuth();
+    }
+
+    setupEventListeners() {
+        const loginButton = document.getElementById('login-button');
+        if (loginButton) {
+            loginButton.addEventListener('click', () => this.login());
+        }
+    }
+
+    checkAuth() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const accessToken = urlParams.get('access_token');
+        const expiresIn = urlParams.get('expires_in');
+
+        if (accessToken) {
+            // Guardar el token en localStorage
+            localStorage.setItem('spotify_access_token', accessToken);
+            localStorage.setItem('token_expires', Date.now() + (expiresIn * 1000));
+            
+            // Limpiar la URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Mostrar la sección de playlist
+            this.showPlaylistSection();
+        } else if (localStorage.getItem('spotify_access_token')) {
+            // Verificar si el token ha expirado
+            const expiresAt = localStorage.getItem('token_expires');
+            if (Date.now() < expiresAt) {
+                this.showPlaylistSection();
+            } else {
+                this.logout();
+            }
+        }
     }
 
     login() {
@@ -9,88 +43,37 @@ class Auth {
         localStorage.setItem('spotify_auth_state', state);
 
         const params = new URLSearchParams({
-            client_id: config.clientId,
-            response_type: 'token',
-            redirect_uri: config.redirectUri,
+            client_id: this.config.clientId,
+            response_type: 'code',
+            redirect_uri: this.config.redirectUri,
             state: state,
-            scope: config.scopes.join(' '),
+            scope: this.config.scopes.join(' '),
             show_dialog: 'true'
         });
 
-        window.location.href = `${config.authUrl}?${params.toString()}`;
+        window.location.href = `${this.config.authUrl}?${params.toString()}`;
     }
 
     logout() {
         localStorage.removeItem('spotify_access_token');
         localStorage.removeItem('token_expires');
         localStorage.removeItem('spotify_auth_state');
-        window.location.href = config.baseUrl + '/';
+        window.location.reload();
     }
 
     generateState() {
-        return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
+        return Math.random().toString(36).substring(2, 15);
     }
 
-    async handleCallback() {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const accessToken = params.get('access_token');
-        const expiresIn = params.get('expires_in');
-        const state = params.get('state');
-        const storedState = localStorage.getItem('spotify_auth_state');
-
-        console.log('accessToken:', accessToken);
-        console.log('expiresIn:', expiresIn);
-        console.log('state:', state);
-        console.log('storedState:', storedState);
-
-        if (!accessToken) {
-            alert('No se recibió access_token de Spotify. Intenta iniciar sesión de nuevo.');
-            window.location.href = config.baseUrl + '/';
-            return;
-        }
-        if (!state || !storedState) {
-            alert('Falta el parámetro state. Intenta iniciar sesión de nuevo.');
-            window.location.href = config.baseUrl + '/';
-            return;
-        }
-        if (state !== storedState) {
-            alert('El parámetro state no coincide. Intenta iniciar sesión de nuevo.');
-            window.location.href = config.baseUrl + '/';
-            return;
-        }
-
-        this.accessToken = accessToken;
-        this.tokenExpires = Date.now() + (parseInt(expiresIn, 10) * 1000);
-
-        localStorage.setItem('spotify_access_token', this.accessToken);
-        localStorage.setItem('token_expires', this.tokenExpires);
-        localStorage.removeItem('spotify_auth_state');
-
-        window.location.href = config.baseUrl + '/';
+    showPlaylistSection() {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('playlist-section').style.display = 'block';
     }
 
-    async getValidToken() {
-        if (!this.accessToken) {
-            return null;
-        }
-        if (this.tokenExpires && Date.now() >= this.tokenExpires) {
-            this.logout();
-            return null;
-        }
-        return this.accessToken;
+    getAccessToken() {
+        return localStorage.getItem('spotify_access_token');
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const auth = new Auth();
-    // Si estamos en la página principal, verificar si hay un token
-    if (!window.location.hash) {
-        const token = auth.getValidToken();
-        if (token) {
-            console.log('Usuario autenticado');
-        }
-    }
-}); 
+// Inicializar la autenticación
+new Auth(); 
