@@ -4,17 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autenticación Spotify</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #app {
+            text-align: center;
+        }
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #1DB954;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <h1>Procesando autenticación...</h1>
+        <div class="loading"></div>
     </div>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const auth = new Auth();
-            auth.handleCallback();
+            auth.handleCallback().catch(error => {
+                console.error('Error en la autenticación:', error);
+                document.getElementById('app').innerHTML = `
+                    <h1>Error en la autenticación</h1>
+                    <p>Por favor, intenta iniciar sesión de nuevo.</p>
+                    <button onclick="window.location.href = '${config.baseUrl}/'">Volver al inicio</button>
+                `;
+            });
         });
     </script>
 </body>
