@@ -69,6 +69,15 @@
             padding: 8px 12px;
             cursor: pointer;
             color: #fff;
+            display: flex;
+            align-items: center;
+        }
+        .autocomplete-suggestion img {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-right: 10px;
         }
         .autocomplete-suggestion:hover, .autocomplete-suggestion.active {
             background: #1db954;
@@ -155,6 +164,24 @@
             margin-bottom: 6px;
             border-bottom: 1px solid #222;
             padding-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .playlist-preview img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .playlist-preview .remove-track-preview {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 0 8px;
+            cursor: pointer;
+            margin-left: auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }

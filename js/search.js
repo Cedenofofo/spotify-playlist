@@ -49,7 +49,7 @@ class SearchManager {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'autocomplete-suggestion';
             trackDiv.innerHTML = `
-                <img src="${track.album.images[2]?.url || ''}" alt="${track.album.name}" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;border-radius:3px;">
+                <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/32?text=🎵'}" alt="${track.album.name}">
                 <span>${track.name} <span style="color:#1db954;">${track.artists.map(artist => artist.name).join(', ')}</span></span>
             `;
             trackDiv.addEventListener('click', () => {

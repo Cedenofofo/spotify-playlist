@@ -81,7 +81,7 @@ class PlaylistManager {
                 artists.forEach(artist => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-suggestion';
-                    div.textContent = artist.name;
+                    div.innerHTML = `<img src='${artist.images[0]?.url || 'https://via.placeholder.com/32?text=🎤'}' alt='${artist.name}'>${artist.name}`;
                     div.onclick = () => {
                         input.value = artist.name;
                         suggestionsDiv.innerHTML = '';
@@ -147,7 +147,18 @@ class PlaylistManager {
 
     renderPlaylistPreview(playlistName, tracks) {
         const previewDiv = document.getElementById('playlist-preview');
-        previewDiv.innerHTML = `<h3>${playlistName}</h3><ul>${tracks.map(track => `<li><b>${track.name}</b> <span style='color:#1db954;'>${track.artist}</span></li>`).join('')}</ul>`;
+        previewDiv.innerHTML = `<h3>${playlistName}</h3><ul>${tracks.map((track, idx) => `
+            <li><img src='${track.album.image || 'https://via.placeholder.com/40?text=🎵'}' alt='${track.album.name}'>
+            <b>${track.name}</b> <span style='color:#1db954;'>${track.artist}</span>
+            <button class='remove-track-preview' data-idx='${idx}' title='Eliminar canción'><i class='fas fa-times'></i></button></li>`).join('')}</ul>`;
+        // Botones para eliminar canciones en la vista previa
+        previewDiv.querySelectorAll('.remove-track-preview').forEach(btn => {
+            btn.onclick = (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                this.previewTracks.splice(idx, 1);
+                this.renderPlaylistPreview(playlistName, this.previewTracks);
+            };
+        });
     }
 
     async exportToSpotify() {
@@ -238,11 +249,21 @@ class PlaylistManager {
             }
         });
         this.renderSelectedTracks();
+        // Actualizar la vista previa si está visible
+        if (document.getElementById('playlist-preview').style.display !== 'none') {
+            this.previewTracks.push(this.selectedTracks[this.selectedTracks.length - 1]);
+            this.renderPlaylistPreview(document.getElementById('playlist-name').value.trim(), this.previewTracks);
+        }
     }
 
     removeTrack(uri) {
         this.selectedTracks = this.selectedTracks.filter(track => track.uri !== uri);
         this.renderSelectedTracks();
+        // Actualizar la vista previa si está visible
+        if (document.getElementById('playlist-preview').style.display !== 'none') {
+            this.previewTracks = this.previewTracks.filter(track => track.uri !== uri);
+            this.renderPlaylistPreview(document.getElementById('playlist-name').value.trim(), this.previewTracks);
+        }
     }
 
     renderSelectedTracks() {
@@ -252,7 +273,7 @@ class PlaylistManager {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'selected-track';
             trackDiv.innerHTML = `
-                <img src="${track.album.image || ''}" alt="${track.album.name}">
+                <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
                 <div class="track-info">
                     <div class="track-name">${track.name}</div>
                     <div class="track-artist">${track.artist}</div>
