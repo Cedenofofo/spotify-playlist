@@ -1,7 +1,6 @@
 class Auth {
     constructor() {
         this.accessToken = localStorage.getItem('spotify_access_token');
-        this.refreshToken = localStorage.getItem('spotify_refresh_token');
         this.tokenExpires = localStorage.getItem('token_expires');
     }
 
@@ -11,7 +10,7 @@ class Auth {
 
         const params = new URLSearchParams({
             client_id: config.clientId,
-            response_type: 'code',
+            response_type: 'token',
             redirect_uri: config.redirectUri,
             state: state,
             scope: config.scopes.join(' '),
@@ -23,7 +22,6 @@ class Auth {
 
     logout() {
         localStorage.removeItem('spotify_access_token');
-        localStorage.removeItem('spotify_refresh_token');
         localStorage.removeItem('token_expires');
         localStorage.removeItem('spotify_auth_state');
         window.location.href = '/spotify-playlist/';
@@ -36,39 +34,40 @@ class Auth {
     }
 
     async handleCallback() {
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get('code');
+        // El token viene en el fragmento de la URL
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const expiresIn = params.get('expires_in');
         const state = params.get('state');
         const storedState = localStorage.getItem('spotify_auth_state');
 
-        if (!code || !state || state !== storedState) {
-            throw new Error('Invalid state or missing code');
+        // LOGS PARA DEPURACIÓN
+        console.log('accessToken:', accessToken);
+        console.log('expiresIn:', expiresIn);
+        console.log('state:', state);
+        console.log('storedState:', storedState);
+
+        if (!accessToken) {
+            alert('No se recibió access_token de Spotify. Intenta iniciar sesión de nuevo.');
+            window.location.href = '/spotify-playlist/';
+            return;
+        }
+        if (!state || !storedState) {
+            alert('Falta el parámetro state. Intenta iniciar sesión de nuevo.');
+            window.location.href = '/spotify-playlist/';
+            return;
+        }
+        if (state !== storedState) {
+            alert('El parámetro state no coincide. Intenta iniciar sesión de nuevo.');
+            window.location.href = '/spotify-playlist/';
+            return;
         }
 
-        const tokenResponse = await fetch(config.tokenUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + btoa(config.clientId + ':' + config.clientSecret)
-            },
-            body: new URLSearchParams({
-                grant_type: 'authorization_code',
-                code: code,
-                redirect_uri: config.redirectUri
-            })
-        });
-
-        const data = await tokenResponse.json();
-        if (!tokenResponse.ok) {
-            throw new Error(data.error || 'Failed to get access token');
-        }
-
-        this.accessToken = data.access_token;
-        this.refreshToken = data.refresh_token;
-        this.tokenExpires = Date.now() + (data.expires_in * 1000);
+        this.accessToken = accessToken;
+        this.tokenExpires = Date.now() + (parseInt(expiresIn, 10) * 1000);
 
         localStorage.setItem('spotify_access_token', this.accessToken);
-        localStorage.setItem('spotify_refresh_token', this.refreshToken);
         localStorage.setItem('token_expires', this.tokenExpires);
 
         window.location.href = '/spotify-playlist/';
@@ -78,45 +77,10 @@ class Auth {
         if (!this.accessToken) {
             return null;
         }
-
-        if (Date.now() >= this.tokenExpires) {
-            await this.refreshAccessToken();
+        if (this.tokenExpires && Date.now() >= this.tokenExpires) {
+            this.logout();
+            return null;
         }
-
         return this.accessToken;
-    }
-
-    async refreshAccessToken() {
-        if (!this.refreshToken) {
-            throw new Error('No refresh token available');
-        }
-
-        const response = await fetch(config.tokenUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + btoa(config.clientId + ':' + config.clientSecret)
-            },
-            body: new URLSearchParams({
-                grant_type: 'refresh_token',
-                refresh_token: this.refreshToken
-            })
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error || 'Failed to refresh token');
-        }
-
-        this.accessToken = data.access_token;
-        this.tokenExpires = Date.now() + (data.expires_in * 1000);
-
-        if (data.refresh_token) {
-            this.refreshToken = data.refresh_token;
-            localStorage.setItem('spotify_refresh_token', this.refreshToken);
-        }
-
-        localStorage.setItem('spotify_access_token', this.accessToken);
-        localStorage.setItem('token_expires', this.tokenExpires);
     }
 } 
