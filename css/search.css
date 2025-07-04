@@ -9,7 +9,7 @@
     width: 100%;
     padding: 1rem 1.25rem;
     border: 2px solid transparent;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     font-size: 1rem;
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
@@ -19,9 +19,9 @@
 
 #track-search:focus {
     outline: none;
-    border-color: var(--spotify-green);
+    border-color: var(--primary-purple);
     background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.1);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     transform: translateY(-2px);
 }
 
@@ -32,10 +32,10 @@
     right: 0;
     background: rgba(40, 40, 40, 0.95);
     backdrop-filter: blur(20px);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
     margin-top: 0.5rem;
-    box-shadow: var(--shadow-heavy);
+    box-shadow: var(--glass-shadow);
     z-index: 1000;
     max-height: 400px;
     overflow-y: auto;
@@ -50,7 +50,7 @@
     display: flex;
     align-items: center;
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: var(--transition);
     margin-bottom: 0.25rem;
@@ -59,15 +59,15 @@
 }
 
 .suggestion-item:hover {
-    background: rgba(29, 185, 84, 0.2);
+    background: rgba(99, 102, 241, 0.2);
     transform: translateX(5px);
-    border-color: var(--spotify-green);
+    border-color: var(--primary-purple);
 }
 
 .suggestion-album-img {
     width: 50px;
     height: 50px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     margin-right: 1rem;
     object-fit: cover;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -90,7 +90,7 @@
 }
 
 .add-track-btn {
-    background: linear-gradient(135deg, var(--spotify-green), #1ed760);
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-indigo));
     border: none;
     border-radius: 50%;
     width: 36px;
@@ -101,13 +101,13 @@
     cursor: pointer;
     transition: var(--transition);
     color: white;
-    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
 .add-track-btn:hover {
-    background: linear-gradient(135deg, #1ed760, var(--spotify-green));
+    background: linear-gradient(135deg, var(--primary-indigo), var(--primary-purple));
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 .no-results {
@@ -123,7 +123,7 @@
     left: 50%;
     transform: translateX(-50%);
     padding: 1rem 2rem;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     color: white;
     font-weight: 600;
     z-index: 1000;
@@ -133,11 +133,11 @@
 }
 
 .toast-success {
-    background: linear-gradient(135deg, var(--spotify-green), #1ed760);
+    background: linear-gradient(135deg, var(--success), #34d399);
 }
 
 .toast-error {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    background: linear-gradient(135deg, var(--error), #dc2626);
 }
 
 @keyframes fadeInOut {
@@ -168,11 +168,11 @@
     align-items: center;
     padding: 1rem;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     margin-bottom: 0.75rem;
     transition: var(--transition);
     backdrop-filter: blur(10px);
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--glass-border);
 }
 
 .track-item:hover {
@@ -183,7 +183,7 @@
 .track-album-img {
     width: 50px;
     height: 50px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     margin-right: 1rem;
     object-fit: cover;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -229,8 +229,8 @@
     transform: translateY(-50%);
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(29, 185, 84, 0.3);
-    border-top: 2px solid var(--spotify-green);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-top: 2px solid var(--primary-purple);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
