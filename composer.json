@@ -1,0 +1,23 @@
+{
+    "name": "tu-nombre/spotify-playlist",
+    "description": "Aplicación web para gestionar playlists de Spotify",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "SpotifyPlaylist\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tu Nombre",
+            "email": "tu@email.com"
+        }
+    ],
+    "minimum-stability": "stable"
+} 
