@@ -7,6 +7,7 @@
 
 #track-search {
     width: 100%;
+<<<<<<< HEAD
     padding: 1rem 1.25rem;
     border: 2px solid transparent;
     border-radius: 12px;
@@ -15,14 +16,27 @@
     color: var(--text-primary);
     transition: var(--transition);
     backdrop-filter: blur(10px);
+=======
+    padding: 12px 20px;
+    border: 2px solid #1DB954;
+    border-radius: 25px;
+    font-size: 16px;
+    background: #282828;
+    color: white;
+    transition: all 0.3s ease;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 #track-search:focus {
     outline: none;
+<<<<<<< HEAD
     border-color: var(--spotify-green);
     background: rgba(255, 255, 255, 0.15);
     box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.1);
     transform: translateY(-2px);
+=======
+    box-shadow: 0 0 5px rgba(29, 185, 84, 0.5);
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 #search-suggestions {
@@ -30,6 +44,7 @@
     top: 100%;
     left: 0;
     right: 0;
+<<<<<<< HEAD
     background: rgba(40, 40, 40, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid var(--card-border);
@@ -44,11 +59,25 @@
 
 .suggestions-list {
     padding: 0.5rem;
+=======
+    background: #282828;
+    border-radius: 10px;
+    margin-top: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.suggestions-list {
+    padding: 10px;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 .suggestion-item {
     display: flex;
     align-items: center;
+<<<<<<< HEAD
     padding: 1rem;
     border-radius: 8px;
     cursor: pointer;
@@ -62,15 +91,32 @@
     background: rgba(29, 185, 84, 0.2);
     transform: translateX(5px);
     border-color: var(--spotify-green);
+=======
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-bottom: 5px;
+}
+
+.suggestion-item:hover {
+    background-color: #333;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 .suggestion-album-img {
     width: 50px;
     height: 50px;
+<<<<<<< HEAD
     border-radius: 8px;
     margin-right: 1rem;
     object-fit: cover;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+=======
+    border-radius: 5px;
+    margin-right: 15px;
+    object-fit: cover;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 .suggestion-info {
@@ -78,6 +124,7 @@
 }
 
 .suggestion-title {
+<<<<<<< HEAD
     color: var(--text-primary);
     font-weight: 600;
     margin-bottom: 0.25rem;
@@ -95,10 +142,29 @@
     border-radius: 50%;
     width: 36px;
     height: 36px;
+=======
+    color: white;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.suggestion-artist {
+    color: #b3b3b3;
+    font-size: 0.9em;
+}
+
+.add-track-btn {
+    background: #1DB954;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+<<<<<<< HEAD
     transition: var(--transition);
     color: white;
     box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
@@ -115,10 +181,26 @@
     text-align: center;
     color: var(--text-secondary);
     font-style: italic;
+=======
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.add-track-btn:hover {
+    background: #1ed760;
+    transform: scale(1.1);
+}
+
+.no-results {
+    padding: 20px;
+    text-align: center;
+    color: #b3b3b3;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 .toast {
     position: fixed;
+<<<<<<< HEAD
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
@@ -161,11 +243,42 @@
 
 #selected-tracks {
     margin-top: 1.5rem;
+=======
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 25px;
+    color: white;
+    font-weight: bold;
+    z-index: 1000;
+    animation: fadeInOut 3s ease;
+}
+
+.toast-success {
+    background: #1DB954;
+}
+
+.toast-error {
+    background: #E91429;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, 20px); }
+    10% { opacity: 1; transform: translate(-50%, 0); }
+    90% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+
+#selected-tracks {
+    margin-top: 20px;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 .track-item {
     display: flex;
     align-items: center;
+<<<<<<< HEAD
     padding: 1rem;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -187,6 +300,19 @@
     margin-right: 1rem;
     object-fit: cover;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+=======
+    padding: 10px;
+    background: #282828;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.track-album-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    margin-right: 15px;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 }
 
 .track-info {
@@ -194,6 +320,7 @@
 }
 
 .track-title {
+<<<<<<< HEAD
     color: var(--text-primary);
     font-weight: 600;
     margin-bottom: 0.25rem;
@@ -264,4 +391,13 @@
         transform: none;
         width: auto;
     }
+=======
+    color: white;
+    font-weight: bold;
+}
+
+.track-artist {
+    color: #b3b3b3;
+    font-size: 0.9em;
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 } 

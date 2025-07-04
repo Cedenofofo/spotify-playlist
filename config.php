@@ -22,7 +22,11 @@ session_start();
 // Configuración de Spotify
 define('SPOTIFY_CLIENT_ID', '87cd9c6748524a58bc0e3151a3173e93');
 define('SPOTIFY_CLIENT_SECRET', '5c0c9086ef2a414d93e7e9385390053b');
+<<<<<<< HEAD
 define('SPOTIFY_REDIRECT_URI', 'https://cedenofofo.github.io/spotify-playlist/callback.html');
+=======
+define('SPOTIFY_REDIRECT_URI', 'http://127.0.0.1/spotify-playlist/callback.php');
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 
 // URLs de la API de Spotify
 define('SPOTIFY_API_URL', 'https://api.spotify.com/v1');
@@ -37,7 +41,11 @@ define('SPOTIFY_SESSION_REFRESH_TOKEN_KEY', 'spotify_refresh_token');
 define('SPOTIFY_SCOPES', 'playlist-modify-public playlist-modify-private user-read-private');
 
 // Configuración de la aplicación
+<<<<<<< HEAD
 define('APP_URL', 'https://cedenofofo.github.io/spotify-playlist');
+=======
+define('APP_URL', 'http://127.0.0.1/spotify-playlist');
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
 define('DEBUG_MODE', true);
 
 // Configuración adicional de seguridad
@@ -74,7 +82,11 @@ function checkAndRefreshToken() {
         if (isset($_SESSION[SPOTIFY_SESSION_REFRESH_TOKEN_KEY])) {
             try {
                 $ch = curl_init();
+<<<<<<< HEAD
                 curl_setopt($ch, CURLOPT_URL, 'https://accounts.spotify.com/api/token');
+=======
+                curl_setopt($ch, CURLOPT_URL, SPOTIFY_TOKEN_URL);
+>>>>>>> 4dd404313851d4170f901235e7ae4014f112478d
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
