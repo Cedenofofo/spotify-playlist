@@ -8,7 +8,7 @@ window.config = {
         : '',                  // Para desarrollo local
     
     // Configuración de Spotify
-    clientId: 'TU_CLIENT_ID_AQUI', // <-- PON AQUÍ TU CLIENT ID DE SPOTIFY
+    clientId: '87cd9c6748524a58bc0e3151a3173e93', // <-- TU CLIENT ID DE SPOTIFY
     // clientSecret: 'NO SE USA EN GITHUB PAGES', // Nunca subas el clientSecret al frontend
     redirectUri: window.location.hostname.includes('github.io')
         ? 'https://cedenofofo.github.io/spotify-playlist/callback.html'
