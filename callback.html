@@ -42,81 +42,44 @@
 
     <script src="js/config.js"></script>
     <script>
-        // Utilidad para decodificar base64url
-        function base64UrlDecode(str) {
-            str = str.replace(/-/g, '+').replace(/_/g, '/');
-            while (str.length % 4) str += '=';
-            return atob(str);
-        }
-
         document.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const state = urlParams.get('state');
             const storedState = localStorage.getItem('spotify_auth_state');
-            const codeVerifier = localStorage.getItem('spotify_pkce_code_verifier');
 
-            console.log('Debug - code:', code);
-            console.log('Debug - state:', state);
-            console.log('Debug - storedState:', storedState);
-            console.log('Debug - codeVerifier:', codeVerifier);
-            
-            if (!code || !state || !storedState || state !== storedState || !codeVerifier) {
-                console.error('Error en la autenticación:', {
-                    hasCode: !!code,
-                    hasState: !!state,
-                    hasStoredState: !!storedState,
-                    stateMatch: state === storedState,
-                    hasCodeVerifier: !!codeVerifier
-                });
+            if (!code || !state || !storedState || state !== storedState) {
                 alert('Error en la autenticación. Por favor, intenta de nuevo.');
-                window.location.href = config.baseUrl || '/';
+                window.location.href = '/';
                 return;
             }
 
             try {
-                console.log('Debug - Iniciando intercambio de código por token...');
-                console.log('Debug - redirectUri:', config.redirectUri);
-                console.log('Debug - clientId:', config.clientId);
-                
-                const body = new URLSearchParams({
-                    grant_type: 'authorization_code',
-                    code: code,
-                    redirect_uri: config.redirectUri,
-                    client_id: config.clientId,
-                    code_verifier: codeVerifier
-                });
-                
-                console.log('Debug - Request body:', body.toString());
                 const response = await fetch('https://accounts.spotify.com/api/token', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + btoa(config.clientId + ':' + config.clientSecret)
                     },
-                    body
+                    body: new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        code: code,
+                        redirect_uri: config.redirectUri
+                    })
                 });
-                
-                console.log('Debug - Response status:', response.status);
-                console.log('Debug - Response headers:', response.headers);
-                
+
                 const data = await response.json();
-                console.log('Debug - API response:', data);
-                
+
                 if (data.access_token) {
-                    // Guardar el access_token y limpiar PKCE
-                    localStorage.setItem('spotify_access_token', data.access_token);
-                    localStorage.removeItem('spotify_pkce_code_verifier');
-                    localStorage.removeItem('spotify_auth_state');
-                    // Redirigir a la página principal
-                    window.location.href = config.baseUrl + '/index.html';
+                    // Redirigir a la página principal con el token
+                    window.location.href = `${config.baseUrl}/?access_token=${data.access_token}&expires_in=${data.expires_in}`;
                 } else {
-                    console.error('Error en la respuesta de la API:', data);
-                    throw new Error(data.error_description || data.error || 'No se recibió el token de acceso');
+                    throw new Error('No se recibió el token de acceso');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error al obtener el token de acceso. Por favor, intenta de nuevo.');
-                window.location.href = config.baseUrl || '/';
+                window.location.href = '/';
             }
         });
     </script>

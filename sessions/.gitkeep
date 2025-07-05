@@ -1,2 +1,0 @@
-# This file ensures the sessions directory is tracked by git
-# The sessions directory is needed for PHP session storage 
