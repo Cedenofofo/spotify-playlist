@@ -311,7 +311,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const loginBtn = document.getElementById('spotify-login-btn');
+        const loginBtn = document.getElementById('login-button');
         if (loginBtn) {
             loginBtn.addEventListener('click', async function() {
                 const codeVerifier = await generateCodeVerifier();
@@ -319,6 +319,9 @@
                 const state = getRandomState();
                 localStorage.setItem('spotify_auth_state', state);
                 localStorage.setItem('spotify_pkce_code_verifier', codeVerifier);
+                console.log('Debug - redirectUri:', config.redirectUri);
+                console.log('Debug - clientId:', config.clientId);
+                
                 const params = new URLSearchParams({
                     client_id: config.clientId,
                     response_type: 'code',
@@ -329,7 +332,10 @@
                     scope: config.scopes.join(' '),
                     show_dialog: 'true'
                 });
-                window.location.href = `${config.authUrl}?${params.toString()}`;
+                
+                const authUrl = `${config.authUrl}?${params.toString()}`;
+                console.log('Debug - authUrl:', authUrl);
+                window.location.href = authUrl;
             });
         }
     });

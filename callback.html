@@ -56,7 +56,19 @@
             const storedState = localStorage.getItem('spotify_auth_state');
             const codeVerifier = localStorage.getItem('spotify_pkce_code_verifier');
 
+            console.log('Debug - code:', code);
+            console.log('Debug - state:', state);
+            console.log('Debug - storedState:', storedState);
+            console.log('Debug - codeVerifier:', codeVerifier);
+            
             if (!code || !state || !storedState || state !== storedState || !codeVerifier) {
+                console.error('Error en la autenticación:', {
+                    hasCode: !!code,
+                    hasState: !!state,
+                    hasStoredState: !!storedState,
+                    stateMatch: state === storedState,
+                    hasCodeVerifier: !!codeVerifier
+                });
                 alert('Error en la autenticación. Por favor, intenta de nuevo.');
                 window.location.href = config.baseUrl || '/';
                 return;
@@ -78,14 +90,18 @@
                     body
                 });
                 const data = await response.json();
+                console.log('Debug - API response:', data);
+                
                 if (data.access_token) {
                     // Guardar el access_token y limpiar PKCE
                     localStorage.setItem('spotify_access_token', data.access_token);
                     localStorage.removeItem('spotify_pkce_code_verifier');
+                    localStorage.removeItem('spotify_auth_state');
                     // Redirigir a la página principal
                     window.location.href = config.baseUrl + '/';
                 } else {
-                    throw new Error('No se recibió el token de acceso');
+                    console.error('Error en la respuesta de la API:', data);
+                    throw new Error(data.error_description || data.error || 'No se recibió el token de acceso');
                 }
             } catch (error) {
                 console.error('Error:', error);
