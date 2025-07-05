@@ -256,6 +256,11 @@
             </button>
         </div>
         <div id="playlist-section" class="playlist-section" style="display: none;">
+            <div style="text-align: right; margin-bottom: 20px;">
+                <button type="button" id="logout-button" class="spotify-button secondary" aria-label="Cerrar sesión">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Cerrar sesión
+                </button>
+            </div>
             <form id="playlist-form" aria-label="Formulario para crear playlist">
                 <label for="playlist-name">Nombre de la playlist:</label>
                 <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada" aria-required="true">
@@ -311,6 +316,23 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si el usuario ya está autenticado
+        const accessToken = localStorage.getItem('spotify_access_token');
+        const loginSection = document.getElementById('login-section');
+        const playlistSection = document.getElementById('playlist-section');
+        
+        if (accessToken) {
+            // Usuario autenticado, mostrar la interfaz de playlist
+            loginSection.style.display = 'none';
+            playlistSection.style.display = 'block';
+            console.log('Usuario autenticado, mostrando interfaz de playlist');
+        } else {
+            // Usuario no autenticado, mostrar botón de login
+            loginSection.style.display = 'block';
+            playlistSection.style.display = 'none';
+            console.log('Usuario no autenticado, mostrando botón de login');
+        }
+        
         const loginBtn = document.getElementById('login-button');
         if (loginBtn) {
             loginBtn.addEventListener('click', async function() {
@@ -336,6 +358,20 @@
                 const authUrl = `${config.authUrl}?${params.toString()}`;
                 console.log('Debug - authUrl:', authUrl);
                 window.location.href = authUrl;
+            });
+        }
+        
+        // Funcionalidad del botón de logout
+        const logoutBtn = document.getElementById('logout-button');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                // Limpiar todos los datos de autenticación
+                localStorage.removeItem('spotify_access_token');
+                localStorage.removeItem('spotify_auth_state');
+                localStorage.removeItem('spotify_pkce_code_verifier');
+                
+                // Recargar la página para mostrar el botón de login
+                window.location.reload();
             });
         }
     });

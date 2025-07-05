@@ -98,7 +98,7 @@
                     localStorage.removeItem('spotify_pkce_code_verifier');
                     localStorage.removeItem('spotify_auth_state');
                     // Redirigir a la página principal
-                    window.location.href = config.baseUrl + '/';
+                    window.location.href = config.baseUrl + '/index.html';
                 } else {
                     console.error('Error en la respuesta de la API:', data);
                     throw new Error(data.error_description || data.error || 'No se recibió el token de acceso');
