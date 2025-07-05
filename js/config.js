@@ -8,8 +8,8 @@ window.config = {
         : '',                  // Para desarrollo local
     
     // Configuración de Spotify
-    clientId: '87cd9c6748524a58bc0e3151a3173e93',
-    clientSecret: '5c0c9086ef2a414d93e7e9385390053b',
+    clientId: 'TU_CLIENT_ID_AQUI', // <-- PON AQUÍ TU CLIENT ID DE SPOTIFY
+    // clientSecret: 'NO SE USA EN GITHUB PAGES', // Nunca subas el clientSecret al frontend
     redirectUri: window.location.hostname.includes('github.io')
         ? 'https://cedenofofo.github.io/spotify-playlist/callback.html'
         : 'http://127.0.0.1/spotify-playlist/callback.php',
@@ -24,4 +24,7 @@ window.config = {
         'playlist-modify-private',
         'user-read-private'
     ]
-}; 
+};
+
+// NOTA: Para GitHub Pages solo necesitas el clientId y la redirectUri a callback.html
+// El clientSecret solo se usa en el backend local (PHP) y nunca debe subirse al frontend. 

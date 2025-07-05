@@ -55,56 +55,77 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            // Preparar datos para enviar al servidor
-            const formData = new FormData();
-            formData.append('artists', JSON.stringify(artists));
-            formData.append('playlistName', playlistName);
-            formData.append('tracksPerArtist', trackCount);
+            // Buscar canciones de los artistas usando la API de Spotify directamente
+            // NOTA: El usuario debe estar autenticado y tener un access_token
+            const accessToken = localStorage.getItem('spotify_access_token');
+            if (!accessToken) {
+                alert('Debes iniciar sesión con Spotify primero.');
+                return;
+            }
 
-            const response = await fetch('search.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                displayTracks(data.tracks);
-                
-                // Crear botón de autenticación
-                const authButton = document.createElement('a');
-                authButton.href = '#';
-                authButton.className = 'spotify-link';
-                authButton.textContent = 'Create Playlist in Spotify';
-                
-                // Manejar el proceso de autenticación y creación de playlist
-                authButton.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    
-                    try {
-                        // Primero intentamos abrir Spotify Desktop
-                        window.location.href = 'spotify:';
-                        
-                        // Esperamos un momento y luego iniciamos el proceso de autenticación
-                        setTimeout(() => {
-                            // Guardamos la URL actual para volver después
-                            sessionStorage.setItem('spotify_return_url', window.location.href);
-                            // Redirigimos a la página de autenticación
-                            window.location.href = data.auth_url;
-                        }, 1000);
-                    } catch (error) {
-                        console.error('Error initiating Spotify auth:', error);
-                        alert('Error connecting to Spotify. Please try again.');
+            let allTracks = [];
+            for (const artist of artists) {
+                const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(artist)}&type=track&limit=${trackCount}`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
                     }
                 });
-                
-                resultContainer.appendChild(authButton);
+                const data = await response.json();
+                if (data.tracks && data.tracks.items) {
+                    allTracks = allTracks.concat(data.tracks.items);
+                }
+            }
+
+            if (allTracks.length > 0) {
+                displayTracks(allTracks);
+                // Crear botón para crear playlist en Spotify
+                const createPlaylistBtn = document.createElement('button');
+                createPlaylistBtn.textContent = 'Crear Playlist en Spotify';
+                createPlaylistBtn.className = 'spotify-link';
+                createPlaylistBtn.addEventListener('click', async function() {
+                    try {
+                        // Obtener el nombre del usuario
+                        const userRes = await fetch('https://api.spotify.com/v1/me', {
+                            headers: { 'Authorization': `Bearer ${accessToken}` }
+                        });
+                        const userData = await userRes.json();
+                        // Crear la playlist
+                        const playlistRes = await fetch(`https://api.spotify.com/v1/users/${userData.id}/playlists`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                name: playlistName,
+                                description: 'Playlist generada automáticamente',
+                                public: true
+                            })
+                        });
+                        const playlistData = await playlistRes.json();
+                        // Añadir canciones a la playlist
+                        const uris = allTracks.map(track => track.uri);
+                        await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ uris })
+                        });
+                        alert('¡Playlist creada con éxito!');
+                        window.open(playlistData.external_urls.spotify, '_blank');
+                    } catch (error) {
+                        alert('Error al crear la playlist en Spotify.');
+                    }
+                });
+                resultContainer.appendChild(createPlaylistBtn);
             } else {
-                resultContainer.innerHTML = `<p class="message">${data.message}</p>`;
+                resultContainer.innerHTML = '<p class="message">No se encontraron canciones para los artistas ingresados.</p>';
             }
         } catch (error) {
             console.error('Error:', error);
-            resultContainer.innerHTML = '<p class="message">An error occurred while creating the playlist</p>';
+            resultContainer.innerHTML = '<p class="message">Ocurrió un error al crear la playlist</p>';
         }
     });
 
