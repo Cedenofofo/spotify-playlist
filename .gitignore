@@ -1,3 +1,86 @@
-node_modules/ 
-.env 
-php_errors.log 
+# Dependencies
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# Configuration files with secrets
+config.php
+config.local.php
+
+# Session files
+sessions/
+*.sess
+
+# Logs
+*.log
+logs/
+error_log
+
+# Cache
+cache/
+*.cache
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+
+# Build files
+dist/
+build/
+*.min.js
+*.min.css
+
+# Backup files
+*.bak
+*.backup
+
+# Spotify API credentials
+spotify_credentials.json
+client_secret.json
+
+# Database files
+*.db
+*.sqlite
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Deployment files
+.htaccess
+robots.txt
+
+# Testing
+coverage/
+.nyc_output/
+test-results/
+
+# Misc
+*.pid
+*.seed
+*.pid.lock

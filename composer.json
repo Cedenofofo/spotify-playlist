@@ -1,23 +1,57 @@
 {
-    "name": "tu-nombre/spotify-playlist",
-    "description": "Aplicación web para gestionar playlists de Spotify",
+    "name": "cedenofofo/tuneuptify",
+    "description": "Un gestor de playlists de Spotify que te permite crear, gestionar y exportar playlists personalizadas",
     "type": "project",
-    "require": {
-        "php": ">=7.4",
-        "ext-curl": "*",
-        "ext-json": "*"
-    },
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "SpotifyPlaylist\\": "src/"
-        }
-    },
     "authors": [
         {
-            "name": "Tu Nombre",
-            "email": "tu@email.com"
+            "name": "cedenofofo",
+            "email": "contact@cedenofofo.com",
+            "homepage": "https://github.com/cedenofofo"
         }
     ],
-    "minimum-stability": "stable"
+    "require": {
+        "php": ">=8.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tuneuptify\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tuneuptify\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "start": "php -S localhost:8000",
+        "dev": "php -S localhost:8000"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "keywords": [
+        "spotify",
+        "playlist",
+        "music",
+        "php",
+        "oauth",
+        "api",
+        "web-app"
+    ],
+    "homepage": "https://github.com/cedenofofo/spotify-playlist-desktop",
+    "support": {
+        "issues": "https://github.com/cedenofofo/spotify-playlist-desktop/issues",
+        "source": "https://github.com/cedenofofo/spotify-playlist-desktop"
+    }
 } 

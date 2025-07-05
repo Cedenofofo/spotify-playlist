@@ -1,36 +1,47 @@
 {
-  "name": "spotify-playlist-desktop",
+  "name": "tuneuptify",
   "version": "1.0.0",
-  "description": "Aplicación de escritorio para gestionar playlists de Spotify",
-  "main": "main.js",
+  "description": "Un gestor de playlists de Spotify que te permite crear, gestionar y exportar playlists personalizadas",
+  "main": "index.html",
   "scripts": {
-    "start": "electron .",
-    "dev": "php -S localhost:3000 & electron .",
-    "build": "electron-builder"
+    "start": "php -S localhost:8000",
+    "dev": "php -S localhost:8000",
+    "build": "echo 'No build step required for this project'",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linting configured'",
+    "format": "echo 'No formatting configured'"
   },
-  "author": "",
+  "keywords": [
+    "spotify",
+    "playlist",
+    "music",
+    "php",
+    "javascript",
+    "oauth",
+    "api"
+  ],
+  "author": {
+    "name": "cedenofofo",
+    "url": "https://github.com/cedenofofo"
+  },
   "license": "MIT",
-  "devDependencies": {
-    "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cedenofofo/spotify-playlist-desktop.git"
   },
-  "build": {
-    "appId": "com.spotify-playlist.app",
-    "productName": "Spotify Playlist Manager",
-    "directories": {
-      "output": "dist"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "assets/icon.png"
-    }
-  }
+  "bugs": {
+    "url": "https://github.com/cedenofofo/spotify-playlist-desktop/issues"
+  },
+  "homepage": "https://cedenofofo.github.io/spotify-playlist-desktop",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 } 
