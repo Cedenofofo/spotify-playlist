@@ -444,10 +444,19 @@ function displayPlaylistPreview(data) {
 
 // Función para eliminar una canción de la vista previa
 function removeTrackFromPreview(index) {
-    if (!window.currentPlaylistTracks) return;
+    console.log('removeTrackFromPreview llamado con índice:', index);
+    
+    if (!window.currentPlaylistTracks) {
+        console.error('No hay tracks disponibles');
+        return;
+    }
+    
+    console.log('Tracks antes de eliminar:', window.currentPlaylistTracks.length);
     
     // Eliminar la canción del array
     window.currentPlaylistTracks.splice(index, 1);
+    
+    console.log('Tracks después de eliminar:', window.currentPlaylistTracks.length);
     
     // Actualizar la vista previa
     const data = {
@@ -459,6 +468,9 @@ function removeTrackFromPreview(index) {
     displayPlaylistPreview(data);
     showNotification('Canción eliminada de la playlist', 'info');
 }
+
+// Hacer la función global
+window.removeTrackFromPreview = removeTrackFromPreview;
 
 // ===== EXPORTAR A SPOTIFY =====
 async function exportToSpotify() {
