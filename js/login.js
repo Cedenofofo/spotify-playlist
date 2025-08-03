@@ -18,6 +18,77 @@ class LoginManager {
                 this.initiateSpotifyAuth();
             });
         }
+        
+        // Agregar botón de prueba si no existe
+        this.addTestButton();
+    }
+    
+    addTestButton() {
+        const testBtn = document.createElement('button');
+        testBtn.textContent = '🔧 Probar Configuración';
+        testBtn.className = 'test-config-btn';
+        testBtn.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #1db954;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 1000;
+        `;
+        testBtn.onclick = () => this.testAllRedirectUris();
+        document.body.appendChild(testBtn);
+    }
+    
+    async testAllRedirectUris() {
+        const testUris = [
+            'https://cedenofofo.github.io/spotify-playlist/',
+            'https://cedenofofo.github.io/spotify-playlist/index.html',
+            'https://cedenofofo.github.io/spotify-playlist/callback.html'
+        ];
+        
+        console.log('🧪 Probando todas las URLs de redirección...');
+        
+        for (let i = 0; i < testUris.length; i++) {
+            const uri = testUris[i];
+            console.log(`\n🔍 Probando URL ${i + 1}: ${uri}`);
+            
+            // Cambiar temporalmente la URL de redirección
+            const originalUri = window.config.redirectUri;
+            window.config.redirectUri = uri;
+            
+            try {
+                const state = this.generateRandomState();
+                const codeVerifier = this.generateCodeVerifier();
+                const codeChallenge = await this.generateCodeChallenge(codeVerifier);
+                const testUrl = this.buildAuthUrl(state, codeChallenge);
+                
+                console.log(`✅ URL generada: ${testUrl}`);
+                
+                // Crear un iframe oculto para probar la URL
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = testUrl;
+                document.body.appendChild(iframe);
+                
+                // Remover el iframe después de un tiempo
+                setTimeout(() => {
+                    if (iframe.parentNode) {
+                        iframe.parentNode.removeChild(iframe);
+                    }
+                }, 2000);
+                
+            } catch (error) {
+                console.error(`❌ Error con URL ${uri}:`, error);
+            }
+            
+            // Restaurar la URL original
+            window.config.redirectUri = originalUri;
+        }
     }
     
     verifySpotifyConfig() {
@@ -29,6 +100,25 @@ class LoginManager {
         console.log('Hostname actual:', window.location.hostname);
         console.log('URL actual:', window.location.href);
         console.log('==============================');
+        
+        // Probar diferentes URLs de redirección
+        this.testRedirectUris();
+    }
+    
+    testRedirectUris() {
+        const testUris = [
+            'https://cedenofofo.github.io/spotify-playlist/',
+            'https://cedenofofo.github.io/spotify-playlist/index.html',
+            'https://cedenofofo.github.io/spotify-playlist/callback.html',
+            'http://localhost:8000/',
+            'http://localhost:3000/'
+        ];
+        
+        console.log('=== URLs de redirección a probar ===');
+        testUris.forEach((uri, index) => {
+            console.log(`${index + 1}. ${uri}`);
+        });
+        console.log('====================================');
     }
     
     checkAuthStatus() {
