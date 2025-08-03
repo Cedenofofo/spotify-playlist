@@ -3,303 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tuneuptify</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Tuneuptify - Gestor de Playlists de Spotify</title>
+    <meta name="description" content="Crea y gestiona playlists personalizadas de Spotify con Tuneuptify">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #1db954 0%, #00cfff 100%);
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: #fff;
-        }
-        header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 18px;
-        }
-        .logo-tuneuptify {
-            width: 180px;
-            height: auto;
-            margin: 18px auto 0 auto;
-            display: block;
-        }
-        .container {
-            max-width: 500px;
-            margin: 40px auto;
-            background: rgba(25, 20, 20, 0.90);
-            border-radius: 18px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            padding: 32px 28px 24px 28px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-        h1 {
-            text-align: center;
-            font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-            font-size: 2rem;
-            color: #00cfff;
-        }
-        label {
-            font-weight: 500;
-            margin-top: 12px;
-            display: block;
-        }
-        input[type="text"], input[type="number"], select {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            padding: 10px;
-            border-radius: 6px;
-            border: none;
-            margin-top: 4px;
-            margin-bottom: 12px;
-            font-size: 1rem;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #track-search, .artist-autocomplete, .artist-row input {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-        .autocomplete-suggestions {
-            background: #222;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            position: absolute;
-            z-index: 10;
-            width: 100%;
-            max-height: 180px;
-            overflow-y: auto;
-        }
-        .autocomplete-suggestion {
-            padding: 8px 12px;
-            cursor: pointer;
-            color: #fff;
-            display: flex;
-            align-items: center;
-        }
-        .autocomplete-suggestion img {
-            width: 32px;
-            height: 32px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .autocomplete-suggestion:hover, .autocomplete-suggestion.active {
-            background: #1db954;
-            color: #191414;
-        }
-        .artist-inputs { margin-bottom: 10px; }
-        .artist-row { display: flex; align-items: center; margin-bottom: 5px; position: relative; }
-        .artist-row input { flex: 1; margin-right: 5px; }
-        .artist-row button { background: #e74c3c; color: #fff; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; }
-        .add-artist-btn {
-            background: #222;
-            color: #1db954;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 16px;
-            margin-bottom: 16px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .add-artist-btn:hover {
-            background: #1db954;
-            color: #fff;
-        }
-        .selected-track { display: flex; align-items: center; margin-bottom: 5px; background: #222; padding: 5px; border-radius: 4px; }
-        .selected-track img { width: 40px; height: 40px; object-fit: cover; border-radius: 3px; margin-right: 10px; }
-        .selected-track .remove-track { background: #e74c3c; color: #fff; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; margin-left: auto; }
-        #success-message { background: #1DB954; color: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; text-align: center; }
-        .spotify-button {
-            background: #1db954;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            transition: background 0.2s, transform 0.2s;
-        }
-        .spotify-button:hover {
-            background: #00cfff;
-            color: #191414;
-            transform: scale(1.04);
-        }
-        .spotify-black {
-            background: #191414 !important;
-            color: #fff !important;
-            border: none;
-        }
-        .spotify-black:hover {
-            background: #333 !important;
-            color: #1db954 !important;
-        }
-        .secondary {
-            background: #222;
-            color: #1db954;
-            border: 1px solid #1db954;
-        }
-        .secondary:hover {
-            background: #1db954;
-            color: #fff;
-        }
-        #loading {
-            text-align: center;
-        }
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1DB954;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        .playlist-preview {
-            background: #181818;
-            border-radius: 10px;
-            padding: 18px 12px;
-            margin-top: 18px;
-            margin-bottom: 18px;
-        }
-        .playlist-preview h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        .playlist-preview ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .playlist-preview li {
-            margin-bottom: 6px;
-            border-bottom: 1px solid #222;
-            padding-bottom: 4px;
-            display: flex;
-            align-items: center;
-        }
-        .playlist-preview img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-        .playlist-preview .track-name {
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        .playlist-preview .track-artist {
-            font-size: 0.85em;
-            color: #b3b3b3;
-            margin-right: 8px;
-            margin-left: auto;
-            white-space: nowrap;
-        }
-        .playlist-preview .remove-track-preview {
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            padding: 0 8px;
-            cursor: pointer;
-            margin-left: 8px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @media (max-width: 600px) {
-            .container {
-                max-width: 98vw;
-                padding: 12vw 2vw 8vw 2vw;
-            }
-            h1 {
-                font-size: 1.3rem;
-            }
-            input[type="text"], input[type="number"], select {
-                font-size: 0.98rem;
-                padding: 8px;
-            }
-            .spotify-button, .add-artist-btn {
-                font-size: 0.98rem;
-                padding: 8px 10px;
-            }
-        }
-    </style>
 </head>
 <body>
+    <!-- Header con animaciones -->
     <header role="banner" aria-label="Tuneuptify logo y título">
-        <img src="img/tuneuptify-logo.png" alt="Logo Tuneuptify" class="logo-tuneuptify" width="180" height="auto" />
+        <img src="img/tuneuptify-logo.png" alt="Logo Tuneuptify" class="logo-tuneuptify" width="200" height="auto" />
         <h1>Tuneuptify</h1>
+        <p style="color: var(--text-secondary); font-size: var(--text-lg); margin-top: var(--space-sm);">
+            Crea playlists personalizadas con inteligencia artificial
+        </p>
     </header>
+
+    <!-- Contenido principal -->
     <main id="main-content" tabindex="-1" aria-label="Generador de Playlist de Spotify">
-    <div class="container" role="main">
-        <div id="login-section" class="login-section">
-            <p>Para comenzar, inicia sesión con tu cuenta de Spotify</p>
-            <button id="login-button" class="spotify-button" aria-label="Iniciar sesión con Spotify">
-                <i class="fab fa-spotify" aria-hidden="true"></i> Iniciar sesión con Spotify
-            </button>
-        </div>
-        <div id="playlist-section" class="playlist-section" style="display: none;">
-            <form id="playlist-form" aria-label="Formulario para crear playlist">
-                <label for="playlist-name">Nombre de la playlist:</label>
-                <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada" aria-required="true">
-                <label for="artist-main">Artista principal:</label>
-                <div style="position:relative;">
-                  <input type="text" id="artist-main" name="artist-main" class="artist-autocomplete" placeholder="Nombre del artista principal" autocomplete="off" aria-autocomplete="list" aria-label="Buscar artista principal">
-                  <div id="artist-main-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+        <div class="container">
+            <!-- Sección de login -->
+            <div id="login-section" class="section">
+                <div class="text-center">
+                    <div style="margin-bottom: var(--space-lg);">
+                        <i class="fas fa-music" style="font-size: 3rem; color: var(--primary-color); margin-bottom: var(--space-md);"></i>
+                        <h2 style="font-size: var(--text-2xl); margin-bottom: var(--space-sm);">¡Bienvenido a Tuneuptify!</h2>
+                        <p style="color: var(--text-secondary); line-height: 1.6;">
+                            Conecta con Spotify y comienza a crear playlists únicas y personalizadas
+                        </p>
+                    </div>
+                    <button id="login-button" class="btn btn-success" aria-label="Iniciar sesión con Spotify">
+                        <i class="fab fa-spotify" aria-hidden="true"></i> 
+                        Iniciar sesión con Spotify
+                    </button>
                 </div>
-                <label>Artistas adicionales:</label>
-                <div id="artist-inputs" class="artist-inputs"></div>
-                <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional"><i class="fas fa-plus" aria-hidden="true"></i> Agregar artista</button>
-                <label for="songs-per-artist">Canciones por artista:</label>
-                <input type="number" id="songs-per-artist" min="1" max="50" value="5" step="1" required aria-required="true">
-                <label for="track-search">Agregar canciones específicas:</label>
-                <div style="position:relative;">
-                  <input type="text" id="track-search" placeholder="Buscar canciones..." autocomplete="off" aria-autocomplete="list" aria-label="Buscar canciones específicas">
-                  <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
-                </div>
-                <h3>Canciones seleccionadas:</h3>
-                <div id="selected-tracks"></div>
-                <button type="button" id="preview-playlist" class="spotify-button" aria-label="Vista previa de la playlist"><i class="fas fa-eye" aria-hidden="true"></i> Vista previa</button>
-            </form>
-            <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
-            <button id="export-spotify" class="spotify-button spotify-black" style="display:none;"><i class="fab fa-spotify" aria-hidden="true"></i> Exportar a Spotify</button>
-            <div id="loading" class="loading-spinner" style="display: none;">
-                <div class="spinner" aria-hidden="true"></div>
-                <p>Creando playlist...</p>
             </div>
-            <div id="success-message" class="success-message" style="display: none;"></div>
+
+            <!-- Sección de creación de playlist -->
+            <div id="playlist-section" class="section" style="display: none;">
+                <form id="playlist-form" aria-label="Formulario para crear playlist">
+                    <!-- Nombre de la playlist -->
+                    <div class="form-group">
+                        <label for="playlist-name">
+                            <i class="fas fa-heading" style="margin-right: var(--space-xs);"></i>
+                            Nombre de la playlist
+                        </label>
+                        <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada" aria-required="true">
+                    </div>
+
+                    <!-- Artista principal -->
+                    <div class="form-group">
+                        <label for="artist-main">
+                            <i class="fas fa-star" style="margin-right: var(--space-xs); color: var(--warning-color);"></i>
+                            Artista principal
+                        </label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="artist-main" name="artist-main" class="artist-autocomplete" 
+                                   placeholder="Busca tu artista favorito..." autocomplete="off" 
+                                   aria-autocomplete="list" aria-label="Buscar artista principal">
+                            <div id="artist-main-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                        </div>
+                    </div>
+
+                    <!-- Artistas adicionales -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-plus-circle" style="margin-right: var(--space-xs); color: var(--success-color);"></i>
+                            Artistas adicionales
+                        </label>
+                        <div id="artist-inputs" class="artist-inputs"></div>
+                        <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional">
+                            <i class="fas fa-plus" aria-hidden="true"></i> 
+                            Agregar artista
+                        </button>
+                    </div>
+
+                    <!-- Canciones por artista -->
+                    <div class="form-group">
+                        <label for="songs-per-artist">
+                            <i class="fas fa-list-ol" style="margin-right: var(--space-xs);"></i>
+                            Canciones por artista
+                        </label>
+                        <input type="number" id="songs-per-artist" min="1" max="50" value="5" step="1" required aria-required="true">
+                    </div>
+
+                    <!-- Búsqueda de canciones específicas -->
+                    <div class="form-group">
+                        <label for="track-search">
+                            <i class="fas fa-search" style="margin-right: var(--space-xs);"></i>
+                            Agregar canciones específicas
+                        </label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="track-search" placeholder="Busca canciones específicas..." 
+                                   autocomplete="off" aria-autocomplete="list" aria-label="Buscar canciones específicas">
+                            <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                        </div>
+                    </div>
+
+                    <!-- Canciones seleccionadas -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-music" style="margin-right: var(--space-xs);"></i>
+                            Canciones seleccionadas
+                        </label>
+                        <div id="selected-tracks"></div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="form-group text-center">
+                        <button type="button" id="preview-playlist" class="btn btn-secondary" aria-label="Vista previa de la playlist">
+                            <i class="fas fa-eye" aria-hidden="true"></i> 
+                            Vista previa
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Vista previa de playlist -->
+                <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
+
+                <!-- Botón de exportar -->
+                <div class="form-group text-center">
+                    <button id="export-spotify" class="btn btn-success" style="display:none;">
+                        <i class="fab fa-spotify" aria-hidden="true"></i> 
+                        Exportar a Spotify
+                    </button>
+                </div>
+
+                <!-- Loading -->
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <p style="margin-top: var(--space-md); color: var(--text-secondary);">
+                        <i class="fas fa-cog fa-spin" style="margin-right: var(--space-xs);"></i>
+                        Creando tu playlist...
+                    </p>
+                </div>
+
+                <!-- Mensajes -->
+                <div id="success-message" class="message message-success" style="display: none;"></div>
+            </div>
         </div>
-    </div>
     </main>
-    <footer style="text-align:center; margin-top:32px; color:#b3b3b3; font-size:0.95em;" aria-label="Pie de página">
-        <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
-        <div class="social-links">
-            <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Sígueme en X (Twitter)">
-                <i class="fab fa-x-twitter"></i>
-            </a>
-            <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Sígueme en Instagram">
-                <i class="fab fa-instagram"></i>
-            </a>
+
+    <!-- Footer moderno -->
+    <footer>
+        <div class="text-center">
+            <p style="margin-bottom: var(--space-sm);">
+                <i class="fas fa-heart" style="color: var(--error-color); margin-right: var(--space-xs);"></i>
+                Desarrollado con pasión por la música
+            </p>
+            <p style="color: var(--text-muted); font-size: var(--text-sm); margin-bottom: var(--space-lg);">
+                &copy; 2025 Tuneuptify. Todos los derechos reservados.
+            </p>
+            
+            <!-- Redes sociales -->
+            <div class="social-links">
+                <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                   class="social-link" aria-label="Sígueme en X (Twitter)">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                   class="social-link" aria-label="Sígueme en Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://github.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                   class="social-link" aria-label="Visita mi GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            
+            <p style="margin-top: var(--space-lg); font-size: var(--text-sm); color: var(--text-muted);">
+                <i class="fas fa-code" style="margin-right: var(--space-xs);"></i>
+                Código abierto y disponible en GitHub
+            </p>
         </div>
-        <p style="margin-top: 12px; font-size: 0.9em;">Sígueme en redes sociales para más proyectos</p>
     </footer>
+
+    <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/search.js"></script>

@@ -1,164 +1,381 @@
+/* ===== ESTILOS ESPECÍFICOS PARA BÚSQUEDA ===== */
+
+/* Contenedor de búsqueda mejorado */
 .search-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin: 20px auto;
+  position: relative;
+  margin-bottom: var(--space-lg);
 }
 
-#track-search {
-    width: 100%;
-    padding: 12px 20px;
-    border: 2px solid #1DB954;
-    border-radius: 25px;
-    font-size: 16px;
-    background: #282828;
-    color: white;
-    transition: all 0.3s ease;
+/* Input de búsqueda con efectos */
+.search-input {
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-input);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-family: var(--font-primary);
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
 }
 
-#track-search:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(29, 185, 84, 0.5);
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
 }
 
-#search-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #282828;
-    border-radius: 10px;
-    margin-top: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    max-height: 400px;
-    overflow-y: auto;
+.search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
-.suggestions-list {
-    padding: 10px;
+/* Icono de búsqueda */
+.search-icon {
+  position: absolute;
+  right: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition: color var(--transition-fast);
 }
 
-.suggestion-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-bottom: 5px;
+.search-input:focus + .search-icon {
+  color: var(--primary-color);
 }
 
-.suggestion-item:hover {
-    background-color: #333;
+/* Sugerencias de búsqueda mejoradas */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: var(--z-dropdown);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: fadeInUp 0.3s ease-out;
+  margin-top: var(--space-xs);
 }
 
-.suggestion-album-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
-    margin-right: 15px;
-    object-fit: cover;
+/* Scrollbar personalizado para sugerencias */
+.search-suggestions::-webkit-scrollbar {
+  width: 6px;
 }
 
-.suggestion-info {
-    flex-grow: 1;
+.search-suggestions::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
 }
 
-.suggestion-title {
-    color: white;
-    font-weight: bold;
-    margin-bottom: 4px;
+.search-suggestions::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: var(--radius-sm);
 }
 
-.suggestion-artist {
-    color: #b3b3b3;
-    font-size: 0.9em;
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
 }
 
-.add-track-btn {
-    background: #1DB954;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
+/* Elementos de sugerencia */
+.search-suggestion {
+  padding: var(--space-md);
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  transition: all var(--transition-fast);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.search-suggestion:last-child {
+  border-bottom: none;
+}
+
+.search-suggestion::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.search-suggestion:hover::before {
+  left: 100%;
+}
+
+.search-suggestion:hover,
+.search-suggestion.active {
+  background: var(--primary-gradient);
+  color: var(--text-primary);
+  transform: translateX(5px);
+}
+
+.search-suggestion img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-right: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
+}
+
+.search-suggestion:hover img {
+  transform: scale(1.1);
+}
+
+.search-suggestion .track-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-suggestion .track-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-suggestion .track-artist {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-suggestion .track-album {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+/* Estado de carga */
+.search-loading {
+  padding: var(--space-lg);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.search-loading .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--space-sm);
+}
+
+/* Estado vacío */
+.search-empty {
+  padding: var(--space-lg);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.search-empty i {
+  font-size: 2rem;
+  margin-bottom: var(--space-sm);
+  opacity: 0.5;
+}
+
+/* Efectos de hover para botones de búsqueda */
+.search-button {
+  background: var(--primary-gradient);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  position: relative;
+  overflow: hidden;
+}
+
+.search-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.search-button:hover::before {
+  left: 100%;
+}
+
+.search-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Filtros de búsqueda */
+.search-filters {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.search-filter {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.search-filter:hover,
+.search-filter.active {
+  background: var(--primary-color);
+  color: var(--text-primary);
+  border-color: var(--primary-color);
+}
+
+/* Resultados de búsqueda */
+.search-results {
+  margin-top: var(--space-lg);
+}
+
+.search-result {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.search-result:hover {
+  background: var(--bg-input);
+  transform: translateX(5px);
+  box-shadow: var(--shadow-md);
+}
+
+.search-result .result-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.search-result .result-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-right: var(--space-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-result .result-info {
+  flex: 1;
+}
+
+.search-result .result-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.search-result .result-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.search-result .result-actions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+/* Responsive para búsqueda */
+@media (max-width: 768px) {
+  .search-suggestions {
+    max-height: 200px;
+  }
+  
+  .search-suggestion {
+    padding: var(--space-sm);
+  }
+  
+  .search-suggestion img {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .search-filters {
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: white;
+  }
 }
 
-.add-track-btn:hover {
-    background: #1ed760;
-    transform: scale(1.1);
+@media (max-width: 480px) {
+  .search-input {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-sm);
+  }
+  
+  .search-suggestion .track-name {
+    font-size: var(--text-sm);
+  }
+  
+  .search-suggestion .track-artist {
+    font-size: var(--text-xs);
+  }
 }
 
-.no-results {
-    padding: 20px;
-    text-align: center;
-    color: #b3b3b3;
+/* Animaciones específicas para búsqueda */
+@keyframes searchPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 24px;
-    border-radius: 25px;
-    color: white;
-    font-weight: bold;
-    z-index: 1000;
-    animation: fadeInOut 3s ease;
+.search-input:focus {
+  animation: searchPulse 0.3s ease-out;
 }
 
-.toast-success {
-    background: #1DB954;
+/* Efectos de transición para resultados */
+.search-result {
+  animation: slideInLeft 0.5s ease-out;
 }
 
-.toast-error {
-    background: #E91429;
-}
-
-@keyframes fadeInOut {
-    0% { opacity: 0; transform: translate(-50%, 20px); }
-    10% { opacity: 1; transform: translate(-50%, 0); }
-    90% { opacity: 1; transform: translate(-50%, 0); }
-    100% { opacity: 0; transform: translate(-50%, -20px); }
-}
-
-#selected-tracks {
-    margin-top: 20px;
-}
-
-.track-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background: #282828;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.track-album-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 5px;
-    margin-right: 15px;
-}
-
-.track-info {
-    flex-grow: 1;
-}
-
-.track-title {
-    color: white;
-    font-weight: bold;
-}
-
-.track-artist {
-    color: #b3b3b3;
-    font-size: 0.9em;
-} 
+.search-result:nth-child(1) { animation-delay: 0.1s; }
+.search-result:nth-child(2) { animation-delay: 0.2s; }
+.search-result:nth-child(3) { animation-delay: 0.3s; }
+.search-result:nth-child(4) { animation-delay: 0.4s; }
+.search-result:nth-child(5) { animation-delay: 0.5s; } 
