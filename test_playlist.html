@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test - Crear Playlist</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div style="padding: 2rem; max-width: 800px; margin: 0 auto;">
@@ -75,6 +76,35 @@
                     </div>
                 </div>
 
+                <!-- Búsqueda de canciones específicas -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label for="track-search" class="form-label">
+                            <i class="fas fa-search"></i>
+                            <span>Agregar canciones específicas</span>
+                        </label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="track-search" class="form-input" 
+                                   placeholder="Busca canciones específicas..." 
+                                   autocomplete="off" aria-autocomplete="list" 
+                                   aria-label="Buscar canciones específicas">
+                            <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                            <div class="input-glow"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canciones seleccionadas -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label class="form-label">
+                            <i class="fas fa-music"></i>
+                            <span>Canciones seleccionadas</span>
+                        </label>
+                        <div id="selected-tracks" class="selected-tracks-container"></div>
+                    </div>
+                </div>
+
                 <!-- Botones de acción -->
                 <div class="form-actions">
                     <button type="button" id="preview-playlist" class="action-btn secondary" aria-label="Vista previa de la playlist">
@@ -118,6 +148,8 @@
 
     <!-- Scripts -->
     <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
     <script src="js/main.js"></script>
     
     <script>
@@ -140,6 +172,39 @@
                                 id: '2', 
                                 name: 'Drake',
                                 images: [{ url: 'https://via.placeholder.com/32?text=🎤' }]
+                            },
+                            {
+                                id: '3',
+                                name: 'Taylor Swift',
+                                images: [{ url: 'https://via.placeholder.com/32?text=🎤' }]
+                            }
+                        ]
+                    }
+                };
+            },
+            
+            searchTracks: async function(query) {
+                // Simular respuesta de canciones
+                return {
+                    tracks: {
+                        items: [
+                            {
+                                uri: 'spotify:track:1',
+                                name: 'Test Song 1',
+                                artists: [{ name: 'Test Artist' }],
+                                album: { 
+                                    name: 'Test Album', 
+                                    images: [{ url: 'https://via.placeholder.com/40?text=🎵' }] 
+                                }
+                            },
+                            {
+                                uri: 'spotify:track:2',
+                                name: 'Test Song 2', 
+                                artists: [{ name: 'Test Artist' }],
+                                album: { 
+                                    name: 'Test Album', 
+                                    images: [{ url: 'https://via.placeholder.com/40?text=🎵' }] 
+                                }
                             }
                         ]
                     }
@@ -179,6 +244,23 @@
                 suggestionsDiv.innerHTML = '<div class="error">Error al buscar artistas</div>';
             }
         };
+        
+        // Sobrescribir la función de búsqueda de canciones
+        if (window.searchManager) {
+            window.searchManager.searchTracks = async function(query, suggestionsDiv, searchInput) {
+                try {
+                    const data = await window.testAPI.searchTracks(query);
+                    if (data.tracks && data.tracks.items) {
+                        this.displayResults(data.tracks.items, suggestionsDiv, searchInput);
+                    } else {
+                        suggestionsDiv.innerHTML = '<div class="no-results">No se encontraron canciones</div>';
+                    }
+                } catch (error) {
+                    console.error('Error al buscar canciones:', error);
+                    suggestionsDiv.innerHTML = '<div class="error">Error al buscar canciones</div>';
+                }
+            };
+        }
         
         window.previewPlaylist = async function() {
             const playlistName = document.getElementById('playlist-name').value;
@@ -220,6 +302,13 @@
                 hideLoadingAnimation();
             }
         };
+        
+        // Inicializar la lista de canciones seleccionadas
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.searchManager) {
+                window.searchManager.updateSelectedTracksList();
+            }
+        });
     </script>
 </body>
 </html> 

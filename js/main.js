@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Verificar si viene del dashboard para mostrar el formulario de crear playlist
     checkHashAndShowPlaylistForm();
+    
+    // Inicializar SearchManager para búsqueda de canciones
+    if (typeof SearchManager !== 'undefined') {
+        window.searchManager = new SearchManager();
+    }
 });
 
 // ===== CURSOR PERSONALIZADO =====
@@ -124,11 +129,15 @@ function setupAuthEvents() {
 
 // ===== CONFIGURACIÓN DE EVENTOS DE FORMULARIO =====
 function setupFormEvents() {
+    console.log('Configurando eventos de formulario...');
+    
     // Event listener para agregar artista
     const addArtistButton = document.getElementById('add-artist');
     if (addArtistButton) {
+        console.log('Agregando event listener para botón agregar artista');
         addArtistButton.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('Botón agregar artista clickeado');
             addArtistInput();
             
             // Efecto de ripple
@@ -142,13 +151,17 @@ function setupFormEvents() {
                 }, 600);
             }
         });
+    } else {
+        console.error('No se encontró el botón add-artist');
     }
 
     // Event listener para vista previa
     const previewButton = document.getElementById('preview-playlist');
     if (previewButton) {
+        console.log('Agregando event listener para botón vista previa');
         previewButton.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('Botón vista previa clickeado');
             previewPlaylist();
             
             // Efecto de ripple
@@ -162,13 +175,17 @@ function setupFormEvents() {
                 }, 600);
             }
         });
+    } else {
+        console.error('No se encontró el botón preview-playlist');
     }
 
     // Event listener para exportar a Spotify
     const exportButton = document.getElementById('export-spotify');
     if (exportButton) {
+        console.log('Agregando event listener para botón exportar');
         exportButton.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('Botón exportar clickeado');
             exportToSpotify();
             
             // Efecto de ripple
@@ -182,6 +199,8 @@ function setupFormEvents() {
                 }, 600);
             }
         });
+    } else {
+        console.error('No se encontró el botón export-spotify');
     }
 
     // Configurar autocompletado para artistas
@@ -193,8 +212,12 @@ function setupArtistAutocomplete() {
     const artistInput = document.getElementById('artist-main');
     const suggestionsDiv = document.getElementById('artist-main-suggestions');
     
-    if (!artistInput || !suggestionsDiv) return;
+    if (!artistInput || !suggestionsDiv) {
+        console.error('No se encontraron elementos para autocompletado de artistas');
+        return;
+    }
     
+    console.log('Configurando autocompletado para artistas');
     let debounceTimeout;
     
     artistInput.addEventListener('input', function() {
@@ -224,6 +247,8 @@ async function searchArtists(query, suggestionsDiv, artistInput) {
             console.error('No hay token de acceso');
             return;
         }
+        
+        console.log('Buscando artistas:', query);
         
         const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=5`, {
             headers: {
@@ -287,6 +312,12 @@ async function previewPlaylist() {
             if (input.value.trim()) {
                 artists.push(input.value.trim());
             }
+        });
+        
+        console.log('Enviando datos para vista previa:', {
+            playlistName,
+            artists,
+            trackCount: parseInt(songsPerArtist)
         });
         
         const response = await fetch('create_playlist.php', {
