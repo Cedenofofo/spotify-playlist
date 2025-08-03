@@ -14,9 +14,21 @@ class LoginManager {
     setupEventListeners() {
         if (this.loginBtn) {
             this.loginBtn.addEventListener('click', () => {
+                this.verifySpotifyConfig();
                 this.initiateSpotifyAuth();
             });
         }
+    }
+    
+    verifySpotifyConfig() {
+        console.log('=== Configuración de Spotify ===');
+        console.log('Client ID:', window.config.clientId);
+        console.log('Redirect URI:', window.config.redirectUri);
+        console.log('Auth URL:', window.config.authUrl);
+        console.log('Scopes:', window.config.scopes.join(' '));
+        console.log('Hostname actual:', window.location.hostname);
+        console.log('URL actual:', window.location.href);
+        console.log('==============================');
     }
     
     checkAuthStatus() {
@@ -52,12 +64,15 @@ class LoginManager {
             // Construir URL
             const authUrl = this.buildAuthUrl(state, codeChallenge);
             
+            console.log('Iniciando autenticación con URL:', authUrl);
+            console.log('Redirect URI configurado:', window.config.redirectUri);
+            
             // Redirigir
             window.location.href = authUrl;
             
         } catch (error) {
-            console.error('Error:', error);
-            this.showMessage('Error al conectar con Spotify', 'error');
+            console.error('Error al iniciar autenticación:', error);
+            this.showMessage('Error al conectar con Spotify: ' + error.message, 'error');
             this.setLoadingState(false);
         }
     }
