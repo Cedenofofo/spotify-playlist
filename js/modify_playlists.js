@@ -440,19 +440,45 @@ class ModifyPlaylistsManager {
     }
 
     getPlaylistImageUrl(playlist) {
+        // Si no hay imágenes, usar placeholder elegante
         if (!playlist.images || playlist.images.length === 0) {
             return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
         }
-        const firstImage = playlist.images[0];
-        if (firstImage && firstImage.url) {
-            return firstImage.url;
-        }
-        for (let i = 1; i < playlist.images.length; i++) {
-            if (playlist.images[i] && playlist.images[i].url) {
-                return playlist.images[i].url;
+
+        // Buscar la mejor imagen disponible
+        let bestImage = null;
+        
+        // Priorizar imágenes cuadradas de tamaño medio
+        for (const image of playlist.images) {
+            if (image && image.url) {
+                // Preferir imágenes de 300x300 o similares
+                if (image.width && image.width >= 200 && image.width <= 400) {
+                    bestImage = image.url;
+                    break;
+                }
+                // Si no hay dimensiones específicas, usar la primera
+                if (!bestImage) {
+                    bestImage = image.url;
+                }
             }
         }
-        return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
+
+        // Si no encontramos una imagen buena, usar la primera disponible
+        if (!bestImage) {
+            for (const image of playlist.images) {
+                if (image && image.url) {
+                    bestImage = image.url;
+                    break;
+                }
+            }
+        }
+
+        // Fallback final
+        if (!bestImage) {
+            return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
+        }
+
+        return bestImage;
     }
 
     setupPlaylistCardListeners() {
