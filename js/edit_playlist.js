@@ -82,9 +82,19 @@ class EditPlaylistManager {
     }
 
     displayPlaylistInfo() {
-        // Imagen de la playlist
+        // Imagen de la playlist con manejo mejorado
         const playlistImage = document.getElementById('playlist-image');
-        playlistImage.src = this.playlist.images[0]?.url || 'https://via.placeholder.com/120x120?text=🎵';
+        const imageUrl = this.getPlaylistImageUrl(this.playlist);
+        
+        playlistImage.src = imageUrl;
+        playlistImage.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://via.placeholder.com/120x120/1db954/ffffff?text=🎵';
+            this.classList.add('placeholder-image');
+        };
+        playlistImage.onload = function() {
+            this.classList.remove('placeholder-image');
+        };
 
         // Nombre de la playlist
         document.getElementById('playlist-name').textContent = this.playlist.name;
@@ -120,6 +130,30 @@ class EditPlaylistManager {
         const visibility = this.playlist.public ? 'Pública' : 'Privada';
         document.getElementById('playlist-visibility').textContent = visibility;
         document.getElementById('public-playlist').checked = this.playlist.public;
+    }
+
+    // Nuevo método para manejar URLs de imágenes de playlist
+    getPlaylistImageUrl(playlist) {
+        // Si no hay imágenes, usar placeholder
+        if (!playlist.images || playlist.images.length === 0) {
+            return 'https://via.placeholder.com/120x120/1db954/ffffff?text=🎵';
+        }
+
+        // Intentar con la primera imagen
+        const firstImage = playlist.images[0];
+        if (firstImage && firstImage.url) {
+            return firstImage.url;
+        }
+
+        // Si la primera imagen no tiene URL, buscar otra
+        for (let i = 1; i < playlist.images.length; i++) {
+            if (playlist.images[i] && playlist.images[i].url) {
+                return playlist.images[i].url;
+            }
+        }
+
+        // Fallback final
+        return 'https://via.placeholder.com/120x120/1db954/ffffff?text=🎵';
     }
 
     async loadPlaylistTracks() {
@@ -176,12 +210,18 @@ class EditPlaylistManager {
             const track = item.track;
             if (!track) return;
 
+            const trackImageUrl = this.getTrackImageUrl(track);
+            
             const trackElement = document.createElement('div');
             trackElement.className = 'track-item';
             trackElement.innerHTML = `
                 <div class="track-info">
                     <span class="track-number">${index + 1}</span>
-                    <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/40x40'}" alt="Album cover" class="track-image">
+                    <img src="${trackImageUrl}" 
+                         alt="Album cover" 
+                         class="track-image"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/40x40/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
+                         onload="this.classList.remove('placeholder-image');">
                     <div class="track-details">
                         <div class="track-name">${this.escapeHtml(track.name)}</div>
                         <div class="track-artist">${track.artists.map(artist => this.escapeHtml(artist.name)).join(', ')}</div>
@@ -195,6 +235,30 @@ class EditPlaylistManager {
             `;
             tracksContainer.appendChild(trackElement);
         });
+    }
+
+    // Nuevo método para manejar URLs de imágenes de tracks
+    getTrackImageUrl(track) {
+        // Si no hay álbum o imágenes, usar placeholder
+        if (!track.album || !track.album.images || track.album.images.length === 0) {
+            return 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎵';
+        }
+
+        // Intentar con la primera imagen
+        const firstImage = track.album.images[0];
+        if (firstImage && firstImage.url) {
+            return firstImage.url;
+        }
+
+        // Si la primera imagen no tiene URL, buscar otra
+        for (let i = 1; i < track.album.images.length; i++) {
+            if (track.album.images[i] && track.album.images[i].url) {
+                return track.album.images[i].url;
+            }
+        }
+
+        // Fallback final
+        return 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎵';
     }
 
     async searchTracks(query) {
@@ -238,10 +302,15 @@ class EditPlaylistManager {
         }
 
         tracks.forEach(track => {
+            const trackImageUrl = this.getTrackImageUrl(track);
+            
             const suggestionItem = document.createElement('div');
             suggestionItem.className = 'suggestion-item';
             suggestionItem.innerHTML = `
-                <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/30x30'}" alt="Album cover">
+                <img src="${trackImageUrl}" 
+                     alt="Album cover"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/30x30/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
+                     onload="this.classList.remove('placeholder-image');">
                 <div class="suggestion-info">
                     <div class="suggestion-name">${this.escapeHtml(track.name)}</div>
                     <div class="suggestion-artist">${track.artists.map(artist => this.escapeHtml(artist.name)).join(', ')}</div>

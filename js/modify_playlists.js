@@ -341,30 +341,35 @@ class ModifyPlaylistsManager {
     }
 
     createPlaylistCard(playlist) {
-                 const imageUrl = playlist.images[0]?.url || 'https://via.placeholder.com/80x80?text=🎵';
-         const trackCount = playlist.tracks?.total || 0;
-         const isPublic = playlist.public ? 'Pública' : 'Privada';
+        // Mejorar el manejo de imágenes con fallback robusto
+        const imageUrl = this.getPlaylistImageUrl(playlist);
+        const trackCount = playlist.tracks?.total || 0;
+        const isPublic = playlist.public ? 'Pública' : 'Privada';
 
         return `
             <div class="playlist-card" data-playlist-id="${playlist.id}">
                 <div class="playlist-header">
-                    <img src="${imageUrl}" alt="${playlist.name}" class="playlist-image">
+                    <img src="${imageUrl}" 
+                         alt="${playlist.name}" 
+                         class="playlist-image"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/80x80/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
+                         onload="this.classList.remove('placeholder-image');">
                     <div class="playlist-info">
                         <h3 title="${this.escapeHtml(playlist.name)}">${this.escapeHtml(playlist.name)}</h3>
                         <p title="${this.escapeHtml(playlist.description || 'Sin descripción')}">${this.escapeHtml(playlist.description || 'Sin descripción')}</p>
                     </div>
                 </div>
                 
-                                 <div class="playlist-stats">
-                     <div class="stat-item">
-                         <span class="stat-value">${trackCount}</span>
-                         <span class="stat-label">Canciones</span>
-                     </div>
-                     <div class="stat-item">
-                         <span class="stat-value">${isPublic}</span>
-                         <span class="stat-label">Estado</span>
-                     </div>
-                 </div>
+                <div class="playlist-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">${trackCount}</span>
+                        <span class="stat-label">Canciones</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${isPublic}</span>
+                        <span class="stat-label">Estado</span>
+                    </div>
+                </div>
                 
                 <div class="playlist-actions">
                     <button class="action-btn btn-view" onclick="modifyPlaylistsManager.viewPlaylist('${playlist.id}')" title="Ver playlist">
@@ -382,6 +387,30 @@ class ModifyPlaylistsManager {
                 </div>
             </div>
         `;
+    }
+
+    // Nuevo método para manejar URLs de imágenes de playlist
+    getPlaylistImageUrl(playlist) {
+        // Si no hay imágenes, usar placeholder
+        if (!playlist.images || playlist.images.length === 0) {
+            return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
+        }
+
+        // Intentar con la primera imagen
+        const firstImage = playlist.images[0];
+        if (firstImage && firstImage.url) {
+            return firstImage.url;
+        }
+
+        // Si la primera imagen no tiene URL, buscar otra
+        for (let i = 1; i < playlist.images.length; i++) {
+            if (playlist.images[i] && playlist.images[i].url) {
+                return playlist.images[i].url;
+            }
+        }
+
+        // Fallback final
+        return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
     }
 
     setupPlaylistCardListeners() {

@@ -2589,3 +2589,136 @@ body {
 .scrollable-container::-webkit-scrollbar-thumb:hover {
   background: #1ed760;
 } 
+
+/* ===== MEJORAS PARA IMÁGENES DE PLAYLIST ===== */
+
+/* Estilos para imágenes placeholder */
+.playlist-image.placeholder-image,
+.track-image.placeholder-image,
+.suggestion-item img.placeholder-image {
+  background: linear-gradient(135deg, #1db954 0%, #1ed760 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.5rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  filter: none !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.3) !important;
+}
+
+/* Mejoras para imágenes de playlist */
+.playlist-image {
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 12px !important;
+  object-fit: cover !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  filter: brightness(0.9) contrast(1.1) saturate(0.8) hue-rotate(5deg) !important;
+}
+
+.playlist-image:hover {
+  transform: scale(1.05) !important;
+  filter: brightness(1.1) contrast(1.2) saturate(1.1) hue-rotate(0deg) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Mejoras para imágenes de tracks */
+.track-image {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  filter: brightness(0.95) contrast(1.05) saturate(0.9) !important;
+}
+
+.track-image:hover {
+  transform: scale(1.1) !important;
+  filter: brightness(1.05) contrast(1.1) saturate(1.05) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Mejoras para imágenes de sugerencias */
+.suggestion-item img {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 6px !important;
+  object-fit: cover !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  filter: brightness(0.9) contrast(1.1) saturate(0.85) !important;
+}
+
+.suggestion-item img:hover {
+  transform: scale(1.05) !important;
+  filter: brightness(1.0) contrast(1.15) saturate(0.95) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Efectos especiales para imágenes placeholder */
+.playlist-image.placeholder-image::before,
+.track-image.placeholder-image::before,
+.suggestion-item img.placeholder-image::before {
+  content: '🎵' !important;
+  font-size: 1.2em !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Animación de carga para imágenes */
+.playlist-image,
+.track-image,
+.suggestion-item img {
+  animation: imageLoad 0.3s ease-in-out !important;
+}
+
+@keyframes imageLoad {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Estilos responsivos para imágenes */
+@media (max-width: 768px) {
+  .playlist-image {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  .track-image {
+    width: 45px !important;
+    height: 45px !important;
+  }
+  
+  .suggestion-item img {
+    width: 35px !important;
+    height: 35px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .playlist-image {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .track-image {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .suggestion-item img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+} 
