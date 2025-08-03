@@ -42,53 +42,98 @@ class LoginManager {
         `;
         testBtn.onclick = () => this.testAllRedirectUris();
         document.body.appendChild(testBtn);
+        
+        // Agregar botón de instrucciones
+        const helpBtn = document.createElement('button');
+        helpBtn.textContent = '📋 Instrucciones';
+        helpBtn.className = 'help-config-btn';
+        helpBtn.style.cssText = `
+            position: fixed;
+            top: 50px;
+            right: 10px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 1000;
+        `;
+        helpBtn.onclick = () => this.showSpotifyInstructions();
+        document.body.appendChild(helpBtn);
+    }
+    
+    showSpotifyInstructions() {
+        const instructions = `
+🔧 CONFIGURACIÓN DE SPOTIFY DEVELOPER DASHBOARD
+
+1. Ve a: https://developer.spotify.com/dashboard
+2. Selecciona tu aplicación
+3. En "Redirect URIs", agrega SOLO esta URL:
+
+   ✅ https://cedenofofo.github.io/spotify-playlist/callback.html
+
+4. Haz clic en "SAVE"
+5. Espera unos minutos para que los cambios se propaguen
+6. Prueba la autenticación nuevamente
+
+⚠️  IMPORTANTE: Solo usa esta URL exacta
+        `;
+        
+        console.log(instructions);
+        alert(instructions);
     }
     
     async testAllRedirectUris() {
-        const testUris = [
-            'https://cedenofofo.github.io/spotify-playlist/',
-            'https://cedenofofo.github.io/spotify-playlist/index.html',
-            'https://cedenofofo.github.io/spotify-playlist/callback.html'
-        ];
+        const testUri = 'https://cedenofofo.github.io/spotify-playlist/callback.html';
         
-        console.log('🧪 Probando todas las URLs de redirección...');
+        console.log('🧪 Probando URL de redirección...');
+        console.log('⚠️  IMPORTANTE: Asegúrate de que esta URL esté configurada en tu Spotify Developer Dashboard');
         
-        for (let i = 0; i < testUris.length; i++) {
-            const uri = testUris[i];
-            console.log(`\n🔍 Probando URL ${i + 1}: ${uri}`);
+        console.log(`\n🔍 Probando URL: ${testUri}`);
+        
+        // Cambiar temporalmente la URL de redirección
+        const originalUri = window.config.redirectUri;
+        window.config.redirectUri = testUri;
+        
+        try {
+            const state = this.generateRandomState();
+            const codeVerifier = this.generateCodeVerifier();
+            const codeChallenge = await this.generateCodeChallenge(codeVerifier);
+            const testUrl = this.buildAuthUrl(state, codeChallenge);
             
-            // Cambiar temporalmente la URL de redirección
-            const originalUri = window.config.redirectUri;
-            window.config.redirectUri = uri;
+            console.log(`✅ URL generada: ${testUrl}`);
             
-            try {
-                const state = this.generateRandomState();
-                const codeVerifier = this.generateCodeVerifier();
-                const codeChallenge = await this.generateCodeChallenge(codeVerifier);
-                const testUrl = this.buildAuthUrl(state, codeChallenge);
-                
-                console.log(`✅ URL generada: ${testUrl}`);
-                
-                // Crear un iframe oculto para probar la URL
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = testUrl;
-                document.body.appendChild(iframe);
-                
-                // Remover el iframe después de un tiempo
-                setTimeout(() => {
-                    if (iframe.parentNode) {
-                        iframe.parentNode.removeChild(iframe);
-                    }
-                }, 2000);
-                
-            } catch (error) {
-                console.error(`❌ Error con URL ${uri}:`, error);
-            }
+            // Probar la URL directamente
+            this.testUrlDirectly(testUrl, testUri);
             
-            // Restaurar la URL original
-            window.config.redirectUri = originalUri;
+        } catch (error) {
+            console.error(`❌ Error con URL ${testUri}:`, error);
         }
+        
+        // Restaurar la URL original
+        window.config.redirectUri = originalUri;
+    }
+    
+    testUrlDirectly(url, uri) {
+        // Crear un enlace temporal para probar la URL
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        
+        console.log(`🔗 Enlace de prueba para ${uri}:`);
+        console.log(`   ${url}`);
+        console.log(`   Haz clic en el enlace para probar manualmente`);
+        
+        // Remover el enlace después de un tiempo
+        setTimeout(() => {
+            if (link.parentNode) {
+                link.parentNode.removeChild(link);
+            }
+        }, 5000);
     }
     
     verifySpotifyConfig() {
@@ -106,18 +151,10 @@ class LoginManager {
     }
     
     testRedirectUris() {
-        const testUris = [
-            'https://cedenofofo.github.io/spotify-playlist/',
-            'https://cedenofofo.github.io/spotify-playlist/index.html',
-            'https://cedenofofo.github.io/spotify-playlist/callback.html',
-            'http://localhost:8000/',
-            'http://localhost:3000/'
-        ];
+        const testUri = 'https://cedenofofo.github.io/spotify-playlist/callback.html';
         
-        console.log('=== URLs de redirección a probar ===');
-        testUris.forEach((uri, index) => {
-            console.log(`${index + 1}. ${uri}`);
-        });
+        console.log('=== URL de redirección configurada ===');
+        console.log(`✅ ${testUri}`);
         console.log('====================================');
     }
     
