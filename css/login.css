@@ -125,49 +125,7 @@
   text-align: center;
 }
 
-/* Lista de características */
-.features-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
-}
 
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md);
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all var(--transition-normal);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.feature-item:hover {
-  background: var(--bg-input);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--accent-gold);
-}
-
-.feature-item i {
-  font-size: var(--text-lg);
-  color: var(--accent-gold);
-  transition: transform var(--transition-fast);
-}
-
-.feature-item:hover i {
-  transform: scale(1.2);
-}
-
-.feature-item span {
-  color: var(--text-primary);
-  font-weight: 500;
-  font-size: var(--text-sm);
-}
 
 /* Botón de login */
 .login-btn {
@@ -346,14 +304,7 @@
     width: 100px;
   }
   
-  .features-list {
-    grid-template-columns: 1fr;
-    gap: var(--space-sm);
-  }
   
-  .feature-item {
-    padding: var(--space-sm);
-  }
   
   .login-btn {
     padding: var(--space-md) var(--space-lg);
@@ -378,9 +329,7 @@
     width: 80px;
   }
   
-  .feature-item span {
-    font-size: var(--text-xs);
-  }
+
 }
 
 /* Animaciones específicas */
@@ -418,8 +367,7 @@
 @media (prefers-reduced-motion: reduce) {
   .login-container,
   .login-card,
-  .login-btn,
-  .feature-item {
+  .login-btn {
     animation: none;
     transition: none;
   }
@@ -429,10 +377,6 @@
 @media (prefers-contrast: high) {
   .login-card {
     border: 2px solid var(--text-primary);
-  }
-  
-  .feature-item {
-    border: 1px solid var(--text-primary);
   }
   
   .login-btn {
