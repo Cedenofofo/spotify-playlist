@@ -460,4 +460,128 @@ class PlaylistManager {
 }
 
 // Inicializar el gestor de playlists y exponer método para agregar canciones específicas
-window.playlistManager = new PlaylistManager(); 
+window.playlistManager = new PlaylistManager();
+
+// Función para detectar si viene del login y mostrar dashboard
+function checkLoginAndShowDashboard() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('access_token');
+    const showDashboard = urlParams.get('show_dashboard');
+    
+    if (accessToken && showDashboard === 'true') {
+        // Guardar el token en localStorage
+        localStorage.setItem('spotify_access_token', accessToken);
+        localStorage.setItem('token_timestamp', Date.now().toString());
+        
+        // Limpiar la URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Mostrar el dashboard
+        showDashboardView();
+    }
+}
+
+// Función para mostrar el dashboard
+function showDashboardView() {
+    // Ocultar la sección de login
+    const loginSection = document.getElementById('login-section');
+    if (loginSection) {
+        loginSection.style.display = 'none';
+    }
+    
+    // Ocultar la sección de playlist
+    const playlistSection = document.getElementById('playlist-section');
+    if (playlistSection) {
+        playlistSection.style.display = 'none';
+    }
+    
+    // Crear y mostrar el dashboard
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Panel de Control</h2>
+            <p class="dashboard-subtitle">¿Qué te gustaría hacer hoy?</p>
+            
+            <div class="dashboard-grid">
+                <!-- Opción 1: Crear Playlist -->
+                <div class="dashboard-card" onclick="navigateToCreatePlaylist()">
+                    <div class="card-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h3>Crear Playlist</h3>
+                    <p>Crea una nueva playlist personalizada con tus canciones favoritas</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Opción 2: Modificar Playlist Actuales -->
+                <div class="dashboard-card" onclick="navigateToModifyPlaylists()">
+                    <div class="card-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>Modificar Playlist Actuales</h3>
+                    <p>Gestiona y modifica tus playlists existentes de Spotify</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Opción 3: Estadísticas de Spotify -->
+                <div class="dashboard-card" onclick="navigateToStatistics()">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Estadísticas de Spotify</h3>
+                    <p>Analiza tus hábitos de escucha y estadísticas musicales</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Opción 4: Reservada -->
+                <div class="dashboard-card disabled">
+                    <div class="card-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3>Próximamente</h3>
+                    <p>Nueva funcionalidad en desarrollo</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Agregar estilos del dashboard
+    const dashboardStyles = document.createElement('link');
+    dashboardStyles.rel = 'stylesheet';
+    dashboardStyles.href = 'css/dashboard.css';
+    document.head.appendChild(dashboardStyles);
+    
+    // Agregar funciones del dashboard
+    window.navigateToCreatePlaylist = function() {
+        // Mostrar la sección de playlist
+        if (playlistSection) {
+            playlistSection.style.display = 'block';
+        }
+        // Limpiar el dashboard
+        mainContent.innerHTML = '';
+        // Recargar la página para mostrar la funcionalidad completa
+        window.location.reload();
+    };
+    
+    window.navigateToModifyPlaylists = function() {
+        alert('Funcionalidad en desarrollo');
+    };
+    
+    window.navigateToStatistics = function() {
+        alert('Funcionalidad en desarrollo');
+    };
+}
+
+// Ejecutar la verificación al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    checkLoginAndShowDashboard();
+}); 
