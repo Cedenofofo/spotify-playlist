@@ -43,8 +43,8 @@ class Auth {
                         return;
                     }
                     
-                    // Si no hay hash específico, redirigir al dashboard
-                    this.redirectToDashboard();
+                    // Si no hay hash específico, mantener en la página principal
+                    console.log('Usuario autenticado, manteniendo en página principal');
                     return;
                 } else {
                     // Si estamos en otra página, mostrar la sección de playlist
