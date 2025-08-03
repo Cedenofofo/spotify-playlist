@@ -84,6 +84,27 @@ class ModifyPlaylistsManager {
         });
     }
 
+    async getCurrentUserId() {
+        try {
+            const token = localStorage.getItem('spotify_access_token');
+            if (!token) return null;
+
+            const response = await fetch('https://api.spotify.com/v1/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                return userData.id;
+            }
+        } catch (error) {
+            console.error('Error al obtener ID del usuario:', error);
+        }
+        return null;
+    }
+
     checkAuth() {
         const token = localStorage.getItem('spotify_access_token');
         const tokenExpires = localStorage.getItem('spotify_token_expires');
@@ -106,20 +127,27 @@ class ModifyPlaylistsManager {
                 throw new Error('No hay token de acceso');
             }
 
-            // Obtener playlists del usuario - aumentar el límite y usar paginación
+            // Obtener TODAS las playlists del usuario (incluyendo privadas)
             let allPlaylists = [];
             let nextUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
             let pageCount = 0;
             let totalPlaylists = 0;
             
+            // También obtener playlists creadas por el usuario
+            const userId = await this.getCurrentUserId();
+            if (userId) {
+                console.log('Obteniendo playlists creadas por el usuario:', userId);
+            }
+            
             // Actualizar mensaje de carga
             const loadingElement = document.querySelector('#loading-state h3');
             const loadingDesc = document.querySelector('#loading-state p');
             
+            // Primera fase: cargar playlists que el usuario sigue
             while (nextUrl) {
                 pageCount++;
                 if (loadingElement) {
-                    loadingElement.textContent = `Cargando tus playlists... (página ${pageCount})`;
+                    loadingElement.textContent = `Cargando playlists seguidas... (página ${pageCount})`;
                 }
                 if (loadingDesc) {
                     loadingDesc.textContent = `Se han cargado ${allPlaylists.length} playlists hasta ahora...`;
@@ -153,6 +181,57 @@ class ModifyPlaylistsManager {
                 // Pequeña pausa para no sobrecargar la API
                 if (nextUrl) {
                     await new Promise(resolve => setTimeout(resolve, 200));
+                }
+            }
+
+            // Segunda fase: cargar playlists creadas por el usuario (si no están ya incluidas)
+            if (userId) {
+                console.log('Cargando playlists creadas por el usuario...');
+                if (loadingElement) {
+                    loadingElement.textContent = 'Cargando playlists creadas por ti...';
+                }
+                
+                let userPlaylistsUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
+                let userPageCount = 0;
+                
+                while (userPlaylistsUrl) {
+                    userPageCount++;
+                    if (loadingDesc) {
+                        loadingDesc.textContent = `Cargando playlists creadas... (página ${userPageCount})`;
+                    }
+                    
+                    console.log(`Cargando playlists del usuario página ${userPageCount}: ${userPlaylistsUrl}`);
+                    
+                    const userResponse = await fetch(userPlaylistsUrl, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!userResponse.ok) {
+                        if (userResponse.status === 401) {
+                            this.auth.logout();
+                            return;
+                        }
+                        console.warn(`Error al cargar playlists del usuario: ${userResponse.status}`);
+                        break;
+                    }
+
+                    const userData = await userResponse.json();
+                    const userPlaylists = userData.items || [];
+                    
+                    // Agregar solo las playlists que no están ya en la lista
+                    const existingIds = allPlaylists.map(p => p.id);
+                    const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
+                    allPlaylists = allPlaylists.concat(newUserPlaylists);
+                    
+                    console.log(`Página ${userPageCount}: ${userPlaylists.length} playlists del usuario, ${newUserPlaylists.length} nuevas agregadas`);
+                    
+                    userPlaylistsUrl = userData.next;
+                    
+                    if (userPlaylistsUrl) {
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    }
                 }
             }
 
