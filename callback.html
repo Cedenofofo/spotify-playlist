@@ -165,23 +165,20 @@
                         window.location.href = 'index.html';
                     }, 3000);
                 }
-                return;
+            } else {
+                // No hay parámetros de autenticación válidos
+                statusElement.innerHTML = `
+                    <div class="callback-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        No se encontraron parámetros de autenticación válidos
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
             }
-            
-                         } else {
-                 // No hay parámetros de autenticación válidos
-                 statusElement.innerHTML = `
-                     <div class="callback-error">
-                         <i class="fas fa-exclamation-triangle"></i>
-                         No se encontraron parámetros de autenticación válidos
-                     </div>
-                 `;
-                 
-                 setTimeout(() => {
-                     window.location.href = 'index.html';
-                 }, 3000);
-             }
-                 });
+        });
     </script>
 </body>
 </html> 
