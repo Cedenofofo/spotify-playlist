@@ -1168,7 +1168,8 @@ body {
 }
 
 .preview-tracks {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   max-height: 400px;
   overflow-y: auto;
@@ -1202,6 +1203,7 @@ body {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: var(--transition-smooth);
+  position: relative;
 }
 
 .preview-track:hover {
