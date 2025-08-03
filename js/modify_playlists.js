@@ -81,12 +81,44 @@ class ModifyPlaylistsManager {
                 throw new Error('No hay token de acceso');
             }
 
-            // Obtener playlists del usuario
-            const response = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            // Obtener playlists del usuario - aumentar el límite y usar paginación
+            let allPlaylists = [];
+            let nextUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
+            let pageCount = 0;
+            
+            // Actualizar mensaje de carga
+            const loadingElement = document.querySelector('#loading-state h3');
+            
+            while (nextUrl) {
+                pageCount++;
+                if (loadingElement) {
+                    loadingElement.textContent = `Cargando tus playlists... (página ${pageCount})`;
                 }
-            });
+                
+                const response = await fetch(nextUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token expirado, redirigir al login
+                        this.auth.logout();
+                        return;
+                    }
+                    throw new Error(`Error en la API: ${response.status}`);
+                }
+
+                const data = await response.json();
+                allPlaylists = allPlaylists.concat(data.items || []);
+                nextUrl = data.next; // URL para la siguiente página
+                
+                // Pequeña pausa para no sobrecargar la API
+                if (nextUrl) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -97,14 +129,16 @@ class ModifyPlaylistsManager {
                 throw new Error(`Error en la API: ${response.status}`);
             }
 
-            const data = await response.json();
-            this.playlists = data.items || [];
+            this.playlists = allPlaylists;
             this.filteredPlaylists = [...this.playlists];
+
+            console.log(`Se cargaron ${this.playlists.length} playlists`);
 
             if (this.playlists.length === 0) {
                 this.showEmptyState();
             } else {
                 this.displayPlaylists();
+                this.showNotification(`Se cargaron ${this.playlists.length} playlists`, 'success');
             }
 
         } catch (error) {
@@ -168,14 +202,17 @@ class ModifyPlaylistsManager {
         const trackCount = playlist.tracks?.total || 0;
         const isPublic = playlist.public ? 'Pública' : 'Privada';
         const owner = playlist.owner?.display_name || 'Usuario';
+        
+        // Truncar nombres muy largos del propietario
+        const truncatedOwner = owner.length > 15 ? owner.substring(0, 15) + '...' : owner;
 
         return `
             <div class="playlist-card" data-playlist-id="${playlist.id}">
                 <div class="playlist-header">
                     <img src="${imageUrl}" alt="${playlist.name}" class="playlist-image">
                     <div class="playlist-info">
-                        <h3>${this.escapeHtml(playlist.name)}</h3>
-                        <p>${this.escapeHtml(playlist.description || 'Sin descripción')}</p>
+                        <h3 title="${this.escapeHtml(playlist.name)}">${this.escapeHtml(playlist.name)}</h3>
+                        <p title="${this.escapeHtml(playlist.description || 'Sin descripción')}">${this.escapeHtml(playlist.description || 'Sin descripción')}</p>
                     </div>
                 </div>
                 
@@ -189,7 +226,7 @@ class ModifyPlaylistsManager {
                         <span class="stat-label">Estado</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">${owner}</span>
+                        <span class="stat-value" title="${this.escapeHtml(owner)}">${this.escapeHtml(truncatedOwner)}</span>
                         <span class="stat-label">Propietario</span>
                     </div>
                 </div>
