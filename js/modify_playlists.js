@@ -24,8 +24,33 @@ class ModifyPlaylistsManager {
             });
         }
 
+        // Efecto ripple para el botón de volver
+        this.setupRippleEffect();
+
         // Cursor personalizado
         this.initCustomCursor();
+    }
+
+    setupRippleEffect() {
+        const backBtn = document.querySelector('.elegant-back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function(e) {
+                const ripple = this.querySelector('.btn-ripple');
+                if (ripple) {
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.style.animation = 'none';
+                    ripple.offsetHeight; // Trigger reflow
+                    ripple.style.animation = 'ripple 0.6s linear';
+                }
+            });
+        }
     }
 
     initCustomCursor() {
@@ -85,15 +110,22 @@ class ModifyPlaylistsManager {
             let allPlaylists = [];
             let nextUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
             let pageCount = 0;
+            let totalPlaylists = 0;
             
             // Actualizar mensaje de carga
             const loadingElement = document.querySelector('#loading-state h3');
+            const loadingDesc = document.querySelector('#loading-state p');
             
             while (nextUrl) {
                 pageCount++;
                 if (loadingElement) {
                     loadingElement.textContent = `Cargando tus playlists... (página ${pageCount})`;
                 }
+                if (loadingDesc) {
+                    loadingDesc.textContent = `Se han cargado ${allPlaylists.length} playlists hasta ahora...`;
+                }
+                
+                console.log(`Cargando página ${pageCount}: ${nextUrl}`);
                 
                 const response = await fetch(nextUrl, {
                     headers: {
@@ -111,25 +143,32 @@ class ModifyPlaylistsManager {
                 }
 
                 const data = await response.json();
-                allPlaylists = allPlaylists.concat(data.items || []);
+                const newPlaylists = data.items || [];
+                allPlaylists = allPlaylists.concat(newPlaylists);
+                totalPlaylists = data.total || allPlaylists.length;
                 nextUrl = data.next; // URL para la siguiente página
+                
+                console.log(`Página ${pageCount}: ${newPlaylists.length} playlists cargadas. Total: ${allPlaylists.length}/${totalPlaylists}`);
                 
                 // Pequeña pausa para no sobrecargar la API
                 if (nextUrl) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    await new Promise(resolve => setTimeout(resolve, 200));
                 }
             }
 
             this.playlists = allPlaylists;
             this.filteredPlaylists = [...this.playlists];
 
-            console.log(`Se cargaron ${this.playlists.length} playlists`);
+            console.log(`Se cargaron ${this.playlists.length} playlists de un total de ${totalPlaylists}`);
 
             if (this.playlists.length === 0) {
                 this.showEmptyState();
             } else {
                 this.displayPlaylists();
-                this.showNotification(`Se cargaron ${this.playlists.length} playlists`, 'success');
+                const message = totalPlaylists > 0 && totalPlaylists !== this.playlists.length 
+                    ? `Se cargaron ${this.playlists.length} de ${totalPlaylists} playlists` 
+                    : `Se cargaron ${this.playlists.length} playlists`;
+                this.showNotification(message, 'success');
             }
 
         } catch (error) {

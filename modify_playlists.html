@@ -291,6 +291,68 @@
             transform: translateY(-50%);
             color: #b3b3b3;
         }
+
+        /* Estilos elegantes para el botón de volver */
+        .elegant-back-btn {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(29, 185, 84, 0.2));
+            border: 2px solid rgba(29, 185, 84, 0.3);
+            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            color: #1db954;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .elegant-back-btn:hover {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.2), rgba(29, 185, 84, 0.3));
+            border-color: rgba(29, 185, 84, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+        }
+
+        .elegant-back-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.2);
+        }
+
+        .elegant-back-btn .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .elegant-back-btn .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(29, 185, 84, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .elegant-back-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .elegant-back-btn:hover i {
+            transform: translateX(-3px);
+        }
     </style>
 </head>
 <body>
@@ -310,9 +372,12 @@
             </div>
             
             <nav class="header-nav">
-                <button class="nav-btn" onclick="goBack()">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Volver al Dashboard</span>
+                <button class="nav-btn elegant-back-btn" onclick="goBack()">
+                    <div class="btn-content">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver al Dashboard</span>
+                    </div>
+                    <div class="btn-ripple"></div>
                 </button>
             </nav>
         </div>
