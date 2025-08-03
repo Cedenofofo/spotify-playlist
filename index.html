@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tuneuptify - Gestor de Playlists de Spotify</title>
     <meta name="description" content="Crea y gestiona playlists personalizadas de Spotify con Tuneuptify">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; connect-src 'self' https://api.spotify.com https://accounts.spotify.com https://open.spotify.com https://via.placeholder.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -40,13 +41,6 @@
                         <span>50k+ Playlists</span>
                     </div>
                 </div>
-                <button id="back-to-dashboard" class="back-btn" style="display: none;" onclick="goToDashboard()">
-                    <div class="btn-content">
-                        <i class="fas fa-arrow-left"></i>
-                        <span>Dashboard</span>
-                    </div>
-                    <div class="btn-ripple"></div>
-                </button>
             </nav>
         </div>
     </header>
