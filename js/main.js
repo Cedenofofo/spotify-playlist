@@ -328,29 +328,79 @@ async function previewPlaylist() {
             trackCount: parseInt(songsPerArtist)
         });
         
-        const response = await fetch('create_playlist.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                playlistName: playlistName,
-                artists: artists,
-                trackCount: parseInt(songsPerArtist)
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            displayPlaylistPreview(data);
-            showNotification('Playlist creada exitosamente', 'success');
-        } else {
-            showNotification(data.error || 'Error al crear la playlist', 'error');
+        // Usar la API de Spotify directamente desde el frontend
+        const token = localStorage.getItem('spotify_access_token');
+        if (!token) {
+            throw new Error('No hay token de acceso');
         }
+        
+        const allTracks = [];
+        
+        // Buscar canciones para cada artista
+        for (const artistQuery of artists) {
+            if (!artistQuery.trim()) continue;
+            
+            // Buscar el artista
+            const searchResponse = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(artistQuery)}&type=artist&limit=5`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!searchResponse.ok) continue;
+            
+            const searchData = await searchResponse.json();
+            if (!searchData.artists || !searchData.artists.items.length) continue;
+            
+            // Usar el primer artista encontrado
+            const artist = searchData.artists.items[0];
+            
+            // Obtener las mejores canciones del artista
+            const tracksResponse = await fetch(`https://api.spotify.com/v1/artists/${artist.id}/top-tracks?market=ES`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!tracksResponse.ok) continue;
+            
+            const tracksData = await tracksResponse.json();
+            const tracks = tracksData.tracks.slice(0, parseInt(songsPerArtist));
+            
+            tracks.forEach(track => {
+                allTracks.push({
+                    uri: track.uri,
+                    name: track.name,
+                    artist: artist.name,
+                    duration: track.duration_ms,
+                    preview_url: track.preview_url,
+                    external_url: track.external_urls.spotify,
+                    album: {
+                        name: track.album.name,
+                        image: track.album.images[0]?.url || null
+                    }
+                });
+            });
+        }
+        
+        if (allTracks.length === 0) {
+            throw new Error('No se encontraron canciones para los artistas proporcionados');
+        }
+        
+        const data = {
+            success: true,
+            message: 'Playlist creada localmente',
+            playlistId: 'playlist_' + Date.now(),
+            playlistName: playlistName,
+            tracks: allTracks
+        };
+        
+        displayPlaylistPreview(data);
+        showNotification('Playlist creada exitosamente', 'success');
+        
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Error al crear la playlist', 'error');
+        showNotification('Error al crear la playlist: ' + error.message, 'error');
     } finally {
         hideLoadingAnimation();
     }
