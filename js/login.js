@@ -30,8 +30,9 @@ class LoginManager {
         const accessToken = localStorage.getItem('spotify_access_token');
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
+        const tokenFromUrl = urlParams.get('access_token');
         
-        if (accessToken || code) {
+        if (accessToken || code || tokenFromUrl) {
             // Si ya está autenticado, redirigir al dashboard
             this.redirectToDashboard();
         }
@@ -80,6 +81,7 @@ class LoginManager {
     async handleAuthCallback() {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
+        const tokenFromUrl = urlParams.get('access_token');
         const state = urlParams.get('state');
         const error = urlParams.get('error');
         
@@ -88,6 +90,35 @@ class LoginManager {
             return;
         }
         
+        // Manejar token directo en URL (Implicit Grant)
+        if (tokenFromUrl) {
+            try {
+                this.setLoadingState(true);
+                
+                // Guardar token directamente
+                localStorage.setItem('spotify_access_token', tokenFromUrl);
+                
+                // Limpiar estado
+                localStorage.removeItem('spotify_auth_state');
+                
+                // Mostrar mensaje de éxito
+                this.showMessage('¡Autenticación exitosa!', 'success');
+                
+                // Redirigir al dashboard después de un breve delay
+                setTimeout(() => {
+                    this.redirectToDashboard();
+                }, 1500);
+                
+                return;
+            } catch (error) {
+                console.error('Error handling direct token:', error);
+                this.showMessage('Error al procesar la autenticación', 'error');
+                this.setLoadingState(false);
+                return;
+            }
+        }
+        
+        // Manejar código de autorización (Authorization Code Flow)
         if (!code || !state) {
             return;
         }
@@ -293,8 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Manejar callback de autenticación si es necesario
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
+    const tokenFromUrl = urlParams.get('access_token');
     
-    if (code) {
+    if (code || tokenFromUrl) {
         window.loginManager.handleAuthCallback();
     }
 });
