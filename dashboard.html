@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
-    <!-- Header moderno con navegación -->
+<body class="dashboard-body">
+    <!-- Header Full Width -->
     <header class="dashboard-header">
         <div class="header-container">
             <div class="logo-section">
@@ -25,7 +25,7 @@
         </div>
     </header>
 
-    <!-- Contenido principal -->
+    <!-- Main Content Full Width -->
     <main class="dashboard-main">
         <div class="dashboard-hero">
             <div class="hero-content">
@@ -36,98 +36,86 @@
 
         <div class="dashboard-content">
             <div class="cards-container">
-                <!-- Tarjeta 1: Crear Playlist -->
+                <!-- Opción 1: Crear Playlist -->
                 <div class="feature-card" onclick="navigateToCreatePlaylist()">
                     <div class="card-header">
-                        <div class="card-icon">
+                        <div class="card-icon-wrapper">
                             <i class="fas fa-plus-circle"></i>
                         </div>
-                        <div class="card-badge">Nuevo</div>
+                        <div class="card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
                     </div>
                     <div class="card-body">
                         <h3 class="card-title">Crear Playlist</h3>
                         <p class="card-description">Crea una nueva playlist personalizada con tus canciones favoritas</p>
-                        <div class="card-features">
-                            <span class="feature-tag">Personalizado</span>
-                            <span class="feature-tag">Spotify</span>
-                        </div>
                     </div>
                     <div class="card-footer">
                         <span class="card-action">Comenzar</span>
-                        <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
 
-                <!-- Tarjeta 2: Modificar Playlist -->
+                <!-- Opción 2: Modificar Playlist Actuales -->
                 <div class="feature-card" onclick="navigateToModifyPlaylists()">
                     <div class="card-header">
-                        <div class="card-icon">
+                        <div class="card-icon-wrapper">
                             <i class="fas fa-edit"></i>
                         </div>
-                        <div class="card-badge">Gestionar</div>
+                        <div class="card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Modificar Playlist</h3>
+                        <h3 class="card-title">Modificar Playlist Actuales</h3>
                         <p class="card-description">Gestiona y modifica tus playlists existentes de Spotify</p>
-                        <div class="card-features">
-                            <span class="feature-tag">Editar</span>
-                            <span class="feature-tag">Organizar</span>
-                        </div>
                     </div>
                     <div class="card-footer">
                         <span class="card-action">Gestionar</span>
-                        <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
 
-                <!-- Tarjeta 3: Estadísticas -->
+                <!-- Opción 3: Estadísticas de Spotify -->
                 <div class="feature-card" onclick="navigateToStatistics()">
                     <div class="card-header">
-                        <div class="card-icon">
+                        <div class="card-icon-wrapper">
                             <i class="fas fa-chart-bar"></i>
                         </div>
-                        <div class="card-badge">Analizar</div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Estadísticas</h3>
-                        <p class="card-description">Analiza tus hábitos de escucha y estadísticas musicales</p>
-                        <div class="card-features">
-                            <span class="feature-tag">Analytics</span>
-                            <span class="feature-tag">Insights</span>
+                        <div class="card-arrow">
+                            <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Estadísticas de Spotify</h3>
+                        <p class="card-description">Analiza tus hábitos de escucha y estadísticas musicales</p>
+                    </div>
                     <div class="card-footer">
-                        <span class="card-action">Ver Stats</span>
-                        <i class="fas fa-arrow-right"></i>
+                        <span class="card-action">Ver Estadísticas</span>
                     </div>
                 </div>
 
-                <!-- Tarjeta 4: Próximamente -->
+                <!-- Opción 4: Reservada -->
                 <div class="feature-card disabled">
                     <div class="card-header">
-                        <div class="card-icon">
+                        <div class="card-icon-wrapper">
                             <i class="fas fa-cog"></i>
                         </div>
-                        <div class="card-badge coming-soon">Próximo</div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Más Funciones</h3>
-                        <p class="card-description">Nuevas funcionalidades en desarrollo</p>
-                        <div class="card-features">
-                            <span class="feature-tag">En desarrollo</span>
-                            <span class="feature-tag">Próximamente</span>
+                        <div class="card-arrow">
+                            <i class="fas fa-clock"></i>
                         </div>
                     </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Próximamente</h3>
+                        <p class="card-description">Nueva funcionalidad en desarrollo</p>
+                    </div>
                     <div class="card-footer">
-                        <span class="card-action">Esperar</span>
-                        <i class="fas fa-clock"></i>
+                        <span class="card-action">En Desarrollo</span>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer moderno -->
+    <!-- Footer Full Width -->
     <footer class="dashboard-footer">
         <div class="footer-container">
             <div class="footer-content">
