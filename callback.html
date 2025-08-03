@@ -50,6 +50,13 @@
     </div>
 
     <script>
+        // Configuración de Spotify
+        const SPOTIFY_CONFIG = {
+            clientId: '87cd9c6748524a58bc0e3151a3173e93',
+            clientSecret: '5c0c9086ef2a414d93e7e9385390053b',
+            redirectUri: 'https://cedenofofo.github.io/spotify-playlist/callback.html'
+        };
+
         // Función para obtener parámetros de la URL
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -65,14 +72,51 @@
             document.getElementById('auth-error').style.display = 'block';
         }
 
-        // Función para redirigir al dashboard
-        function redirectToDashboard(accessToken, expiresIn) {
-            // Guardar el token en localStorage
-            localStorage.setItem('spotify_access_token', accessToken);
-            localStorage.setItem('spotify_token_expires', Date.now() + (expiresIn * 1000));
-            
-            // Redirigir al dashboard
-            window.location.href = 'dashboard.html';
+        // Función para intercambiar código por token
+        async function exchangeCodeForToken(code) {
+            try {
+                document.getElementById('auth-message').textContent = 'Intercambiando código por token...';
+                
+                // Crear las credenciales codificadas en base64
+                const credentials = btoa(SPOTIFY_CONFIG.clientId + ':' + SPOTIFY_CONFIG.clientSecret);
+                
+                const response = await fetch('https://accounts.spotify.com/api/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + credentials
+                    },
+                    body: new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        code: code,
+                        redirect_uri: SPOTIFY_CONFIG.redirectUri
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.access_token) {
+                    // Guardar el token en localStorage
+                    localStorage.setItem('spotify_access_token', data.access_token);
+                    localStorage.setItem('spotify_token_expires', Date.now() + (data.expires_in * 1000));
+                    
+                    if (data.refresh_token) {
+                        localStorage.setItem('spotify_refresh_token', data.refresh_token);
+                    }
+
+                    document.getElementById('auth-message').textContent = '¡Autenticación exitosa! Redirigiendo...';
+                    
+                    // Redirigir al dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    throw new Error('No se recibió el token de acceso');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                handleError('Error al obtener el token de acceso: ' + error.message);
+            }
         }
 
         // Función principal de autenticación
@@ -94,20 +138,15 @@
                 return;
             }
 
-            // Simular el intercambio de código por token
-            // En un entorno real, esto se haría en el servidor
-            document.getElementById('auth-message').textContent = 'Intercambiando código por token...';
-            
-            // Simular un delay para mostrar el proceso
-            setTimeout(() => {
-                // Por ahora, vamos a redirigir directamente al dashboard
-                // En producción, necesitarías hacer una llamada al servidor
-                document.getElementById('auth-message').textContent = 'Redirigiendo al dashboard...';
-                
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-            }, 2000);
+            // Verificar el estado si es necesario
+            const storedState = localStorage.getItem('spotify_auth_state');
+            if (state && storedState && state !== storedState) {
+                handleError('Estado de seguridad inválido');
+                return;
+            }
+
+            // Intercambiar código por token
+            exchangeCodeForToken(code);
         }
 
         // Ejecutar cuando la página cargue

@@ -17,37 +17,33 @@ class Auth {
     }
 
     checkAuth() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const accessToken = urlParams.get('access_token');
-        const expiresIn = urlParams.get('expires_in');
+        // Verificar si ya tenemos un token válido en localStorage
+        const accessToken = localStorage.getItem('spotify_access_token');
+        const tokenExpires = localStorage.getItem('spotify_token_expires');
 
-        if (accessToken) {
-            // Guardar el token en localStorage
-            localStorage.setItem('spotify_access_token', accessToken);
-            localStorage.setItem('token_expires', Date.now() + (expiresIn * 1000));
-            
-            // Limpiar la URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-            
-            // Redirigir al dashboard
-            this.redirectToDashboard();
-        } else if (localStorage.getItem('spotify_access_token')) {
+        if (accessToken && tokenExpires) {
             // Verificar si el token ha expirado
-            const expiresAt = localStorage.getItem('token_expires');
-            if (Date.now() < expiresAt) {
-                // Si estamos en la página principal y ya tenemos token, ir al dashboard
-                if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
+            if (Date.now() < parseInt(tokenExpires)) {
+                // Token válido - redirigir al dashboard si estamos en la página principal
+                if (window.location.pathname.endsWith('index.html') || 
+                    window.location.pathname.endsWith('/') || 
+                    window.location.pathname === '') {
                     this.redirectToDashboard();
+                    return;
                 } else {
+                    // Si estamos en otra página, mostrar la sección de playlist
                     this.showPlaylistSection();
+                    return;
                 }
             } else {
+                // Token expirado - limpiar y mostrar login
                 this.logout();
+                return;
             }
-        } else {
-            // No hay token, mostrar solo login
-            this.showLoginSection();
         }
+
+        // No hay token válido - mostrar login
+        this.showLoginSection();
     }
 
     login() {
@@ -73,9 +69,18 @@ class Auth {
 
     logout() {
         localStorage.removeItem('spotify_access_token');
-        localStorage.removeItem('token_expires');
+        localStorage.removeItem('spotify_token_expires');
+        localStorage.removeItem('spotify_refresh_token');
         localStorage.removeItem('spotify_auth_state');
-        window.location.href = 'index.html';
+        
+        // Redirigir a la página principal
+        if (window.location.pathname !== 'index.html' && 
+            window.location.pathname !== '/' && 
+            window.location.pathname !== '') {
+            window.location.href = 'index.html';
+        } else {
+            window.location.reload();
+        }
     }
 
     redirectToDashboard() {
