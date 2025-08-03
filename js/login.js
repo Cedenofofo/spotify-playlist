@@ -34,6 +34,12 @@ class LoginManager {
         try {
             this.setLoadingState(true);
             
+            // Limpiar datos anteriores
+            localStorage.removeItem('spotify_access_token');
+            localStorage.removeItem('spotify_refresh_token');
+            localStorage.removeItem('spotify_auth_state');
+            localStorage.removeItem('spotify_code_verifier');
+            
             // Generar estado aleatorio
             const state = this.generateRandomState();
             localStorage.setItem('spotify_auth_state', state);
@@ -64,7 +70,8 @@ class LoginManager {
             state: state,
             scope: window.config.scopes.join(' '),
             code_challenge: codeChallenge,
-            code_challenge_method: 'S256'
+            code_challenge_method: 'S256',
+            show_dialog: 'true'
         });
         
         return `${window.config.authUrl}?${params.toString()}`;
