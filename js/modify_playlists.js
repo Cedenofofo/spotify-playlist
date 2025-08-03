@@ -420,27 +420,8 @@ class ModifyPlaylistsManager {
 
     async editPlaylist(playlistId) {
         try {
-            const token = localStorage.getItem('spotify_access_token');
-            if (!token) {
-                throw new Error('No hay token de acceso');
-            }
-
-            // Obtener detalles de la playlist
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al obtener playlist: ${response.status}`);
-            }
-
-            const playlist = await response.json();
-            
-            // Mostrar modal de edición
-            this.showEditPlaylistModal(playlist);
-
+            // Redirigir a la página de edición con el ID de la playlist
+            window.location.href = `edit_playlist.html?id=${playlistId}`;
         } catch (error) {
             console.error('Error al editar playlist:', error);
             this.showNotification('Error al cargar la playlist', 'error');

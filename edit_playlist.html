@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Playlist - Tuneuptify</title>
+    <meta name="description" content="Edita y modifica tu playlist de Spotify con Tuneuptify">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/search.css">
+    <style>
+        .edit-playlist-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .edit-playlist-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .playlist-info-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .playlist-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .playlist-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            object-fit: cover;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .playlist-details h1 {
+            color: #ffffff;
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .playlist-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            color: #ffffff;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1db954;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .edit-form-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tracks-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .track-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .track-number {
+            color: #b3b3b3;
+            font-weight: 500;
+            min-width: 30px;
+        }
+        
+        .track-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-name {
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .track-artist {
+            color: #b3b3b3;
+            font-size: 0.9rem;
+        }
+        
+        .track-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: #b3b3b3;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+        
+        .action-btn.remove {
+            color: #e74c3c;
+        }
+        
+        .action-btn.remove:hover {
+            background: rgba(231, 76, 60, 0.2);
+            color: #ff6b6b;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #1db954;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Estilos para radio buttons */
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .radio-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+        
+        .radio-custom {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b3b3b3;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .radio-option input[type="radio"]:checked + .radio-custom {
+            border-color: #1db954;
+            background: #1db954;
+        }
+        
+        .radio-option input[type="radio"]:checked + .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        /* Estilos para sugerencias de búsqueda */
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Estilos para botones de acción */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+        
+        .hero-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hero-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor personalizado -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-follower"></div>
+
+    <!-- Header -->
+    <header class="elegant-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="brand-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="brand-title">Tuneuptify</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="elegant-main">
+        <div class="edit-playlist-container">
+            <!-- Botón de regreso -->
+            <a href="modify_playlists.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver a mis playlists</span>
+            </a>
+
+            <!-- Header de la playlist -->
+            <div class="edit-playlist-header">
+                <div class="playlist-info-card">
+                    <div class="playlist-header">
+                        <img id="playlist-image" src="" alt="Playlist" class="playlist-image">
+                        <div class="playlist-details">
+                            <h1 id="playlist-name">Cargando...</h1>
+                            <p id="playlist-description" style="color: #b3b3b3; margin: 0;">Cargando descripción...</p>
+                            <div class="playlist-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="tracks-count">-</div>
+                                    <div class="stat-label">Canciones</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="playlist-duration">-</div>
+                                    <div class="stat-label">Duración</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="playlist-visibility">-</div>
+                                    <div class="stat-label">Visibilidad</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de edición -->
+            <div class="edit-form-container">
+                <form id="edit-playlist-form" class="elegant-form">
+                    <!-- Información básica -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-edit"></i>
+                            Información de la playlist
+                        </h3>
+                        
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="edit-playlist-name" class="form-label">
+                                    <i class="fas fa-heading"></i>
+                                    <span>Nombre de la playlist</span>
+                                </label>
+                                <input type="text" id="edit-playlist-name" class="form-input" required>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="edit-playlist-description" class="form-label">
+                                    <i class="fas fa-align-left"></i>
+                                    <span>Descripción</span>
+                                </label>
+                                <textarea id="edit-playlist-description" class="form-input" rows="3" 
+                                          placeholder="Describe tu playlist..."></textarea>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label class="form-label">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Visibilidad</span>
+                                </label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="playlist-visibility" value="public" id="public-playlist">
+                                        <span class="radio-custom"></span>
+                                        <span>Pública</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="playlist-visibility" value="private" id="private-playlist">
+                                        <span class="radio-custom"></span>
+                                        <span>Privada</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Búsqueda de canciones -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-search"></i>
+                            Agregar canciones
+                        </h3>
+                        
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="track-search" class="form-label">
+                                    <i class="fas fa-music"></i>
+                                    <span>Buscar canciones</span>
+                                </label>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="track-search" class="form-input" 
+                                           placeholder="Busca canciones para agregar..." 
+                                           autocomplete="off">
+                                    <div id="search-suggestions" class="autocomplete-suggestions"></div>
+                                    <div class="input-glow"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de canciones actuales -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-list"></i>
+                            Canciones en la playlist
+                        </h3>
+                        
+                        <div id="tracks-list" class="tracks-list">
+                            <div class="loading-spinner"></div>
+                            <p style="text-align: center; color: #b3b3b3;">Cargando canciones...</p>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="form-actions">
+                        <button type="submit" class="hero-btn primary" id="save-changes-btn">
+                            <div class="btn-content">
+                                <i class="fas fa-save"></i>
+                                <span>Guardar cambios</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                        
+                        <button type="button" class="hero-btn secondary" id="cancel-btn">
+                            <div class="btn-content">
+                                <i class="fas fa-times"></i>
+                                <span>Cancelar</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/edit_playlist.js"></script>
+</body>
+</html> 
