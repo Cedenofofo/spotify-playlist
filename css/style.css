@@ -1,51 +1,30 @@
-/* ===== VARIABLES CSS - PALETA ELEGANTE ===== */
+/* ===== VARIABLES CSS MODERNAS ===== */
 :root {
-  /* Paleta de colores elegante y profesional */
-  --primary-navy: #1a1a2e;        /* Azul marino profundo */
-  --primary-slate: #16213e;        /* Slate elegante */
-  --accent-gold: #f4d03f;         /* Dorado elegante */
-  --accent-copper: #d35400;       /* Cobre sofisticado */
-  --accent-sage: #27ae60;         /* Verde salvia */
-  --accent-lavender: #8e44ad;     /* Lavanda suave */
-  --accent-coral: #e74c3c;        /* Coral vibrante */
+  /* Paleta de colores moderna */
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --spotify-gradient: linear-gradient(135deg, #1db954 0%, #00cfff 100%);
+  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   
-  /* Gradientes elegantes */
-  --gradient-elegant: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #1a1a2e 100%);
-  --gradient-accent: linear-gradient(135deg, #f4d03f 0%, #d35400 50%, #e74c3c 100%);
-  --gradient-subtle: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
-  --gradient-warm: linear-gradient(135deg, #8e44ad 0%, #e74c3c 50%, #f39c12 100%);
-  
-  /* Fondo elegante y sofisticado */
-  --bg-elegant: linear-gradient(45deg, 
-    #0f0f23 0%, 
-    #1a1a2e 10%, 
-    #16213e 20%, 
-    #0f3460 30%, 
-    #533483 40%, 
-    #8e44ad 50%, 
-    #e74c3c 60%, 
-    #f39c12 70%, 
-    #f4d03f 80%, 
-    #27ae60 90%, 
-    #0f0f23 100%);
+  /* Colores principales */
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --accent-color: #f093fb;
+  --success-color: #1db954;
+  --error-color: #e74c3c;
+  --warning-color: #f39c12;
   
   /* Colores de fondo */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: rgba(26, 26, 46, 0.8);
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-glass: rgba(255, 255, 255, 0.08);
-  --bg-input: rgba(255, 255, 255, 0.1);
+  --bg-primary: #0a0a0a;
+  --bg-secondary: rgba(255, 255, 255, 0.05);
+  --bg-card: rgba(255, 255, 255, 0.08);
+  --bg-glass: rgba(255, 255, 255, 0.1);
+  --bg-input: rgba(255, 255, 255, 0.12);
   
   /* Colores de texto */
   --text-primary: #ffffff;
-  --text-secondary: #e8e8e8;
-  --text-muted: #b8b8b8;
-  
-  /* Colores de estado */
-  --success-color: #27ae60;
-  --error-color: #e74c3c;
-  --warning-color: #f39c12;
-  --info-color: #3498db;
+  --text-secondary: #b3b3b3;
+  --text-muted: #888888;
   
   /* Espaciado moderno */
   --space-xs: 0.5rem;
@@ -75,10 +54,10 @@
   --radius-xl: 1.5rem;
   --radius-2xl: 2rem;
   
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.25);
-  --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.25);
   
   /* Transiciones suaves */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -104,74 +83,13 @@ html {
 
 body {
   font-family: var(--font-primary);
-  background: var(--bg-elegant);
-  background-size: 300% 300%;
+  background: var(--primary-gradient);
   min-height: 100vh;
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  animation: elegantGradient 20s ease infinite;
-  position: relative;
-}
-
-/* Animación del fondo elegante */
-@keyframes elegantGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Efectos de partículas elegantes */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(circle at 20% 80%, rgba(244, 208, 63, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(142, 68, 173, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(231, 76, 60, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 60% 60%, rgba(39, 174, 96, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 10% 90%, rgba(212, 84, 0, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 90% 10%, rgba(52, 152, 219, 0.03) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: -1;
-  animation: elegantFloat 25s ease-in-out infinite;
-}
-
-@keyframes elegantFloat {
-  0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-  25% { transform: translateY(-15px) rotate(90deg) scale(1.05); }
-  50% { transform: translateY(-5px) rotate(180deg) scale(1.02); }
-  75% { transform: translateY(-25px) rotate(270deg) scale(1.08); }
-}
-
-/* Efectos de líneas elegantes */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    linear-gradient(90deg, transparent 98%, rgba(244, 208, 63, 0.1) 100%),
-    linear-gradient(0deg, transparent 98%, rgba(142, 68, 173, 0.1) 100%),
-    linear-gradient(45deg, transparent 98%, rgba(231, 76, 60, 0.1) 100%),
-    linear-gradient(-45deg, transparent 98%, rgba(39, 174, 96, 0.1) 100%);
-  background-size: 100px 100px, 100px 100px, 150px 150px, 150px 150px;
-  pointer-events: none;
-  z-index: -1;
-  animation: elegantLines 30s linear infinite;
-}
-
-@keyframes elegantLines {
-  0% { transform: translateX(0) translateY(0); }
-  100% { transform: translateX(-100px) translateY(-100px); }
 }
 
 /* ===== ANIMACIONES GLOBALES ===== */
@@ -215,23 +133,14 @@ body::after {
   }
 }
 
-@keyframes elegantGlow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(244, 208, 63, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(142, 68, 173, 0.3);
-  }
-}
-
 /* ===== LAYOUT PRINCIPAL ===== */
 .container {
   max-width: 600px;
   margin: var(--space-xl) auto;
   background: var(--bg-glass);
   border-radius: var(--radius-2xl);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: var(--shadow-xl);
   padding: var(--space-2xl);
@@ -247,16 +156,15 @@ body::after {
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--gradient-accent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 .container:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
-  animation: elegantGlow 3s ease-in-out infinite;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== HEADER ELEGANTE ===== */
+/* ===== HEADER MODERNO ===== */
 header {
   text-align: center;
   margin-bottom: var(--space-xl);
@@ -281,14 +189,13 @@ header {
 h1 {
   font-size: var(--text-4xl);
   font-weight: 800;
-  background: var(--gradient-accent);
+  background: var(--spotify-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: var(--space-sm);
   letter-spacing: -0.02em;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  animation: pulse 3s ease-in-out infinite;
 }
 
 /* ===== SECCIONES ===== */
@@ -301,7 +208,7 @@ h1 {
 .section:nth-child(3) { animation-delay: 0.2s; }
 .section:nth-child(4) { animation-delay: 0.3s; }
 
-/* ===== FORMULARIOS ELEGANTES ===== */
+/* ===== FORMULARIOS MODERNOS ===== */
 .form-group {
   margin-bottom: var(--space-lg);
   position: relative;
@@ -340,8 +247,8 @@ input[type="number"]:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 4px rgba(244, 208, 63, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
   transform: translateY(-2px);
   background: rgba(255, 255, 255, 0.15);
 }
@@ -352,7 +259,7 @@ input[type="number"]::placeholder {
   opacity: 0.7;
 }
 
-/* ===== AUTOCOMPLETADO ELEGANTE ===== */
+/* ===== AUTOCOMPLETADO MEJORADO ===== */
 .autocomplete-container {
   position: relative;
 }
@@ -399,12 +306,12 @@ input[type="number"]::placeholder {
 
 .autocomplete-suggestion:hover,
 .autocomplete-suggestion.active {
-  background: var(--gradient-accent);
+  background: var(--primary-gradient);
   color: var(--text-primary);
   transform: translateX(5px);
 }
 
-/* ===== ARTISTAS ELEGANTES ===== */
+/* ===== ARTISTAS MEJORADOS ===== */
 .artist-inputs {
   margin-bottom: var(--space-md);
 }
@@ -446,8 +353,8 @@ input[type="number"]::placeholder {
 
 .add-artist-btn {
   background: var(--bg-card);
-  color: var(--accent-gold);
-  border: 2px solid var(--accent-gold);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
   border-radius: var(--radius-lg);
   padding: var(--space-md) var(--space-lg);
   font-size: var(--text-base);
@@ -463,7 +370,7 @@ input[type="number"]::placeholder {
 }
 
 .add-artist-btn:hover {
-  background: var(--gradient-accent);
+  background: var(--primary-gradient);
   color: var(--text-primary);
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
@@ -539,9 +446,9 @@ input[type="number"]::placeholder {
   box-shadow: var(--shadow-md);
 }
 
-/* ===== BOTONES ELEGANTES ===== */
+/* ===== BOTONES MODERNOS ===== */
 .btn {
-  background: var(--gradient-accent);
+  background: var(--primary-gradient);
   color: var(--text-primary);
   border: none;
   border-radius: var(--radius-lg);
@@ -585,17 +492,17 @@ input[type="number"]::placeholder {
 
 .btn:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(244, 208, 63, 0.3);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
 }
 
 .btn-secondary {
   background: var(--bg-card);
-  color: var(--accent-gold);
-  border: 2px solid var(--accent-gold);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
 }
 
 .btn-secondary:hover {
-  background: var(--gradient-accent);
+  background: var(--primary-gradient);
   color: var(--text-primary);
   border-color: transparent;
 }
@@ -605,7 +512,7 @@ input[type="number"]::placeholder {
 }
 
 .btn-success:hover {
-  background: #229954;
+  background: #16a085;
 }
 
 .btn-error {
@@ -616,7 +523,7 @@ input[type="number"]::placeholder {
   background: #c0392b;
 }
 
-/* ===== LOADING ELEGANTE ===== */
+/* ===== LOADING ANIMADO ===== */
 .loading {
   text-align: center;
   padding: var(--space-2xl);
@@ -626,7 +533,7 @@ input[type="number"]::placeholder {
   width: 50px;
   height: 50px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: var(--space-lg) auto;
@@ -637,7 +544,7 @@ input[type="number"]::placeholder {
   100% { transform: rotate(360deg); }
 }
 
-/* ===== MENSAJES ELEGANTES ===== */
+/* ===== MENSAJES MEJORADOS ===== */
 .message {
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
@@ -649,9 +556,9 @@ input[type="number"]::placeholder {
 }
 
 .message-success {
-  background: rgba(39, 174, 96, 0.2);
+  background: rgba(29, 185, 84, 0.2);
   color: var(--text-primary);
-  border: 1px solid rgba(39, 174, 96, 0.3);
+  border: 1px solid rgba(29, 185, 84, 0.3);
 }
 
 .message-error {
@@ -679,7 +586,7 @@ input[type="number"]::placeholder {
 }
 
 .playlist-preview h3 {
-  color: var(--accent-gold);
+  color: var(--primary-color);
   font-size: var(--text-xl);
   font-weight: 700;
   margin-bottom: var(--space-lg);
@@ -754,7 +661,7 @@ input[type="number"]::placeholder {
   box-shadow: var(--shadow-md);
 }
 
-/* ===== FOOTER ELEGANTE ===== */
+/* ===== FOOTER MODERNO ===== */
 footer {
   text-align: center;
   margin-top: var(--space-2xl);
@@ -789,7 +696,7 @@ footer {
 }
 
 .social-link:hover {
-  color: var(--accent-gold);
+  color: var(--primary-color);
   transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
   background: var(--bg-input);
@@ -861,14 +768,14 @@ footer {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--accent-gold);
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
 /* High contrast mode */
 @media (prefers-contrast: high) {
   :root {
-    --accent-gold: #ffffff;
+    --primary-color: #ffffff;
     --text-primary: #ffffff;
     --text-secondary: #cccccc;
     --bg-card: #000000;
@@ -895,7 +802,7 @@ select:focus-visible {
 
 /* ===== EFECTOS ESPECIALES ===== */
 .glow {
-  box-shadow: 0 0 20px rgba(244, 208, 63, 0.3);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 .pulse {
@@ -904,4 +811,85 @@ select:focus-visible {
 
 .float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* ===== COMING SOON STYLES ===== */
+.coming-soon {
+  text-align: center;
+  padding: 3rem 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.coming-soon-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem;
+  font-size: 2rem;
+  color: white;
+}
+
+.coming-soon h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.coming-soon p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.coming-soon ul {
+  text-align: left;
+  max-width: 400px;
+  margin: 0 auto 2rem;
+  color: var(--text-secondary);
+}
+
+.coming-soon li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.coming-soon li::before {
+  content: '•';
+  color: var(--primary-color);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 3rem;
+  font-weight: 400;
+}
+
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 } 
