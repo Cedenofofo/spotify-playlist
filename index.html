@@ -3,152 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Tuneuptify</title>
-    <meta name="description" content="Inicia sesión en Tuneuptify para gestionar tus playlists de Spotify">
-    
-    <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
-        img-src 'self' data: https:;
-        connect-src 'self' https://accounts.spotify.com https://api.spotify.com https://www.google.com;
-        frame-src 'self' https://accounts.spotify.com;
-        object-src 'none';
-        base-uri 'self';
-        form-action 'self';
-    ">
-    
-
-    
-    <!-- Fuentes -->
+    <title>Tuneuptify - Gestor de Playlists de Spotify</title>
+    <meta name="description" content="Crea y gestiona playlists personalizadas de Spotify con Tuneuptify">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Estilos -->
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/search.css">
 </head>
 <body>
+    <!-- Header con animaciones -->
+    <header role="banner" aria-label="Tuneuptify logo y título">
+        <img src="img/tuneuptify-logo.png" alt="Logo Tuneuptify" class="logo-tuneuptify" width="200" height="auto" />
+        <h1>Tuneuptify</h1>
+        <p style="color: var(--text-secondary); font-size: var(--text-lg); margin-top: var(--space-sm);">
+            Crea playlists personalizadas con inteligencia artificial
+        </p>
+    </header>
+
     <!-- Contenido principal -->
-    <main class="login-main">
-        <div class="login-container">
-            <!-- Logo y título -->
-            <div class="login-header">
-                <img src="img/tuneuptify-logo.png" alt="Tuneuptify Logo" class="login-logo">
-                <h1 class="login-title">Tuneuptify</h1>
-                <p class="login-subtitle">Tu gestor de música personal</p>
+    <main id="main-content" tabindex="-1" aria-label="Generador de Playlist de Spotify">
+        <div class="container">
+            <!-- Sección de login -->
+            <div id="login-section" class="section">
+                <div class="text-center">
+                    <div style="margin-bottom: var(--space-lg);">
+                        <i class="fas fa-music" style="font-size: 3rem; color: var(--primary-color); margin-bottom: var(--space-md);"></i>
+                        <h2 style="font-size: var(--text-2xl); margin-bottom: var(--space-sm);">¡Bienvenido a Tuneuptify!</h2>
+                        <p style="color: var(--text-secondary); line-height: 1.6;">
+                            Conecta con Spotify y comienza a crear playlists únicas y personalizadas
+                        </p>
+                    </div>
+                    <button id="login-button" class="btn btn-success" aria-label="Iniciar sesión con Spotify">
+                        <i class="fab fa-spotify" aria-hidden="true"></i> 
+                        Iniciar sesión con Spotify
+                    </button>
+                </div>
             </div>
 
-            <!-- Formulario de login -->
-            <div class="login-form">
-                <div class="login-card">
-                    <div class="login-card-header">
-                        <i class="fas fa-music"></i>
-                        <h2>Bienvenido a Tuneuptify</h2>
-                        <p>Conecta con Spotify para acceder a todas las funcionalidades</p>
+            <!-- Sección de creación de playlist -->
+            <div id="playlist-section" class="section" style="display: none;">
+                <form id="playlist-form" aria-label="Formulario para crear playlist">
+                    <!-- Nombre de la playlist -->
+                    <div class="form-group">
+                        <label for="playlist-name">
+                            <i class="fas fa-heading" style="margin-right: var(--space-xs);"></i>
+                            Nombre de la playlist
+                        </label>
+                        <input type="text" id="playlist-name" required placeholder="Mi Playlist personalizada" aria-required="true">
                     </div>
-                    
-                    <div class="login-card-body">
-                        <button id="spotify-login" class="login-btn">
-                            <i class="fab fa-spotify"></i>
-                            <span>Conectar con Spotify</span>
-                        </button>
-                        
-                        <div class="login-info">
-                            <p><i class="fas fa-shield-alt"></i> Tus datos están seguros</p>
-                            <p><i class="fas fa-lock"></i> Solo accedemos a lo que autorices</p>
+
+                    <!-- Artista principal -->
+                    <div class="form-group">
+                        <label for="artist-main">
+                            <i class="fas fa-star" style="margin-right: var(--space-xs); color: var(--warning-color);"></i>
+                            Artista principal
+                        </label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="artist-main" name="artist-main" class="artist-autocomplete" 
+                                   placeholder="Busca tu artista favorito..." autocomplete="off" 
+                                   aria-autocomplete="list" aria-label="Buscar artista principal">
+                            <div id="artist-main-suggestions" class="autocomplete-suggestions" role="listbox"></div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Footer -->
-            <footer class="login-footer">
-                <p>&copy; 2024 Tuneuptify</p>
-                <div class="social-links">
-                    <a href="https://github.com/Cedenofofo/spotify-playlist" class="social-link" target="_blank">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <a href="https://instagram.com" class="social-link" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
+                    <!-- Artistas adicionales -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-plus-circle" style="margin-right: var(--space-xs); color: var(--success-color);"></i>
+                            Artistas adicionales
+                        </label>
+                        <div id="artist-inputs" class="artist-inputs"></div>
+                        <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional">
+                            <i class="fas fa-plus" aria-hidden="true"></i> 
+                            Agregar artista
+                        </button>
+                    </div>
+
+                    <!-- Canciones por artista -->
+                    <div class="form-group">
+                        <label for="songs-per-artist">
+                            <i class="fas fa-list-ol" style="margin-right: var(--space-xs);"></i>
+                            Canciones por artista
+                        </label>
+                        <input type="number" id="songs-per-artist" min="1" max="50" value="5" step="1" required aria-required="true">
+                    </div>
+
+                    <!-- Búsqueda de canciones específicas -->
+                    <div class="form-group">
+                        <label for="track-search">
+                            <i class="fas fa-search" style="margin-right: var(--space-xs);"></i>
+                            Agregar canciones específicas
+                        </label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="track-search" placeholder="Busca canciones específicas..." 
+                                   autocomplete="off" aria-autocomplete="list" aria-label="Buscar canciones específicas">
+                            <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                        </div>
+                    </div>
+
+                    <!-- Canciones seleccionadas -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-music" style="margin-right: var(--space-xs);"></i>
+                            Canciones seleccionadas
+                        </label>
+                        <div id="selected-tracks"></div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="form-group text-center">
+                        <button type="button" id="preview-playlist" class="btn btn-secondary" aria-label="Vista previa de la playlist">
+                            <i class="fas fa-eye" aria-hidden="true"></i> 
+                            Vista previa
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Vista previa de playlist -->
+                <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
+
+                <!-- Botón de exportar -->
+                <div class="form-group text-center">
+                    <button id="export-spotify" class="btn btn-success" style="display:none;">
+                        <i class="fab fa-spotify" aria-hidden="true"></i> 
+                        Exportar a Spotify
+                    </button>
                 </div>
-            </footer>
+
+                <!-- Loading -->
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <p style="margin-top: var(--space-md); color: var(--text-secondary);">
+                        <i class="fas fa-cog fa-spin" style="margin-right: var(--space-xs);"></i>
+                        Creando tu playlist...
+                    </p>
+                </div>
+
+                <!-- Mensajes -->
+                <div id="success-message" class="message message-success" style="display: none;"></div>
+            </div>
         </div>
     </main>
 
+    <!-- Footer moderno -->
+    <footer>
+        <div class="text-center">
+            <p style="color: var(--text-muted); font-size: var(--text-sm); margin-bottom: var(--space-lg);">
+                &copy; 2025 Tuneuptify. Todos los derechos reservados.
+            </p>
+            
+            <!-- Redes sociales -->
+            <div class="social-links">
+                <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                   class="social-link" aria-label="Sígueme en X (Twitter)">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                   class="social-link" aria-label="Sígueme en Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://github.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                   class="social-link" aria-label="Visita mi GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            
+            <p style="margin-top: var(--space-lg); font-size: var(--text-sm); color: var(--text-muted);">
+                <i class="fas fa-code" style="margin-right: var(--space-xs);"></i>
+                Código abierto y disponible en GitHub
+            </p>
+        </div>
+    </footer>
+
     <!-- Scripts -->
     <script src="js/config.js"></script>
-    <script src="js/login.js"></script>
-    <script>
-        // Suprimir TODOS los errores externos de manera ultra agresiva
-        const originalError = console.error;
-        const originalWarn = console.warn;
-        const originalLog = console.log;
-        
-        // Función para detectar si es un error externo
-        function isExternalError(message) {
-            return message.includes('Content Security Policy') || 
-                   message.includes('recaptcha') || 
-                   message.includes('indexReact') ||
-                   message.includes('accounts.spotify.com') ||
-                   message.includes('google.com') ||
-                   message.includes('spotifycdn') ||
-                   message.includes('favicon.ico') ||
-                   message.includes('frame-ancestors') ||
-                   message.includes('connect-src') ||
-                   message.includes('POST https://accounts.spotify.com') ||
-                   message.includes('Fetch API cannot load') ||
-                   message.includes('Refused to connect') ||
-                   message.includes('Refused to frame');
-        }
-        
-        console.error = function(...args) {
-            const message = args.join(' ');
-            if (isExternalError(message)) {
-                return; // No mostrar errores externos
-            }
-            originalError.apply(console, args);
-        };
-        
-        console.warn = function(...args) {
-            const message = args.join(' ');
-            if (isExternalError(message)) {
-                return; // No mostrar warnings externos
-            }
-            originalWarn.apply(console, args);
-        };
-        
-        console.log = function(...args) {
-            const message = args.join(' ');
-            if (isExternalError(message) || 
-                message.includes('URL Parameters') || 
-                message.includes('Auth callback params')) {
-                return; // No mostrar logs externos
-            }
-            originalLog.apply(console, args);
-        };
-        
-        // Manejar callback de autenticación directamente en index.html
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const tokenFromUrl = urlParams.get('access_token');
-            const code = urlParams.get('code');
-            const error = urlParams.get('error');
-            
-            if (tokenFromUrl || code || error) {
-                // Si hay parámetros de autenticación, procesarlos
-                if (window.loginManager) {
-                    window.loginManager.handleAuthCallback();
-                }
-            }
-        });
-    </script>
+    <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html> 
