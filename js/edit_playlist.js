@@ -48,7 +48,7 @@ class EditPlaylistManager {
     }
 
     setupMultiSelectButtons() {
-        // Agregar botones de selección múltiple en la sección de tracks, no en las sugerencias
+        // Agregar botones de selección múltiple en la sección correcta
         const tracksList = document.getElementById('tracks-list');
         if (tracksList) {
             // Crear contenedor para los botones de selección múltiple
@@ -71,10 +71,18 @@ class EditPlaylistManager {
                 </div>
             `;
             
-            // Insertar antes del contenedor de tracks, no dentro
-            const tracksContainer = tracksList.closest('.input-wrapper');
-            if (tracksContainer) {
-                tracksContainer.insertBefore(multiSelectContainer, tracksList);
+            // Insertar después del label "Canciones en la playlist" pero antes del contenedor de tracks
+            const formGroup = tracksList.closest('.form-group');
+            if (formGroup) {
+                // Buscar el label dentro del form-group
+                const label = formGroup.querySelector('.form-label');
+                if (label) {
+                    // Insertar después del label
+                    label.parentNode.insertBefore(multiSelectContainer, label.nextSibling);
+                } else {
+                    // Fallback: insertar al inicio del form-group
+                    formGroup.insertBefore(multiSelectContainer, formGroup.firstChild);
+                }
             }
 
             // Event listeners para botones de selección múltiple
