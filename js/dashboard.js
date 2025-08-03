@@ -27,8 +27,8 @@ function checkAuthStatus() {
         // Verificar si hay token en localStorage
         const storedToken = localStorage.getItem('spotify_access_token');
         if (!storedToken) {
-            // Redirigir al login si no hay token
-            window.location.href = 'index.html';
+                    // Redirigir al sitio web principal si no hay token
+        window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
             return;
         }
         
@@ -38,10 +38,10 @@ function checkAuthStatus() {
         const tokenAge = currentTime - parseInt(tokenTimestamp);
         
         if (tokenAge > 3600000) { // 1 hora en milisegundos
-            console.log('Token expirado, redirigiendo al login');
+            console.log('Token expirado, redirigiendo al sitio web principal');
             localStorage.removeItem('spotify_access_token');
             localStorage.removeItem('token_timestamp');
-            window.location.href = 'index.html';
+            window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
             return;
         }
     }
@@ -70,7 +70,7 @@ function initializeCardEffects() {
     });
 }
 
-// Navegar a crear playlist (página actual)
+// Navegar a crear playlist (página principal del sitio)
 function navigateToCreatePlaylist() {
     console.log('Navegando a crear playlist');
     
@@ -78,9 +78,9 @@ function navigateToCreatePlaylist() {
     const card = event.currentTarget;
     card.classList.add('loading');
     
-    // Redirigir a la página actual (index.html) que tiene la funcionalidad de crear playlist
+    // Redirigir a la página principal del sitio web
     setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
     }, 500);
 }
 
@@ -124,8 +124,8 @@ function logout() {
         localStorage.removeItem('code_verifier');
         localStorage.removeItem('spotify_state');
         
-        // Redirigir al login
-        window.location.href = 'index.html';
+        // Redirigir al sitio web principal
+        window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
     }
 }
 
