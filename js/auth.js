@@ -1,12 +1,19 @@
 class Auth {
     constructor() {
-        if (!window.config) {
-            console.error('Configuración no disponible');
-            return;
-        }
-        this.config = window.config;
-        this.setupEventListeners();
-        this.checkAuth();
+        console.log('Auth constructor iniciado');
+        console.log('window.config disponible:', !!window.config);
+        
+        // Esperar un poco para asegurar que config.js se haya cargado
+        setTimeout(() => {
+            if (!window.config) {
+                console.error('Configuración no disponible después de timeout');
+                return;
+            }
+            console.log('Configuración cargada correctamente');
+            this.config = window.config;
+            this.setupEventListeners();
+            this.checkAuth();
+        }, 100);
     }
 
     setupEventListeners() {
