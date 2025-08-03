@@ -4,6 +4,9 @@ class SearchManager {
         this.auth = new Auth();
         this.setupEventListeners();
         console.log('SearchManager inicializado');
+        
+        // Verificar si hay canciones seleccionadas al inicializar
+        this.checkSelectedTracks();
     }
 
     setupEventListeners() {
@@ -112,6 +115,9 @@ class SearchManager {
         localStorage.setItem('selectedTracks', JSON.stringify(selectedTracks));
         this.updateSelectedTracksList();
         showNotification('Canción agregada a la lista', 'success');
+        
+        // Actualizar automáticamente la vista previa si existe
+        this.updatePlaylistPreview();
     }
 
     removeTrack(uri) {
@@ -120,6 +126,9 @@ class SearchManager {
         localStorage.setItem('selectedTracks', JSON.stringify(updatedTracks));
         this.updateSelectedTracksList();
         showNotification('Canción removida de la lista', 'info');
+        
+        // Actualizar automáticamente la vista previa
+        this.updatePlaylistPreview();
     }
 
     updateSelectedTracksList() {
@@ -154,6 +163,79 @@ class SearchManager {
 
             selectedTracksDiv.appendChild(trackDiv);
         });
+    }
+
+    updatePlaylistPreview() {
+        const previewDiv = document.getElementById('playlist-preview');
+        if (!previewDiv) return;
+        
+        const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+        
+        if (selectedTracks.length === 0) {
+            previewDiv.style.display = 'none';
+            return;
+        }
+        
+        // Obtener el nombre de la playlist del formulario
+        const playlistName = document.getElementById('playlist-name')?.value || 'Mi Playlist';
+        
+        // Crear la vista previa con solo las canciones seleccionadas
+        const data = {
+            success: true,
+            playlistName: playlistName,
+            tracks: selectedTracks
+        };
+        
+        // Llamar a la función global de vista previa
+        if (typeof displayPlaylistPreview === 'function') {
+            displayPlaylistPreview(data);
+        } else {
+            // Si la función no está disponible, crear una vista previa básica
+            this.createBasicPreview(data);
+        }
+    }
+
+    createBasicPreview(data) {
+        const previewDiv = document.getElementById('playlist-preview');
+        const exportButton = document.getElementById('export-spotify');
+        
+        if (!previewDiv) return;
+        
+        previewDiv.innerHTML = `
+            <div class="preview-header">
+                <h4>Vista previa: ${data.playlistName}</h4>
+                <p>${data.tracks.length} canciones seleccionadas</p>
+            </div>
+            <div class="preview-tracks">
+                ${data.tracks.map((track, index) => `
+                    <div class="preview-track" data-track-index="${index}">
+                        <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
+                        <div class="track-info">
+                            <div class="track-name">${track.name}</div>
+                            <div class="track-artist">${track.artist}</div>
+                        </div>
+                        <button class="remove-track-btn" onclick="removeTrackFromPreview(${index})" title="Eliminar canción">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        previewDiv.style.display = 'block';
+        if (exportButton) {
+            exportButton.style.display = 'block';
+        }
+    }
+
+    checkSelectedTracks() {
+        const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+        if (selectedTracks.length > 0) {
+            // Si hay canciones seleccionadas, mostrar la vista previa automáticamente
+            setTimeout(() => {
+                this.updatePlaylistPreview();
+            }, 500); // Pequeño delay para asegurar que el DOM esté listo
+        }
     }
 
     debounce(func, wait) {

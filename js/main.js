@@ -11,10 +11,25 @@ window.removeTrackFromPreview = function(index) {
     
     console.log('Tracks antes de eliminar:', window.currentPlaylistTracks.length);
     
+    // Obtener la canción que se va a eliminar
+    const trackToRemove = window.currentPlaylistTracks[index];
+    
     // Eliminar la canción del array
     window.currentPlaylistTracks.splice(index, 1);
     
     console.log('Tracks después de eliminar:', window.currentPlaylistTracks.length);
+    
+    // También eliminar de localStorage si es una canción específica
+    if (trackToRemove && trackToRemove.uri) {
+        const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+        const updatedSelectedTracks = selectedTracks.filter(track => track.uri !== trackToRemove.uri);
+        localStorage.setItem('selectedTracks', JSON.stringify(updatedSelectedTracks));
+        
+        // Actualizar la lista de canciones seleccionadas
+        if (window.searchManager && typeof window.searchManager.updateSelectedTracksList === 'function') {
+            window.searchManager.updateSelectedTracksList();
+        }
+    }
     
     // Actualizar la vista previa
     const data = {
@@ -448,13 +463,18 @@ function displayPlaylistPreview(data) {
     // Combinar todas las canciones para la vista previa
     const allTracks = [...data.tracks, ...selectedTracks];
     
+    // Eliminar duplicados basándose en el URI
+    const uniqueTracks = allTracks.filter((track, index, self) => 
+        index === self.findIndex(t => t.uri === track.uri)
+    );
+    
     previewDiv.innerHTML = `
         <div class="preview-header">
             <h4>Vista previa: ${data.playlistName}</h4>
-            <p>${allTracks.length} canciones encontradas</p>
+            <p>${uniqueTracks.length} canciones encontradas</p>
         </div>
         <div class="preview-tracks">
-            ${allTracks.map((track, index) => `
+            ${uniqueTracks.map((track, index) => `
                 <div class="preview-track" data-track-index="${index}">
                     <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
                     <div class="track-info">
@@ -793,4 +813,5 @@ window.addArtistInput = addArtistInput;
 window.removeArtist = removeArtist;
 window.showNotification = showNotification;
 window.showLoadingAnimation = showLoadingAnimation;
-window.hideLoadingAnimation = hideLoadingAnimation; 
+window.hideLoadingAnimation = hideLoadingAnimation;
+window.displayPlaylistPreview = displayPlaylistPreview; 
