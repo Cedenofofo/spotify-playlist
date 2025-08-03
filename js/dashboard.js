@@ -11,40 +11,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Verificar estado de autenticación
 function checkAuthStatus() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('access_token');
-    
-    if (accessToken) {
-        // Guardar el token en localStorage
-        localStorage.setItem('spotify_access_token', accessToken);
-        localStorage.setItem('token_timestamp', Date.now().toString());
-        
-        // Limpiar la URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-        
-        console.log('Token guardado en localStorage');
-    } else {
-        // Verificar si hay token en localStorage
-        const storedToken = localStorage.getItem('spotify_access_token');
-        if (!storedToken) {
-                    // Redirigir al sitio web principal si no hay token
-        window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
-            return;
-        }
-        
-        // Verificar si el token no ha expirado (1 hora)
-        const tokenTimestamp = localStorage.getItem('token_timestamp');
-        const currentTime = Date.now();
-        const tokenAge = currentTime - parseInt(tokenTimestamp);
-        
-        if (tokenAge > 3600000) { // 1 hora en milisegundos
-            console.log('Token expirado, redirigiendo al sitio web principal');
-            localStorage.removeItem('spotify_access_token');
-            localStorage.removeItem('token_timestamp');
-            window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
+    // Verificar si ya tenemos un token válido en localStorage
+    const accessToken = localStorage.getItem('spotify_access_token');
+    const tokenExpires = localStorage.getItem('spotify_token_expires');
+
+    if (accessToken && tokenExpires) {
+        // Verificar si el token ha expirado
+        if (Date.now() < parseInt(tokenExpires)) {
+            console.log('Token válido, usuario autenticado');
+            return; // Usuario autenticado, continuar
+        } else {
+            // Token expirado - limpiar y redirigir
+            console.log('Token expirado, redirigiendo al login');
+            logout();
             return;
         }
     }
+
+    // No hay token válido - redirigir al login
+    console.log('No hay token válido, redirigiendo al login');
+    window.location.href = 'index.html';
 }
 
 // Inicializar efectos de las tarjetas
@@ -80,7 +66,7 @@ function navigateToCreatePlaylist() {
     
     // Redirigir a la página principal del sitio web
     setTimeout(() => {
-        window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
+        window.location.href = 'index.html';
     }, 500);
 }
 
@@ -120,12 +106,12 @@ function logout() {
     if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
         // Limpiar localStorage
         localStorage.removeItem('spotify_access_token');
-        localStorage.removeItem('token_timestamp');
-        localStorage.removeItem('code_verifier');
-        localStorage.removeItem('spotify_state');
+        localStorage.removeItem('spotify_token_expires');
+        localStorage.removeItem('spotify_refresh_token');
+        localStorage.removeItem('spotify_auth_state');
         
         // Redirigir al sitio web principal
-        window.location.href = 'https://cedenofofo.github.io/spotify-playlist/';
+        window.location.href = 'index.html';
     }
 }
 
@@ -140,13 +126,10 @@ function isAuthenticated() {
     if (!token) return false;
     
     // Verificar si el token no ha expirado
-    const tokenTimestamp = localStorage.getItem('token_timestamp');
-    if (!tokenTimestamp) return false;
+    const tokenExpires = localStorage.getItem('spotify_token_expires');
+    if (!tokenExpires) return false;
     
-    const currentTime = Date.now();
-    const tokenAge = currentTime - parseInt(tokenTimestamp);
-    
-    return tokenAge <= 3600000; // 1 hora
+    return Date.now() < parseInt(tokenExpires);
 }
 
 // Función para hacer llamadas a la API de Spotify
