@@ -71,16 +71,34 @@
     <script src="js/config.js"></script>
     <script src="js/login.js"></script>
     <script>
-        // Suprimir errores de CSP externos
+        // Suprimir errores de CSP externos de manera más agresiva
         const originalError = console.error;
+        const originalWarn = console.warn;
+        
         console.error = function(...args) {
             const message = args.join(' ');
             if (message.includes('Content Security Policy') || 
                 message.includes('recaptcha') || 
-                message.includes('indexReact')) {
+                message.includes('indexReact') ||
+                message.includes('accounts.spotify.com') ||
+                message.includes('google.com') ||
+                message.includes('spotifycdn')) {
                 return; // No mostrar estos errores
             }
             originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('Content Security Policy') || 
+                message.includes('recaptcha') || 
+                message.includes('indexReact') ||
+                message.includes('accounts.spotify.com') ||
+                message.includes('google.com') ||
+                message.includes('spotifycdn')) {
+                return; // No mostrar estos warnings
+            }
+            originalWarn.apply(console, args);
         };
         
         // Manejar callback de autenticación directamente en index.html
