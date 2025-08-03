@@ -129,82 +129,169 @@ class ModifyPlaylistsManager {
 
     async getCurrentUserId() {
         try {
+            console.log('Obteniendo ID de usuario...');
             const token = localStorage.getItem('spotify_access_token');
-            if (!token) return null;
+            if (!token) {
+                console.error('No hay token disponible');
+                return null;
+            }
+
+            // Agregar timeout para evitar que se quede colgado
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
 
             const response = await fetch('https://api.spotify.com/v1/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
-                }
+                },
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (response.ok) {
                 const userData = await response.json();
+                console.log('ID de usuario obtenido exitosamente:', userData.id);
                 return userData.id;
+            } else {
+                console.error(`Error al obtener ID de usuario: ${response.status} - ${response.statusText}`);
+                if (response.status === 401) {
+                    console.error('Token expirado');
+                    this.auth.logout();
+                }
+                return null;
             }
         } catch (error) {
-            console.error('Error al obtener ID de usuario:', error);
+            if (error.name === 'AbortError') {
+                console.error('Timeout al obtener ID de usuario');
+            } else {
+                console.error('Error al obtener ID de usuario:', error);
+            }
+            return null;
         }
-        return null;
     }
 
     checkAuth() {
+        console.log('Verificando autenticación...');
         const token = localStorage.getItem('spotify_access_token');
         if (!token) {
+            console.log('No hay token, redirigiendo al login');
             window.location.href = 'index.html';
             return;
         }
+        console.log('Token encontrado, iniciando carga de playlists');
         this.loadPlaylists();
+    }
+
+    // Función de retry para requests que pueden fallar
+    async retryRequest(fetchFn, maxRetries = 3, delay = 1000) {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                return await fetchFn();
+            } catch (error) {
+                console.warn(`Intento ${attempt} falló:`, error);
+                if (attempt === maxRetries) {
+                    throw error;
+                }
+                await new Promise(resolve => setTimeout(resolve, delay * attempt));
+            }
+        }
     }
 
     async loadPlaylists() {
         try {
+            console.log('=== INICIANDO CARGA DE PLAYLISTS ===');
             this.showLoadingState();
             
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
+                console.error('No hay token de acceso');
                 this.auth.logout();
                 return;
             }
 
+            console.log('Token encontrado, obteniendo ID de usuario...');
             const userId = await this.getCurrentUserId();
             if (!userId) {
-                throw new Error('No se pudo obtener el ID de usuario');
+                console.error('No se pudo obtener el ID de usuario');
+                this.showErrorState();
+                return;
             }
+
+            console.log('ID de usuario obtenido:', userId);
 
             let allPlaylists = [];
             let nextUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
+            let pageCount = 0;
+            const maxPages = 10; // Límite de seguridad
 
-            // Cargar todas las playlists del usuario
-            while (nextUrl) {
-                const response = await fetch(nextUrl, {
+            // Cargar todas las playlists del usuario con límite de páginas
+            while (nextUrl && pageCount < maxPages) {
+                pageCount++;
+                console.log(`Cargando página ${pageCount}: ${nextUrl}`);
+                
+                try {
+                    const response = await fetch(nextUrl, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        console.error(`Error en página ${pageCount}: ${response.status} - ${response.statusText}`);
+                        if (response.status === 401) {
+                            console.error('Token expirado, redirigiendo al login');
+                            this.auth.logout();
+                            return;
+                        }
+                        throw new Error(`Error al cargar playlists: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log(`Página ${pageCount}: ${data.items?.length || 0} playlists cargadas`);
+                    
+                    if (data.items) {
+                        allPlaylists = allPlaylists.concat(data.items);
+                    }
+                    
+                    nextUrl = data.next;
+                    
+                    // Pequeña pausa para no sobrecargar la API
+                    if (nextUrl) {
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    }
+                    
+                } catch (error) {
+                    console.error(`Error en página ${pageCount}:`, error);
+                    break;
+                }
+            }
+
+            console.log(`Total de playlists cargadas: ${allPlaylists.length}`);
+
+            // También cargar playlists colaborativas (con manejo de errores)
+            try {
+                console.log('Cargando playlists colaborativas...');
+                const collaborativeResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error al cargar playlists: ${response.status}`);
+                if (collaborativeResponse.ok) {
+                    const collaborativeData = await collaborativeResponse.json();
+                    console.log(`Playlists colaborativas encontradas: ${collaborativeData.items?.length || 0}`);
+                    
+                    // Filtrar playlists que no están en la lista principal
+                    const existingIds = new Set(allPlaylists.map(p => p.id));
+                    const newCollaborative = collaborativeData.items.filter(p => !existingIds.has(p.id));
+                    allPlaylists = allPlaylists.concat(newCollaborative);
+                    console.log(`Nuevas playlists colaborativas agregadas: ${newCollaborative.length}`);
+                } else {
+                    console.warn('Error al cargar playlists colaborativas:', collaborativeResponse.status);
                 }
-
-                const data = await response.json();
-                allPlaylists = allPlaylists.concat(data.items);
-                nextUrl = data.next;
-            }
-
-            // También cargar playlists colaborativas
-            const collaborativeResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (collaborativeResponse.ok) {
-                const collaborativeData = await collaborativeResponse.json();
-                // Filtrar playlists que no están en la lista principal
-                const existingIds = new Set(allPlaylists.map(p => p.id));
-                const newCollaborative = collaborativeData.items.filter(p => !existingIds.has(p.id));
-                allPlaylists = allPlaylists.concat(newCollaborative);
+            } catch (error) {
+                console.warn('Error al cargar playlists colaborativas:', error);
             }
 
             // Eliminar duplicados
@@ -218,14 +305,24 @@ class ModifyPlaylistsManager {
                 }
             }
 
+            console.log(`Playlists únicas finales: ${uniquePlaylists.length}`);
+
             this.playlists = uniquePlaylists;
             this.filteredPlaylists = [...this.playlists];
             
-            console.log(`Cargadas ${this.playlists.length} playlists`);
-            this.displayPlaylists();
+            console.log('=== CARGA DE PLAYLISTS COMPLETADA ===');
+            
+            if (this.playlists.length === 0) {
+                console.log('No se encontraron playlists, mostrando estado vacío');
+                this.showEmptyState();
+            } else {
+                console.log('Mostrando playlists en la interfaz');
+                this.displayPlaylists();
+                this.showNotification(`Se cargaron ${this.playlists.length} playlists`, 'success');
+            }
 
         } catch (error) {
-            console.error('Error al cargar playlists:', error);
+            console.error('Error general en loadPlaylists:', error);
             this.showErrorState();
         }
     }
