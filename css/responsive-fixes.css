@@ -1,5 +1,98 @@
 /* ===== FIXES ESPECÍFICOS PARA RESPONSIVIDAD Y SUPERPOSICIÓN ===== */
 
+/* Fix para viewport y altura completa */
+html, body {
+  height: 100% !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+}
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Fix para contenedor principal */
+#app, .app-container, main {
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+}
+
+/* Fix para secciones principales */
+.hero-section, .main-content, .content-section {
+  min-height: calc(100vh - 80px) !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  padding-bottom: 2rem !important;
+}
+
+/* Fix para hero section específicamente */
+.hero-parallax {
+  min-height: 100vh !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2rem 1rem !important;
+  overflow-x: hidden !important;
+}
+
+/* Fix para cards de bienvenida */
+.welcome-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+/* Fix para contenedores de contenido */
+.content-container, .section-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  padding: 1rem !important;
+}
+
+/* Fix para grids y layouts */
+.grid-container, .flex-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+/* Fix para elementos que pueden cortarse */
+.card, .feature-card, .stat-card {
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  word-wrap: break-word !important;
+}
+
+/* Fix para formularios */
+.form-container, .playlist-form-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  padding: 1rem !important;
+}
+
+/* Fix para contenedores de scroll */
+.scrollable-content, .scroll-container {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
 /* Reset de z-index y posicionamiento */
 * {
   box-sizing: border-box;
@@ -124,6 +217,20 @@
   
   .elegant-main {
     margin-top: 70px !important;
+    min-height: calc(100vh - 70px) !important;
+    height: auto !important;
+  }
+  
+  .hero-parallax {
+    min-height: calc(100vh - 70px) !important;
+    height: auto !important;
+    padding: 1.5rem 1rem !important;
+  }
+  
+  .welcome-card {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
   
   .header-container {
@@ -146,6 +253,31 @@
   .quick-stats {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
     gap: 0.75rem !important;
+  }
+  
+  /* Fix para evitar contenido cortado en pantallas medianas */
+  .element, .component, .widget {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+  
+  .content, .section, .block {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+  
+  .viewport-fix {
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
   
   .features-grid {
@@ -172,6 +304,21 @@
   
   .elegant-main {
     margin-top: 60px !important;
+    min-height: calc(100vh - 60px) !important;
+    height: auto !important;
+  }
+  
+  .hero-parallax {
+    min-height: calc(100vh - 60px) !important;
+    height: auto !important;
+    padding: 1rem 0.75rem !important;
+  }
+  
+  .welcome-card {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    margin: 0 0.5rem !important;
   }
   
   .brand-title {
@@ -188,7 +335,8 @@
   }
   
   .hero-parallax {
-    height: 70vh !important;
+    min-height: calc(100vh - 60px) !important;
+    height: auto !important;
     padding: 1rem !important;
   }
   
@@ -209,6 +357,15 @@
   .quick-stats {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
     gap: 0.5rem !important;
+  }
+  
+  /* Fix para evitar contenido cortado en tablets */
+  .element, .component, .widget {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
   
   .stat-card {
@@ -246,14 +403,27 @@
   
   .selected-tracks-container {
     max-height: 200px !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   .preview-tracks {
     max-height: 150px !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   .autocomplete-suggestions {
     max-height: 200px !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  
+  /* Fix para evitar contenido cortado en tablets */
+  .content-wrapper, .page-content {
+    min-height: calc(100vh - 60px) !important;
+    height: auto !important;
+    padding-bottom: 1rem !important;
   }
   
   .track-item {
@@ -303,6 +473,21 @@
   
   .elegant-main {
     margin-top: 55px !important;
+    min-height: calc(100vh - 55px) !important;
+    height: auto !important;
+  }
+  
+  .hero-parallax {
+    min-height: calc(100vh - 55px) !important;
+    height: auto !important;
+    padding: 0.75rem 0.5rem !important;
+  }
+  
+  .welcome-card {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    margin: 0 0.25rem !important;
   }
   
   .brand-title {
@@ -315,7 +500,8 @@
   }
   
   .hero-parallax {
-    height: 60vh !important;
+    min-height: calc(100vh - 55px) !important;
+    height: auto !important;
     padding: 0.5rem !important;
   }
   
@@ -336,6 +522,15 @@
   .quick-stats {
     grid-template-columns: 1fr !important;
     gap: 0.75rem !important;
+  }
+  
+  /* Fix para evitar contenido cortado en móviles */
+  .element, .component, .widget {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
   
   .stat-card {
@@ -373,14 +568,27 @@
   
   .selected-tracks-container {
     max-height: 150px !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   .preview-tracks {
     max-height: 120px !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   .autocomplete-suggestions {
     max-height: 150px !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  
+  /* Fix para evitar contenido cortado en móviles */
+  .content-wrapper, .page-content {
+    min-height: calc(100vh - 55px) !important;
+    height: auto !important;
+    padding-bottom: 0.75rem !important;
   }
   
   .track-item {
@@ -421,6 +629,21 @@
   
   .elegant-main {
     margin-top: 50px !important;
+    min-height: calc(100vh - 50px) !important;
+    height: auto !important;
+  }
+  
+  .hero-parallax {
+    min-height: calc(100vh - 50px) !important;
+    height: auto !important;
+    padding: 0.5rem 0.25rem !important;
+  }
+  
+  .welcome-card {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    margin: 0 0.125rem !important;
   }
   
   .brand-title {
@@ -433,7 +656,8 @@
   }
   
   .hero-parallax {
-    height: 50vh !important;
+    min-height: calc(100vh - 50px) !important;
+    height: auto !important;
     padding: 0.25rem !important;
   }
   
@@ -454,6 +678,15 @@
   .quick-stats {
     grid-template-columns: 1fr !important;
     gap: 0.5rem !important;
+  }
+  
+  /* Fix para evitar contenido cortado en pantallas muy pequeñas */
+  .element, .component, .widget {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
   
   .stat-card {
@@ -491,14 +724,27 @@
   
   .selected-tracks-container {
     max-height: 120px !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   .preview-tracks {
     max-height: 100px !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   .autocomplete-suggestions {
     max-height: 120px !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  
+  /* Fix para evitar contenido cortado en pantallas muy pequeñas */
+  .content-wrapper, .page-content {
+    min-height: calc(100vh - 50px) !important;
+    height: auto !important;
+    padding-bottom: 0.5rem !important;
   }
   
   .track-item {
@@ -780,6 +1026,76 @@
   overflow-y: auto !important;
   overflow-x: hidden !important;
   max-height: 300px !important;
+}
+
+/* Fix para evitar contenido cortado */
+.content-wrapper, .page-content {
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  padding-bottom: 2rem !important;
+}
+
+/* Fix para secciones que pueden cortarse */
+.section, .content-section {
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 1rem 0 !important;
+}
+
+/* Fix para elementos que pueden salirse del viewport */
+.container, .wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  padding: 0 1rem !important;
+}
+
+/* Fix para elementos que pueden cortarse */
+.element, .component, .widget {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  word-wrap: break-word !important;
+}
+
+/* Fix para elementos que pueden cortarse en todas las pantallas */
+.content, .section, .block {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  word-wrap: break-word !important;
+}
+
+/* Fix para elementos que pueden salirse del viewport */
+.viewport-fix {
+  width: 100% !important;
+  max-width: 100vw !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  word-wrap: break-word !important;
+}
+
+/* Fix para elementos que pueden salirse horizontalmente */
+.horizontal-scroll, .overflow-x {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix para elementos que pueden salirse verticalmente */
+.vertical-scroll, .overflow-y {
+  overflow-y: auto !important;
+  max-height: none !important;
+  height: auto !important;
 }
 
 .selected-tracks-container::-webkit-scrollbar,
