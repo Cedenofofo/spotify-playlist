@@ -1,0 +1,809 @@
+/* ===== FIXES ESPECÍFICOS PARA RESPONSIVIDAD Y SUPERPOSICIÓN ===== */
+
+/* Reset de z-index y posicionamiento */
+* {
+  box-sizing: border-box;
+}
+
+/* Fix para el header en todas las pantallas */
+.elegant-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  background: rgba(10, 10, 10, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Fix para el contenido principal */
+.elegant-main {
+  margin-top: 80px !important;
+  min-height: calc(100vh - 80px) !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Fix para el hero section */
+.hero-parallax {
+  position: relative !important;
+  z-index: 1 !important;
+  overflow: hidden !important;
+}
+
+/* Fix para las cards de estadísticas */
+.quick-stats {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 1rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.stat-card {
+  position: relative !important;
+  z-index: 2 !important;
+  overflow: hidden !important;
+}
+
+/* Fix para el grid de features */
+.features-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 2rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.feature-card {
+  position: relative !important;
+  z-index: 2 !important;
+  overflow: hidden !important;
+}
+
+/* Fix para formularios */
+.playlist-form-container {
+  position: relative !important;
+  z-index: 2 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.form-group {
+  position: relative !important;
+  z-index: 3 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.input-wrapper {
+  position: relative !important;
+  z-index: 4 !important;
+}
+
+/* Fix para autocompletado */
+.autocomplete-container {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.autocomplete-suggestions {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  background: rgba(10, 10, 10, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+}
+
+/* Fix para notificaciones */
+.notification {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 10000 !important;
+  max-width: 300px !important;
+  word-wrap: break-word !important;
+}
+
+/* ===== RESPONSIVE FIXES ===== */
+
+/* Pantallas medianas */
+@media (max-width: 1024px) {
+  .elegant-header {
+    height: 70px !important;
+    padding: 0 1rem !important;
+  }
+  
+  .elegant-main {
+    margin-top: 70px !important;
+  }
+  
+  .header-container {
+    gap: 1rem !important;
+  }
+  
+  .brand-title {
+    font-size: 1.2rem !important;
+  }
+  
+  .nav-stats {
+    gap: 0.5rem !important;
+  }
+  
+  .stat-pill {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .quick-stats {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+  
+  .welcome-title {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .elegant-header {
+    height: 60px !important;
+    padding: 0 0.75rem !important;
+  }
+  
+  .elegant-main {
+    margin-top: 60px !important;
+  }
+  
+  .brand-title {
+    font-size: 1rem !important;
+  }
+  
+  .brand-logo {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .nav-stats {
+    display: none !important;
+  }
+  
+  .hero-parallax {
+    height: 70vh !important;
+    padding: 1rem !important;
+  }
+  
+  .welcome-card {
+    padding: 1.5rem !important;
+    margin: 0 1rem !important;
+  }
+  
+  .welcome-title {
+    font-size: 1.8rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1rem !important;
+  }
+  
+  .quick-stats {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    gap: 0.5rem !important;
+  }
+  
+  .stat-card {
+    padding: 1rem !important;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  .feature-card {
+    padding: 1.5rem !important;
+  }
+  
+  .playlist-form-container {
+    padding: 1rem !important;
+    margin: 0 1rem !important;
+  }
+  
+  .form-input {
+    padding: 0.75rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .action-btn {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .hero-btn {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .selected-tracks-container {
+    max-height: 200px !important;
+  }
+  
+  .preview-tracks {
+    max-height: 150px !important;
+  }
+  
+  .autocomplete-suggestions {
+    max-height: 200px !important;
+  }
+  
+  .track-item {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .track-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  .track-name {
+    font-size: 0.9rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .track-artist {
+    font-size: 0.8rem !important;
+  }
+  
+  .track-image {
+    width: 40px !important;
+    height: 40px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .suggestion-item img {
+    width: 35px !important;
+    height: 35px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .footer-content {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    text-align: center !important;
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  .elegant-header {
+    height: 55px !important;
+    padding: 0 0.5rem !important;
+  }
+  
+  .elegant-main {
+    margin-top: 55px !important;
+  }
+  
+  .brand-title {
+    font-size: 0.9rem !important;
+  }
+  
+  .brand-logo {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .hero-parallax {
+    height: 60vh !important;
+    padding: 0.5rem !important;
+  }
+  
+  .welcome-card {
+    padding: 1rem !important;
+    margin: 0 0.5rem !important;
+  }
+  
+  .welcome-title {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .welcome-subtitle {
+    font-size: 0.9rem !important;
+  }
+  
+  .quick-stats {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  .stat-card {
+    padding: 0.75rem !important;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  .feature-card {
+    padding: 1rem !important;
+  }
+  
+  .playlist-form-container {
+    padding: 0.75rem !important;
+    margin: 0 0.5rem !important;
+  }
+  
+  .form-input {
+    padding: 0.6rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .action-btn {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .hero-btn {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .selected-tracks-container {
+    max-height: 150px !important;
+  }
+  
+  .preview-tracks {
+    max-height: 120px !important;
+  }
+  
+  .autocomplete-suggestions {
+    max-height: 150px !important;
+  }
+  
+  .track-item {
+    padding: 0.4rem !important;
+    gap: 0.4rem !important;
+  }
+  
+  .track-name {
+    font-size: 0.85rem !important;
+  }
+  
+  .track-artist {
+    font-size: 0.75rem !important;
+  }
+  
+  .track-image {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  
+  .suggestion-item img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .notification {
+    max-width: 250px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .elegant-header {
+    height: 50px !important;
+    padding: 0 0.25rem !important;
+  }
+  
+  .elegant-main {
+    margin-top: 50px !important;
+  }
+  
+  .brand-title {
+    font-size: 0.8rem !important;
+  }
+  
+  .brand-logo {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .hero-parallax {
+    height: 50vh !important;
+    padding: 0.25rem !important;
+  }
+  
+  .welcome-card {
+    padding: 0.75rem !important;
+    margin: 0 0.25rem !important;
+  }
+  
+  .welcome-title {
+    font-size: 1.3rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .welcome-subtitle {
+    font-size: 0.8rem !important;
+  }
+  
+  .quick-stats {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+  
+  .stat-card {
+    padding: 0.5rem !important;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  .feature-card {
+    padding: 0.75rem !important;
+  }
+  
+  .playlist-form-container {
+    padding: 0.5rem !important;
+    margin: 0 0.25rem !important;
+  }
+  
+  .form-input {
+    padding: 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .action-btn {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .hero-btn {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .selected-tracks-container {
+    max-height: 120px !important;
+  }
+  
+  .preview-tracks {
+    max-height: 100px !important;
+  }
+  
+  .autocomplete-suggestions {
+    max-height: 120px !important;
+  }
+  
+  .track-item {
+    padding: 0.3rem !important;
+    gap: 0.3rem !important;
+  }
+  
+  .track-name {
+    font-size: 0.8rem !important;
+  }
+  
+  .track-artist {
+    font-size: 0.7rem !important;
+  }
+  
+  .track-image {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .suggestion-item img {
+    width: 25px !important;
+    height: 25px !important;
+  }
+  
+  .notification {
+    max-width: 200px !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* ===== FIXES ESPECÍFICOS PARA SUPERPOSICIÓN ===== */
+
+/* Fix para elementos que se superponen en formularios */
+.form-group {
+  position: relative !important;
+  z-index: 1 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.input-wrapper {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.autocomplete-container {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Fix para modales y overlays */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-content {
+  background: rgba(10, 10, 10, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 2rem !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+}
+
+/* Fix para elementos flotantes */
+.floating-elements {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Fix para elementos de navegación */
+.nav-element {
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+/* Fix para elementos de scroll */
+.scrollable-container {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background: #1db954 !important;
+  border-radius: 3px !important;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: #1ed760 !important;
+}
+
+/* Fix para imágenes de playlist */
+.playlist-image {
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 12px !important;
+  object-fit: cover !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  filter: brightness(0.9) contrast(1.1) saturate(0.8) hue-rotate(5deg) !important;
+}
+
+.playlist-image:hover {
+  transform: scale(1.05) !important;
+  filter: brightness(1.1) contrast(1.2) saturate(1.1) hue-rotate(0deg) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Fix para elementos de track */
+.track-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  padding: 0.75rem !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  margin-bottom: 0.5rem !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.track-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: translateX(5px) !important;
+}
+
+.track-info {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.track-name {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  margin-bottom: 0.25rem !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.track-artist {
+  color: #b3b3b3 !important;
+  font-size: 0.9rem !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.track-image {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+}
+
+/* Fix para botones de acción */
+.action-btn {
+  background: none !important;
+  border: none !important;
+  color: #b3b3b3 !important;
+  cursor: pointer !important;
+  padding: 0.5rem !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.action-btn.remove {
+  color: #e74c3c !important;
+}
+
+.action-btn.remove:hover {
+  background: rgba(231, 76, 60, 0.1) !important;
+  color: #e74c3c !important;
+}
+
+/* Fix para elementos de sugerencias */
+.suggestion-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  padding: 0.75rem !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+}
+
+.suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.suggestion-item img {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 4px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+}
+
+.suggestion-info {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.suggestion-name {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  margin-bottom: 0.25rem !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.suggestion-artist {
+  color: #b3b3b3 !important;
+  font-size: 0.9rem !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Fix para botones de agregar */
+.add-track-btn {
+  background: #1db954 !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.5rem !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  flex-shrink: 0 !important;
+}
+
+.add-track-btn:hover {
+  background: #1ed760 !important;
+  transform: scale(1.1) !important;
+}
+
+/* Fix para contenedores de scroll */
+.selected-tracks-container,
+.preview-tracks,
+.autocomplete-suggestions {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: 300px !important;
+}
+
+.selected-tracks-container::-webkit-scrollbar,
+.preview-tracks::-webkit-scrollbar,
+.autocomplete-suggestions::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.selected-tracks-container::-webkit-scrollbar-track,
+.preview-tracks::-webkit-scrollbar-track,
+.autocomplete-suggestions::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+}
+
+.selected-tracks-container::-webkit-scrollbar-thumb,
+.preview-tracks::-webkit-scrollbar-thumb,
+.autocomplete-suggestions::-webkit-scrollbar-thumb {
+  background: #1db954 !important;
+  border-radius: 3px !important;
+}
+
+.selected-tracks-container::-webkit-scrollbar-thumb:hover,
+.preview-tracks::-webkit-scrollbar-thumb:hover,
+.autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+  background: #1ed760 !important;
+} 
