@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tuneuptify - Gestor de Playlists de Spotify</title>
-    <meta name="description" content="Crea y gestiona tus playlists de Spotify de forma fácil y elegante con Tuneuptify">
+    <title>Login - Tuneuptify</title>
+    <meta name="description" content="Inicia sesión en Tuneuptify para gestionar tus playlists de Spotify">
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,197 +16,75 @@
     
     <!-- Estilos -->
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="index.html" class="navbar-logo">
-                <img src="img/tuneuptify-logo.png" alt="Tuneuptify">
-                <span>Tuneuptify</span>
-            </a>
-            
-            <ul class="navbar-menu">
-                <li class="navbar-item">
-                    <a href="index.html" class="navbar-link active">
-                        <i class="fas fa-home"></i>
-                        <span>Inicio</span>
-                    </a>
-                </li>
-                <li class="navbar-item">
-                    <a href="pages/playlists.html" class="navbar-link">
-                        <i class="fas fa-music"></i>
-                        <span>Mis Playlists</span>
-                    </a>
-                </li>
-                <li class="navbar-item">
-                    <a href="#" class="navbar-link">
-                        <i class="fas fa-search"></i>
-                        <span>Búsqueda</span>
-                    </a>
-                </li>
-                <li class="navbar-item">
-                    <a href="#" class="navbar-link">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Estadísticas</span>
-                    </a>
-                </li>
-                <li class="navbar-item">
-                    <a href="#" class="navbar-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Configuración</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="navbar-user">
-                <img src="https://via.placeholder.com/32x32" alt="Usuario" id="user-avatar">
-                <span id="user-name">Usuario</span>
-            </div>
-            
-            <button class="navbar-toggle" id="navbar-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
-
     <!-- Contenido principal -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Header -->
-            <header>
-                <img src="img/tuneuptify-logo.png" alt="Tuneuptify Logo" class="logo-tuneuptify">
-                <h1>Tuneuptify</h1>
-                <p class="tagline">Crea y gestiona tus playlists de Spotify de forma elegante</p>
-            </header>
+    <main class="login-main">
+        <div class="login-container">
+            <!-- Logo y título -->
+            <div class="login-header">
+                <img src="img/tuneuptify-logo.png" alt="Tuneuptify Logo" class="login-logo">
+                <h1 class="login-title">Tuneuptify</h1>
+                <p class="login-subtitle">Tu gestor de música personal</p>
+            </div>
 
-            <!-- Sección de autenticación -->
-            <section class="section">
-                <div class="form-group">
-                    <label for="spotify-auth">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Conecta con Spotify
-                    </label>
-                    <button id="spotify-auth" class="btn btn-success">
-                        <i class="fab fa-spotify"></i>
-                        Conectar con Spotify
-                    </button>
-                </div>
-            </section>
-
-            <!-- Sección de artistas -->
-            <section class="section">
-                <div class="form-group">
-                    <label for="artist-input">
-                        <i class="fas fa-microphone"></i>
-                        Buscar artistas
-                    </label>
-                    <div class="autocomplete-container">
-                        <input type="text" id="artist-input" placeholder="Escribe el nombre de un artista...">
-                        <i class="fas fa-search search-icon"></i>
-                        <div class="autocomplete-suggestions" id="artist-suggestions"></div>
-                    </div>
-                </div>
-                
-                <div class="artist-inputs" id="artist-inputs">
-                    <!-- Los artistas se agregarán dinámicamente aquí -->
-                </div>
-                
-                <button class="add-artist-btn" onclick="addArtistInput()">
-                    <i class="fas fa-plus"></i>
-                    Agregar otro artista
-                </button>
-                
-                <button class="btn btn-secondary" onclick="searchArtists()">
-                    <i class="fas fa-search"></i>
-                    Buscar canciones
-                </button>
-            </section>
-
-            <!-- Sección de canciones seleccionadas -->
-            <section class="section">
-                <div class="form-group">
-                    <label>
+            <!-- Formulario de login -->
+            <div class="login-form">
+                <div class="login-card">
+                    <div class="login-card-header">
                         <i class="fas fa-music"></i>
-                        Canciones seleccionadas
-                    </label>
-                    <div id="selected-tracks">
-                        <p class="empty-message">No hay canciones seleccionadas</p>
+                        <h2>Bienvenido a Tuneuptify</h2>
+                        <p>Conecta con Spotify para acceder a todas las funcionalidades</p>
+                    </div>
+                    
+                    <div class="login-card-body">
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Crear Playlists</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Administrar Playlists</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Estadísticas</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-microphone"></i>
+                                <span>Karaoke</span>
+                            </div>
+                        </div>
+                        
+                        <button id="spotify-login" class="login-btn">
+                            <i class="fab fa-spotify"></i>
+                            <span>Conectar con Spotify</span>
+                        </button>
+                        
+                        <div class="login-info">
+                            <p><i class="fas fa-shield-alt"></i> Tus datos están seguros</p>
+                            <p><i class="fas fa-lock"></i> Solo accedemos a lo que autorices</p>
+                        </div>
                     </div>
                 </div>
-            </section>
-
-            <!-- Sección de playlist -->
-            <section class="section">
-                <div class="form-group">
-                    <label for="playlist-name">
-                        <i class="fas fa-list"></i>
-                        Nombre de la playlist
-                    </label>
-                    <input type="text" id="playlist-name" placeholder="Mi nueva playlist">
-                </div>
-                
-                <div class="form-group">
-                    <label for="playlist-description">
-                        <i class="fas fa-align-left"></i>
-                        Descripción (opcional)
-                    </label>
-                    <textarea id="playlist-description" rows="3" placeholder="Describe tu playlist..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="playlist-public">
-                        <i class="fas fa-globe"></i>
-                        Visibilidad
-                    </label>
-                    <select id="playlist-public">
-                        <option value="true">Pública</option>
-                        <option value="false">Privada</option>
-                    </select>
-                </div>
-                
-                <button class="btn btn-secondary" onclick="previewPlaylist()">
-                    <i class="fas fa-eye"></i>
-                    Vista previa
-                </button>
-                
-                <button class="btn btn-success" onclick="exportToSpotify()">
-                    <i class="fab fa-spotify"></i>
-                    Crear en Spotify
-                </button>
-            </section>
-
-            <!-- Vista previa de la playlist -->
-            <div id="playlist-preview" class="playlist-preview" style="display: none;">
-                <!-- La vista previa se mostrará aquí -->
             </div>
 
-            <!-- Estados de carga y mensajes -->
-            <div id="loading" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>Procesando...</p>
-            </div>
-
-            <div id="message-container"></div>
+            <!-- Footer -->
+            <footer class="login-footer">
+                <p>&copy; 2024 Tuneuptify. Creado con ❤️ para amantes de la música.</p>
+                <div class="social-links">
+                    <a href="https://github.com/Cedenofofo/spotify-playlist" class="social-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </footer>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Tuneuptify. Creado con ❤️ para amantes de la música.</p>
-        <div class="social-links">
-            <a href="https://github.com/Cedenofofo/spotify-playlist" class="social-link" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-    </footer>
-
     <!-- Scripts -->
     <script src="js/config.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/login.js"></script>
 </body>
 </html> 
