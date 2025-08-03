@@ -127,7 +127,7 @@ class ModifyPlaylistsManager {
                 throw new Error('No hay token de acceso');
             }
 
-            // Obtener TODAS las playlists del usuario usando múltiples endpoints
+            // Obtener TODAS las playlists del usuario usando el endpoint correcto
             let allPlaylists = [];
             let pageCount = 0;
             let totalPlaylists = 0;
@@ -138,8 +138,8 @@ class ModifyPlaylistsManager {
                 console.log('Obteniendo playlists creadas por el usuario:', userId);
             }
             
-            // Método 1: Cargar playlists que el usuario sigue
-            console.log('=== MÉTODO 1: Playlists seguidas ===');
+            // Método principal: Cargar todas las playlists del usuario
+            console.log('=== CARGANDO TODAS LAS PLAYLISTS ===');
             let nextUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
             
             // Actualizar mensaje de carga
@@ -191,67 +191,10 @@ class ModifyPlaylistsManager {
                 }
             }
 
-            // Método 2: Cargar playlists creadas por el usuario
-            if (userId) {
-                console.log('=== MÉTODO 2: Playlists creadas por el usuario ===');
-                if (loadingElement) {
-                    loadingElement.textContent = 'Cargando playlists creadas por ti...';
-                }
-                
-                let userPlaylistsUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
-                let userPageCount = 0;
-                
-                while (userPlaylistsUrl) {
-                    userPageCount++;
-                    if (loadingDesc) {
-                        loadingDesc.textContent = `Cargando playlists creadas... (página ${userPageCount})`;
-                    }
-                    
-                    console.log(`Cargando playlists del usuario página ${userPageCount}: ${userPlaylistsUrl}`);
-                    
-                    const userResponse = await fetch(userPlaylistsUrl, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (!userResponse.ok) {
-                        if (userResponse.status === 401) {
-                            this.auth.logout();
-                            return;
-                        }
-                        console.warn(`Error al cargar playlists del usuario: ${userResponse.status}`);
-                        break;
-                    }
-
-                    const userData = await userResponse.json();
-                    const userPlaylists = userData.items || [];
-                    
-                    // Agregar solo las playlists que no están ya en la lista
-                    const existingIds = allPlaylists.map(p => p.id);
-                    const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
-                    allPlaylists = allPlaylists.concat(newUserPlaylists);
-                    
-                    console.log(`Página ${userPageCount}: ${userPlaylists.length} playlists del usuario, ${newUserPlaylists.length} nuevas agregadas`);
-                    console.log(`¿Hay siguiente página de usuario? ${userData.next ? 'SÍ' : 'NO'}`);
-                    if (userData.next) {
-                        console.log(`Siguiente URL de usuario: ${userData.next}`);
-                    }
-                    
-                    userPlaylistsUrl = userData.next;
-                    
-                    if (userPlaylistsUrl) {
-                        await new Promise(resolve => setTimeout(resolve, 200));
-                    }
-                }
-            }
-
-            // Método 3: Intentar obtener todas las playlists con un límite mayor
-            console.log('=== MÉTODO 3: Playlists con límite mayor ===');
-            if (loadingElement) {
-                loadingElement.textContent = 'Buscando playlists adicionales...';
-            }
+            // Intentar con diferentes límites para asegurar que se carguen todas
+            console.log('=== INTENTANDO CON DIFERENTES LÍMITES ===');
             
+            // Intentar con límite de 100
             try {
                 const largeLimitResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=100', {
                     headers: {
@@ -263,43 +206,22 @@ class ModifyPlaylistsManager {
                     const largeLimitData = await largeLimitResponse.json();
                     const largeLimitPlaylists = largeLimitData.items || [];
                     
+                    console.log(`Límite 100: ${largeLimitPlaylists.length} playlists encontradas`);
+                    console.log(`Total reportado por API: ${largeLimitData.total}`);
+                    
                     // Agregar solo las playlists que no están ya en la lista
                     const existingIds = allPlaylists.map(p => p.id);
                     const newLargeLimitPlaylists = largeLimitPlaylists.filter(p => !existingIds.includes(p.id));
                     allPlaylists = allPlaylists.concat(newLargeLimitPlaylists);
                     
-                    console.log(`Método 3: ${largeLimitPlaylists.length} playlists encontradas, ${newLargeLimitPlaylists.length} nuevas agregadas`);
+                    console.log(`Nuevas playlists agregadas: ${newLargeLimitPlaylists.length}`);
                 }
             } catch (error) {
-                console.warn('Error en método 3:', error);
+                console.warn('Error con límite 100:', error);
             }
 
             this.playlists = allPlaylists;
             this.filteredPlaylists = [...this.playlists];
-
-            // Método 4: Intentar con diferentes parámetros
-            console.log('=== MÉTODO 4: Playlists con parámetros adicionales ===');
-            try {
-                const additionalResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=50&offset=0', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (additionalResponse.ok) {
-                    const additionalData = await additionalResponse.json();
-                    const additionalPlaylists = additionalData.items || [];
-                    
-                    // Agregar solo las playlists que no están ya en la lista
-                    const existingIds = allPlaylists.map(p => p.id);
-                    const newAdditionalPlaylists = additionalPlaylists.filter(p => !existingIds.includes(p.id));
-                    allPlaylists = allPlaylists.concat(newAdditionalPlaylists);
-                    
-                    console.log(`Método 4: ${additionalPlaylists.length} playlists encontradas, ${newAdditionalPlaylists.length} nuevas agregadas`);
-                }
-            } catch (error) {
-                console.warn('Error en método 4:', error);
-            }
 
             console.log(`RESUMEN FINAL: Se cargaron ${this.playlists.length} playlists de un total de ${totalPlaylists}`);
             console.log('IDs de playlists cargadas:', allPlaylists.map(p => p.id));
