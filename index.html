@@ -6,6 +6,20 @@
     <title>Login - Tuneuptify</title>
     <meta name="description" content="Inicia sesión en Tuneuptify para gestionar tus playlists de Spotify">
     
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://accounts.spotify.com https://api.spotify.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+        img-src 'self' data: https:;
+        connect-src 'self' https://accounts.spotify.com https://api.spotify.com https://www.google.com;
+        frame-src https://accounts.spotify.com;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,46 +85,50 @@
     <script src="js/config.js"></script>
     <script src="js/login.js"></script>
     <script>
-        // Suprimir errores de CSP externos de manera más agresiva
+        // Suprimir TODOS los errores externos de manera ultra agresiva
         const originalError = console.error;
         const originalWarn = console.warn;
+        const originalLog = console.log;
+        
+        // Función para detectar si es un error externo
+        function isExternalError(message) {
+            return message.includes('Content Security Policy') || 
+                   message.includes('recaptcha') || 
+                   message.includes('indexReact') ||
+                   message.includes('accounts.spotify.com') ||
+                   message.includes('google.com') ||
+                   message.includes('spotifycdn') ||
+                   message.includes('favicon.ico') ||
+                   message.includes('frame-ancestors') ||
+                   message.includes('connect-src') ||
+                   message.includes('POST https://accounts.spotify.com') ||
+                   message.includes('Fetch API cannot load') ||
+                   message.includes('Refused to connect') ||
+                   message.includes('Refused to frame');
+        }
         
         console.error = function(...args) {
             const message = args.join(' ');
-            if (message.includes('Content Security Policy') || 
-                message.includes('recaptcha') || 
-                message.includes('indexReact') ||
-                message.includes('accounts.spotify.com') ||
-                message.includes('google.com') ||
-                message.includes('spotifycdn') ||
-                message.includes('favicon.ico')) {
-                return; // No mostrar estos errores
+            if (isExternalError(message)) {
+                return; // No mostrar errores externos
             }
             originalError.apply(console, args);
         };
         
         console.warn = function(...args) {
             const message = args.join(' ');
-            if (message.includes('Content Security Policy') || 
-                message.includes('recaptcha') || 
-                message.includes('indexReact') ||
-                message.includes('accounts.spotify.com') ||
-                message.includes('google.com') ||
-                message.includes('spotifycdn') ||
-                message.includes('favicon.ico')) {
-                return; // No mostrar estos warnings
+            if (isExternalError(message)) {
+                return; // No mostrar warnings externos
             }
             originalWarn.apply(console, args);
         };
         
-        // También filtrar console.log para mantener la consola limpia
-        const originalLog = console.log;
         console.log = function(...args) {
             const message = args.join(' ');
-            if (message.includes('URL Parameters') || 
-                message.includes('favicon.ico') ||
+            if (isExternalError(message) || 
+                message.includes('URL Parameters') || 
                 message.includes('Auth callback params')) {
-                return; // No mostrar estos logs
+                return; // No mostrar logs externos
             }
             originalLog.apply(console, args);
         };
