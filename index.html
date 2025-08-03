@@ -70,5 +70,27 @@
     <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/login.js"></script>
+    <script>
+        // Manejar callback de autenticación directamente en index.html
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenFromUrl = urlParams.get('access_token');
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            console.log('Index.html - URL Parameters:', {
+                code: code,
+                access_token: tokenFromUrl,
+                error: error
+            });
+            
+            if (tokenFromUrl || code || error) {
+                // Si hay parámetros de autenticación, procesarlos
+                if (window.loginManager) {
+                    window.loginManager.handleAuthCallback();
+                }
+            }
+        });
+    </script>
 </body>
 </html> 
