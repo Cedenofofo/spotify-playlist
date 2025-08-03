@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/search.css">
 </head>
 <body>
@@ -63,6 +64,36 @@
                         <p class="welcome-subtitle">Conecta con Spotify y comienza a crear playlists únicas y personalizadas</p>
                     </div>
                     
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">IA</div>
+                                <div class="stat-label">Inteligente</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">100%</div>
+                                <div class="stat-label">Personalizado</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">Rápido</div>
+                                <div class="stat-label">& Eficiente</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="hero-actions">
                         <button id="login-button" class="hero-btn primary" aria-label="Iniciar sesión con Spotify">
                             <div class="btn-content">
@@ -71,19 +102,190 @@
                             </div>
                             <div class="btn-ripple"></div>
                         </button>
-                        
-                        <div class="hero-features">
-                            <div class="feature-item">
-                                <i class="fas fa-magic"></i>
-                                <span>IA Inteligente</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid de acciones principales -->
+        <section class="actions-section">
+            <div class="actions-container">
+                <div class="section-header">
+                    <h3 class="section-title">Características Principales</h3>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div class="actions-grid">
+                    <!-- Crear Playlist -->
+                    <div class="action-card primary">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
+                                <i class="fas fa-plus-circle"></i>
+                                <div class="icon-pulse"></div>
                             </div>
-                            <div class="feature-item">
-                                <i class="fas fa-palette"></i>
-                                <span>Personalizado</span>
+                            <div class="card-badge">Nuevo</div>
+                            <h3 class="card-title">Crear Playlist</h3>
+                            <p class="card-description">Crea playlists únicas con IA inteligente y personalización avanzada</p>
+                            <div class="card-features">
+                                <span class="feature">Artistas múltiples</span>
+                                <span class="feature">Canciones específicas</span>
+                                <span class="feature">IA inteligente</span>
                             </div>
-                            <div class="feature-item">
-                                <i class="fas fa-rocket"></i>
-                                <span>Rápido</span>
+                        </div>
+                        <div class="card-footer">
+                            <span class="action-text">Comenzar</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                        </div>
+                    </div>
+
+                    <!-- Gestionar Playlists -->
+                    <div class="action-card secondary">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
+                                <i class="fas fa-edit"></i>
+                                <div class="icon-pulse"></div>
+                            </div>
+                            <div class="card-badge">Gestionar</div>
+                            <h3 class="card-title">Gestionar Playlists</h3>
+                            <p class="card-description">Modifica y optimiza tus playlists existentes de Spotify</p>
+                            <div class="card-features">
+                                <span class="feature">Editar canciones</span>
+                                <span class="feature">Reorganizar</span>
+                                <span class="feature">Optimizar</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="action-text">Gestionar</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas -->
+                    <div class="action-card accent">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
+                                <i class="fas fa-chart-bar"></i>
+                                <div class="icon-pulse"></div>
+                            </div>
+                            <div class="card-badge">Analizar</div>
+                            <h3 class="card-title">Estadísticas</h3>
+                            <p class="card-description">Analiza tus hábitos de escucha y tendencias musicales</p>
+                            <div class="card-features">
+                                <span class="feature">Gráficos</span>
+                                <span class="feature">Tendencias</span>
+                                <span class="feature">Insights</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="action-text">Ver Stats</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                        </div>
+                    </div>
+
+                    <!-- Próximamente -->
+                    <div class="action-card disabled">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
+                                <i class="fas fa-cog"></i>
+                                <div class="icon-pulse"></div>
+                            </div>
+                            <div class="card-badge coming-soon">Próximo</div>
+                            <h3 class="card-title">Nuevas Funciones</h3>
+                            <p class="card-description">Funcionalidades avanzadas en desarrollo</p>
+                            <div class="card-features">
+                                <span class="feature">IA Avanzada</span>
+                                <span class="feature">Colaboración</span>
+                                <span class="feature">Avanzado</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="action-text">Próximamente</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de actividad reciente -->
+        <section class="recent-section">
+            <div class="recent-container">
+                <div class="section-header">
+                    <h3 class="section-title">Actividad Reciente</h3>
+                    <button class="view-all-btn">
+                        <span>Ver Todo</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="recent-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Nueva playlist creada</h4>
+                            <p>Playlist "Rock Classics" creada exitosamente</p>
+                            <div class="timeline-tags">
+                                <span class="tag">Rock</span>
+                                <span class="tag">Clásicos</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Playlist modificada</h4>
+                            <p>Se agregaron 15 canciones a "Pop Hits"</p>
+                            <div class="timeline-tags">
+                                <span class="tag">Pop</span>
+                                <span class="tag">Actualizado</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Favoritos actualizados</h4>
+                            <p>Se agregaron 8 canciones a favoritos</p>
+                            <div class="timeline-tags">
+                                <span class="tag">Favoritos</span>
+                                <span class="tag">Nuevo</span>
                             </div>
                         </div>
                     </div>
@@ -91,7 +293,7 @@
             </div>
         </section>
 
-        <!-- Sección de creación de playlist -->
+        <!-- Sección de creación de playlist (oculta por defecto) -->
         <section class="playlist-section" id="playlist-section" style="display: none;">
             <div class="section-container">
                 <div class="section-header">
