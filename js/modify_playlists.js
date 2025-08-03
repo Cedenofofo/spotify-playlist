@@ -228,13 +228,9 @@ class ModifyPlaylistsManager {
     }
 
     createPlaylistCard(playlist) {
-        const imageUrl = playlist.images[0]?.url || 'https://via.placeholder.com/80x80?text=🎵';
-        const trackCount = playlist.tracks?.total || 0;
-        const isPublic = playlist.public ? 'Pública' : 'Privada';
-        const owner = playlist.owner?.display_name || 'Usuario';
-        
-        // Truncar nombres muy largos del propietario
-        const truncatedOwner = owner.length > 15 ? owner.substring(0, 15) + '...' : owner;
+                 const imageUrl = playlist.images[0]?.url || 'https://via.placeholder.com/80x80?text=🎵';
+         const trackCount = playlist.tracks?.total || 0;
+         const isPublic = playlist.public ? 'Pública' : 'Privada';
 
         return `
             <div class="playlist-card" data-playlist-id="${playlist.id}">
@@ -246,20 +242,16 @@ class ModifyPlaylistsManager {
                     </div>
                 </div>
                 
-                <div class="playlist-stats">
-                    <div class="stat-item">
-                        <span class="stat-value">${trackCount}</span>
-                        <span class="stat-label">Canciones</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">${isPublic}</span>
-                        <span class="stat-label">Estado</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" title="${this.escapeHtml(owner)}">${this.escapeHtml(truncatedOwner)}</span>
-                        <span class="stat-label">Propietario</span>
-                    </div>
-                </div>
+                                 <div class="playlist-stats">
+                     <div class="stat-item">
+                         <span class="stat-value">${trackCount}</span>
+                         <span class="stat-label">Canciones</span>
+                     </div>
+                     <div class="stat-item">
+                         <span class="stat-value">${isPublic}</span>
+                         <span class="stat-label">Estado</span>
+                     </div>
+                 </div>
                 
                 <div class="playlist-actions">
                     <button class="action-btn btn-view" onclick="modifyPlaylistsManager.viewPlaylist('${playlist.id}')" title="Ver playlist">
