@@ -1,587 +1,326 @@
-class PlaylistManager {
-    constructor() {
-        this.config = window.config;
-        this.auth = new Auth();
-        this.selectedTracks = [];
-        this.artistInputs = [];
-        this.previewTracks = [];
-        this.previewPlaylistId = null;
-        this.setupArtistInputs();
-        this.setupEventListeners();
-        this.renderSelectedTracks();
-        this.setupArtistAutocomplete(document.getElementById('artist-main'), document.getElementById('artist-main-suggestions'));
-        this.initializeAnimations();
-    }
+// ===== ELEGANT MAIN JAVASCRIPT =====
 
-    initializeAnimations() {
-        // Agregar animaciones de entrada
-        const sections = document.querySelectorAll('.section');
-        sections.forEach((section, index) => {
-            section.style.animationDelay = `${index * 0.1}s`;
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Tuneuptify elegante cargado');
+    
+    // Inicializar todas las funcionalidades elegantes
+    initCustomCursor();
+    initEntranceAnimations();
+    initParticleEffects();
+    initFormInteractions();
+    
+    // Configurar eventos de autenticación
+    setupAuthEvents();
+    
+    // Configurar eventos de formulario
+    setupFormEvents();
+    
+    // Verificar si viene del dashboard para mostrar el formulario de crear playlist
+    checkHashAndShowPlaylistForm();
+});
 
-        // Efectos hover en botones
-        const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            button.addEventListener('mouseenter', () => {
-                button.classList.add('glow');
-            });
-            button.addEventListener('mouseleave', () => {
-                button.classList.remove('glow');
-            });
-        });
-    }
-
-    setupArtistInputs() {
-        const artistInputsDiv = document.getElementById('artist-inputs');
-        artistInputsDiv.innerHTML = '';
-        this.artistInputs = [];
-    }
-
-    addArtistInput(value = '') {
-        const artistInputsDiv = document.getElementById('artist-inputs');
-        const row = document.createElement('div');
-        row.className = 'artist-row';
-        row.style.animation = 'slideInLeft 0.5s ease-out';
-        
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = 'Nombre del artista adicional';
-        input.setAttribute('aria-label', 'Nombre del artista adicional');
-        input.value = value;
-        row.appendChild(input);
-        
-        const suggestionsDiv = document.createElement('div');
-        suggestionsDiv.className = 'autocomplete-suggestions';
-        row.appendChild(suggestionsDiv);
-        this.setupArtistAutocomplete(input, suggestionsDiv);
-        
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        removeBtn.onclick = () => {
-            row.style.animation = 'slideInLeft 0.3s ease-out reverse';
-            setTimeout(() => {
-                row.remove();
-                this.artistInputs = this.artistInputs.filter(i => i !== input);
-            }, 300);
-        };
-        row.appendChild(removeBtn);
-        artistInputsDiv.appendChild(row);
-        this.artistInputs.push(input);
-    }
-
-    setupEventListeners() {
-        document.getElementById('add-artist').onclick = () => this.addArtistInput();
-        document.getElementById('preview-playlist').onclick = () => this.previewPlaylist();
-        document.getElementById('export-spotify').onclick = () => this.exportToSpotify();
-        
-        // Validar solo números en el input de cantidad de canciones
-        const songsInput = document.getElementById('songs-per-artist');
-        songsInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            if (this.value === '' || parseInt(this.value) < 1) this.value = 1;
-            if (parseInt(this.value) > 50) this.value = 50;
-        });
-
-        // Efectos de focus en inputs
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                input.parentElement.classList.add('glow');
-            });
-            input.addEventListener('blur', () => {
-                input.parentElement.classList.remove('glow');
-            });
-        });
-    }
-
-    setupArtistAutocomplete(input, suggestionsDiv) {
-        let lastQuery = '';
-        let debounceTimeout;
-        
-        input.addEventListener('input', async (e) => {
-            const query = input.value.trim();
-            if (query.length < 1) {
-                suggestionsDiv.innerHTML = '';
-                return;
-            }
-            
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(async () => {
-                if (query === lastQuery) return;
-                lastQuery = query;
-                
-                // Mostrar loading en el input
-                input.style.background = 'rgba(255, 255, 255, 0.15)';
-                
-                const artists = await this.searchArtists(query);
-                suggestionsDiv.innerHTML = '';
-                
-                if (artists.length === 0) {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-suggestion';
-                    div.innerHTML = '<i class="fas fa-search" style="margin-right: 8px; opacity: 0.5;"></i>No se encontraron artistas';
-                    suggestionsDiv.appendChild(div);
-                }
-                
-                artists.forEach(artist => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-suggestion';
-                    div.innerHTML = `
-                        <img src='${artist.images[0]?.url || 'https://via.placeholder.com/40?text=🎤'}' alt='${artist.name}'>
-                        <span>${artist.name}</span>
-                    `;
-                    div.onclick = () => {
-                        input.value = artist.name;
-                        suggestionsDiv.innerHTML = '';
-                        input.style.background = '';
-                    };
-                    suggestionsDiv.appendChild(div);
-                });
-                
-                input.style.background = '';
-            }, 300);
-        });
-        
-        input.addEventListener('blur', () => setTimeout(() => {
-            suggestionsDiv.innerHTML = '';
-            input.style.background = '';
-        }, 200));
-    }
-
-    async searchArtists(query) {
-        try {
-            const token = this.auth.getAccessToken();
-            if (!token) {
-                this.showMessage('Tu sesión de Spotify ha expirado. Por favor, inicia sesión de nuevo.', 'error');
-                setTimeout(() => window.location.reload(), 2000);
-                return [];
-            }
-            
-            const response = await fetch(`${this.config.apiUrl}/search?q=${encodeURIComponent(query)}&type=artist&limit=5`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            
-            if (response.status === 401) {
-                this.showMessage('Tu sesión de Spotify ha expirado. Por favor, inicia sesión de nuevo.', 'error');
-                setTimeout(() => window.location.reload(), 2000);
-                return [];
-            }
-            
-            if (response.status === 403) {
-                this.showMessage('No tienes permisos para usar la API de Spotify. Asegúrate de aceptar todos los permisos.', 'error');
-                return [];
-            }
-            
-            if (!response.ok) {
-                this.showMessage('Error de red o de autenticación con Spotify. Intenta recargar la página.', 'error');
-                return [];
-            }
-            
-            const data = await response.json();
-            if (data.artists && data.artists.items) {
-                return data.artists.items;
-            }
-        } catch (e) {
-            this.showMessage('Error de red o de autenticación con Spotify. Intenta recargar la página.', 'error');
-        }
-        return [];
-    }
-
-    showMessage(message, type = 'success') {
-        const messageDiv = document.getElementById('success-message');
-        messageDiv.className = `message message-${type}`;
-        messageDiv.innerHTML = message;
-        messageDiv.style.display = 'block';
+// ===== CURSOR PERSONALIZADO =====
+function initCustomCursor() {
+    const cursor = document.querySelector('.custom-cursor');
+    const follower = document.querySelector('.custom-cursor-follower');
+    
+    if (!cursor || !follower) return;
+    
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
         
         setTimeout(() => {
-            messageDiv.style.display = 'none';
-        }, 5000);
-    }
-
-    async previewPlaylist() {
-        const playlistName = document.getElementById('playlist-name').value.trim();
-        const songsPerArtist = parseInt(document.getElementById('songs-per-artist').value);
-        const mainArtist = document.getElementById('artist-main').value.trim();
-        const artistNames = [mainArtist, ...this.artistInputs.map(input => input.value.trim())].filter(Boolean);
-        let allTracks = [...this.selectedTracks];
-
-        if (!playlistName) {
-            this.showMessage('Por favor, ingresa un nombre para la playlist', 'warning');
-            return;
-        }
-
-        if (artistNames.length > 0) {
-            const loadingDiv = document.getElementById('loading');
-            loadingDiv.style.display = 'block';
-            
-            try {
-                for (const artist of artistNames) {
-                    const tracks = await this.searchTracksByArtist(artist, songsPerArtist);
-                    for (const t of tracks) {
-                        if (!allTracks.some(track => track.uri === t.uri)) {
-                            allTracks.push(t);
-                        }
-                    }
-                }
-            } catch (error) {
-                this.showMessage('Error al buscar canciones de los artistas', 'error');
-            } finally {
-                loadingDiv.style.display = 'none';
-            }
-        }
-
-        if (allTracks.length === 0) {
-            this.showMessage('Agrega al menos un artista o una canción específica', 'warning');
-            return;
-        }
-
-        this.previewTracks = allTracks;
-        this.previewPlaylistId = null;
-        this.renderPlaylistPreview(playlistName, allTracks);
-        
-        const previewDiv = document.getElementById('playlist-preview');
-        previewDiv.style.display = 'block';
-        previewDiv.style.animation = 'fadeInUp 0.8s ease-out';
-        
-        const exportBtn = document.getElementById('export-spotify');
-        exportBtn.style.display = 'inline-flex';
-        exportBtn.style.animation = 'fadeInUp 0.8s ease-out 0.2s both';
-    }
-
-    renderPlaylistPreview(playlistName, tracks) {
-        const previewDiv = document.getElementById('playlist-preview');
-        previewDiv.innerHTML = `
-            <h3>
-                <i class="fas fa-music" style="margin-right: var(--space-sm); color: var(--primary-color);"></i>
-                ${playlistName}
-            </h3>
-            <p style="color: var(--text-secondary); margin-bottom: var(--space-lg);">
-                <i class="fas fa-list" style="margin-right: var(--space-xs);"></i>
-                ${tracks.length} canción${tracks.length !== 1 ? 'es' : ''} en la playlist
-            </p>
-            <ul>
-                ${tracks.map((track, idx) => `
-                    <li>
-                        <img src='${track.album.image || 'https://via.placeholder.com/50?text=🎵'}' alt='${track.album.name}'>
-                        <div class="track-info">
-                            <div class="track-name">${track.name}</div>
-                            <div class="track-artist">${track.artist}</div>
-                        </div>
-                        <button class="remove-track-preview" data-idx='${idx}' title='Eliminar canción'>
-                            <i class='fas fa-times'></i>
-                        </button>
-                    </li>
-                `).join('')}
-            </ul>
-        `;
-        
-        // Botones para eliminar canciones en la vista previa
-        previewDiv.querySelectorAll('.remove-track-preview').forEach(btn => {
-            btn.onclick = (e) => {
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                this.previewTracks.splice(idx, 1);
-                this.renderPlaylistPreview(playlistName, this.previewTracks);
-            };
+            follower.style.left = e.clientX + 'px';
+            follower.style.top = e.clientY + 'px';
+        }, 50);
+    });
+    
+    // Efectos de hover
+    const interactiveElements = document.querySelectorAll('button, .action-card, .stat-card, .social-link, .hero-btn');
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'scale(1.5)';
+            follower.style.transform = 'scale(1.5)';
         });
-    }
+        
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'scale(1)';
+            follower.style.transform = 'scale(1)';
+        });
+    });
+}
 
-    async exportToSpotify() {
-        if (!this.previewTracks || this.previewTracks.length === 0) {
-            this.showMessage('Primero genera la vista previa de la playlist.', 'warning');
-            return;
-        }
+// ===== ANIMACIONES DE ENTRADA =====
+function initEntranceAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    const elements = document.querySelectorAll('.welcome-card, .hero-features, .playlist-form-container, .section-header');
+    elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.6s ease';
+        el.style.transitionDelay = `${index * 0.1}s`;
+        observer.observe(el);
+    });
+}
+
+// ===== EFECTOS DE PARTÍCULAS =====
+function initParticleEffects() {
+    const shapes = document.querySelectorAll('.shape');
+    shapes.forEach((shape, index) => {
+        shape.style.animationDelay = `${index * 1}s`;
+    });
+}
+
+// ===== INTERACCIONES DE FORMULARIO =====
+function initFormInteractions() {
+    const formInputs = document.querySelectorAll('.form-input');
+    
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            const wrapper = this.closest('.input-wrapper');
+            if (wrapper) {
+                wrapper.style.transform = 'scale(1.02)';
+                wrapper.style.boxShadow = '0 0 0 3px rgba(29, 185, 84, 0.2)';
+            }
+        });
         
-        const playlistName = document.getElementById('playlist-name').value.trim();
-        
-        try {
-            const loadingDiv = document.getElementById('loading');
-            loadingDiv.style.display = 'block';
+        input.addEventListener('blur', function() {
+            const wrapper = this.closest('.input-wrapper');
+            if (wrapper) {
+                wrapper.style.transform = 'scale(1)';
+                wrapper.style.boxShadow = 'none';
+            }
+        });
+    });
+}
+
+// ===== CONFIGURACIÓN DE AUTENTICACIÓN =====
+function setupAuthEvents() {
+    const loginButton = document.getElementById('login-button');
+    if (loginButton) {
+        loginButton.addEventListener('click', function(e) {
+            // Efecto de ripple
+            const ripple = this.querySelector('.btn-ripple');
+            if (ripple) {
+                ripple.style.width = '300px';
+                ripple.style.height = '300px';
+                setTimeout(() => {
+                    ripple.style.width = '0';
+                    ripple.style.height = '0';
+                }, 600);
+            }
             
-            // Crear la playlist
-            const response = await fetch(`${this.config.apiUrl}/me/playlists`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.auth.getAccessToken()}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: playlistName,
-                    public: false,
-                    description: 'Creada con Tuneuptify 🎵'
-                })
-            });
+            // Efecto de salida
+            document.body.style.opacity = '0';
+            document.body.style.transform = 'scale(0.95)';
+            document.body.style.transition = 'all 0.3s ease';
             
-            const playlist = await response.json();
-            
-            if (playlist.id) {
-                // Agregar canciones a la playlist (en lotes de 100)
-                for (let i = 0; i < this.previewTracks.length; i += 100) {
-                    const uris = this.previewTracks.slice(i, i + 100).map(t => t.uri);
-                    await fetch(`${this.config.apiUrl}/playlists/${playlist.id}/tracks`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${this.auth.getAccessToken()}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ uris })
-                    });
+            // Llamar a la función de login
+            setTimeout(() => {
+                if (window.auth && window.auth.login) {
+                    window.auth.login();
                 }
-                
-                this.showMessage(`
-                    <div style="text-align: center;">
-                        <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success-color); margin-bottom: var(--space-sm);"></i>
-                        <h4>¡Playlist creada con éxito!</h4>
-                        <p>Tu playlist "${playlistName}" ha sido exportada a Spotify</p>
-                        <a href='https://open.spotify.com/playlist/${playlist.id}' target='_blank' class='btn btn-success' style="margin-top: var(--space-md);">
-                            <i class='fab fa-spotify'></i> Abrir en Spotify
-                        </a>
-                    </div>
-                `, 'success');
-                
-                document.getElementById('playlist-preview').style.display = 'none';
-                document.getElementById('export-spotify').style.display = 'none';
-                this.selectedTracks = [];
-                this.renderSelectedTracks();
-            } else {
-                throw new Error('Error al crear la playlist');
-            }
-        } catch (error) {
-            this.showMessage(`Error al exportar la playlist: ${error.message}`, 'error');
-        } finally {
-            document.getElementById('loading').style.display = 'none';
-        }
-    }
-
-    async searchTracksByArtist(artist, limit) {
-        try {
-            const response = await fetch(`${this.config.apiUrl}/search?q=${encodeURIComponent(artist)}&type=track&limit=${limit}`, {
-                headers: {
-                    'Authorization': `Bearer ${this.auth.getAccessToken()}`
-                }
-            });
-            const data = await response.json();
-            if (data.tracks && data.tracks.items) {
-                return data.tracks.items.map(track => ({
-                    uri: track.uri,
-                    name: track.name,
-                    artist: track.artists.map(a => a.name).join(', '),
-                    album: {
-                        name: track.album.name,
-                        image: track.album.images[0]?.url
-                    }
-                }));
-            }
-        } catch (e) { }
-        return [];
-    }
-
-    addSpecificTrack(track) {
-        if (this.selectedTracks.some(t => t.uri === track.uri)) {
-            this.showMessage('Esta canción ya está en la lista', 'warning');
-            return;
-        }
-        
-        const newTrack = {
-            uri: track.uri,
-            name: track.name,
-            artist: track.artists.map(a => a.name).join(', '),
-            album: {
-                name: track.album.name,
-                image: track.album.images[0]?.url
-            }
-        };
-        
-        this.selectedTracks.push(newTrack);
-        this.renderSelectedTracks();
-        
-        // Actualizar la vista previa si está visible
-        if (document.getElementById('playlist-preview').style.display !== 'none') {
-            this.previewTracks.push(newTrack);
-            this.renderPlaylistPreview(document.getElementById('playlist-name').value.trim(), this.previewTracks);
-        }
-        
-        // Mostrar confirmación
-        this.showMessage(`"${track.name}" agregada a la lista`, 'success');
-    }
-
-    removeTrack(uri) {
-        const track = this.selectedTracks.find(t => t.uri === uri);
-        this.selectedTracks = this.selectedTracks.filter(track => track.uri !== uri);
-        this.renderSelectedTracks();
-        
-        // Actualizar la vista previa si está visible
-        if (document.getElementById('playlist-preview').style.display !== 'none') {
-            this.previewTracks = this.previewTracks.filter(track => track.uri !== uri);
-            this.renderPlaylistPreview(document.getElementById('playlist-name').value.trim(), this.previewTracks);
-        }
-        
-        if (track) {
-            this.showMessage(`"${track.name}" removida de la lista`, 'warning');
-        }
-    }
-
-    renderSelectedTracks() {
-        const selectedTracksDiv = document.getElementById('selected-tracks');
-        selectedTracksDiv.innerHTML = '';
-        
-        if (this.selectedTracks.length === 0) {
-            selectedTracksDiv.innerHTML = `
-                <div style="text-align: center; padding: var(--space-lg); color: var(--text-secondary);">
-                    <i class="fas fa-music" style="font-size: 2rem; margin-bottom: var(--space-sm); opacity: 0.5;"></i>
-                    <p>No hay canciones seleccionadas</p>
-                    <p style="font-size: var(--text-sm);">Busca y agrega canciones específicas arriba</p>
-                </div>
-            `;
-            return;
-        }
-        
-        this.selectedTracks.forEach((track, index) => {
-            const trackDiv = document.createElement('div');
-            trackDiv.className = 'selected-track';
-            trackDiv.style.animation = `slideInLeft 0.5s ease-out ${index * 0.1}s both`;
-            trackDiv.innerHTML = `
-                <img src="${track.album.image || 'https://via.placeholder.com/50?text=🎵'}" alt="${track.album.name}">
-                <div class="track-info">
-                    <div class="track-name">${track.name}</div>
-                    <div class="track-artist">${track.artist}</div>
-                </div>
-                <button class="remove-track" data-uri="${track.uri}" title="Eliminar canción">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            trackDiv.querySelector('.remove-track').onclick = () => this.removeTrack(track.uri);
-            selectedTracksDiv.appendChild(trackDiv);
+            }, 300);
         });
     }
 }
 
-// Inicializar el gestor de playlists y exponer método para agregar canciones específicas
-window.playlistManager = new PlaylistManager();
-
-// Función para detectar si viene del login y mostrar dashboard
-function checkLoginAndShowDashboard() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('access_token');
-    const showDashboard = urlParams.get('show_dashboard');
+// ===== CONFIGURACIÓN DE FORMULARIO =====
+function setupFormEvents() {
+    const buttons = ['#add-artist', '#preview-playlist', '#export-spotify'];
     
-    if (accessToken && showDashboard === 'true') {
-        // Guardar el token en localStorage
-        localStorage.setItem('spotify_access_token', accessToken);
-        localStorage.setItem('token_timestamp', Date.now().toString());
+    buttons.forEach(selector => {
+        const button = document.querySelector(selector);
+        if (button) {
+            button.addEventListener('click', function(e) {
+                // Efecto de ripple
+                const ripple = this.querySelector('.btn-ripple');
+                if (ripple) {
+                    ripple.style.width = '300px';
+                    ripple.style.height = '300px';
+                    setTimeout(() => {
+                        ripple.style.width = '0';
+                        ripple.style.height = '0';
+                    }, 600);
+                }
+            });
+        }
+    });
+}
+
+// ===== VERIFICAR HASH Y MOSTRAR FORMULARIO =====
+function checkHashAndShowPlaylistForm() {
+    // Verificar si hay un hash en la URL
+    if (window.location.hash === '#playlist-section') {
+        console.log('Detectado hash #playlist-section, mostrando formulario de crear playlist');
         
-        // Limpiar la URL
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // Ocultar las secciones principales
+        const heroSection = document.querySelector('.hero-parallax');
+        const featuresSection = document.querySelector('.features-section');
         
-        // Mostrar el dashboard
-        showDashboardView();
+        if (heroSection) heroSection.style.display = 'none';
+        if (featuresSection) featuresSection.style.display = 'none';
+        
+        // Mostrar la sección de playlist
+        const playlistSection = document.getElementById('playlist-section');
+        if (playlistSection) {
+            playlistSection.style.display = 'block';
+            
+            // Scroll suave hacia el formulario
+            setTimeout(() => {
+                playlistSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+            
+            // Agregar animación de entrada
+            playlistSection.style.opacity = '0';
+            playlistSection.style.transform = 'translateY(30px)';
+            playlistSection.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                playlistSection.style.opacity = '1';
+                playlistSection.style.transform = 'translateY(0)';
+            }, 200);
+        }
+        
+        // Limpiar el hash de la URL sin recargar la página
+        history.replaceState(null, null, window.location.pathname);
     }
 }
 
-// Función para mostrar el dashboard
-function showDashboardView() {
-    // Ocultar la sección de login
-    const loginSection = document.getElementById('login-section');
-    if (loginSection) {
-        loginSection.style.display = 'none';
-    }
+// ===== FUNCIONES AUXILIARES =====
+function addArtistInput() {
+    const artistInputs = document.getElementById('artist-inputs');
+    const newRow = document.createElement('div');
+    newRow.className = 'artist-row';
+    newRow.style.opacity = '0';
+    newRow.style.transform = 'translateX(-20px)';
+    newRow.style.transition = 'all 0.3s ease';
     
-    // Ocultar la sección de playlist
-    const playlistSection = document.getElementById('playlist-section');
-    if (playlistSection) {
-        playlistSection.style.display = 'none';
-    }
+    newRow.innerHTML = `
+        <input type="text" class="form-input" placeholder="Nombre del artista adicional">
+        <button type="button" class="remove-artist-btn" onclick="removeArtist(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
     
-    // Crear y mostrar el dashboard
-    const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = `
-        <div class="dashboard-container">
-            <h2 class="dashboard-title">Panel de Control</h2>
-            <p class="dashboard-subtitle">¿Qué te gustaría hacer hoy?</p>
-            
-            <div class="dashboard-grid">
-                <!-- Opción 1: Crear Playlist -->
-                <div class="dashboard-card" onclick="navigateToCreatePlaylist()">
-                    <div class="card-icon">
-                        <i class="fas fa-plus-circle"></i>
-                    </div>
-                    <h3>Crear Playlist</h3>
-                    <p>Crea una nueva playlist personalizada con tus canciones favoritas</p>
-                    <div class="card-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
+    artistInputs.appendChild(newRow);
+    
+    // Animación de entrada
+    setTimeout(() => {
+        newRow.style.opacity = '1';
+        newRow.style.transform = 'translateX(0)';
+    }, 50);
+}
 
-                <!-- Opción 2: Modificar Playlist Actuales -->
-                <div class="dashboard-card" onclick="navigateToModifyPlaylists()">
-                    <div class="card-icon">
-                        <i class="fas fa-edit"></i>
-                    </div>
-                    <h3>Modificar Playlist Actuales</h3>
-                    <p>Gestiona y modifica tus playlists existentes de Spotify</p>
-                    <div class="card-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
+function removeArtist(button) {
+    const row = button.closest('.artist-row');
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(20px)';
+    
+    setTimeout(() => {
+        row.remove();
+    }, 300);
+}
 
-                <!-- Opción 3: Estadísticas de Spotify -->
-                <div class="dashboard-card" onclick="navigateToStatistics()">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3>Estadísticas de Spotify</h3>
-                    <p>Analiza tus hábitos de escucha y estadísticas musicales</p>
-                    <div class="card-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
+function showLoadingAnimation() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'flex';
+        loading.style.opacity = '0';
+        loading.style.transform = 'scale(0.9)';
+        
+        setTimeout(() => {
+            loading.style.opacity = '1';
+            loading.style.transform = 'scale(1)';
+        }, 50);
+    }
+}
 
-                <!-- Opción 4: Reservada -->
-                <div class="dashboard-card disabled">
-                    <div class="card-icon">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <h3>Próximamente</h3>
-                    <p>Nueva funcionalidad en desarrollo</p>
-                    <div class="card-arrow">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-            </div>
+function hideLoadingAnimation() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.opacity = '0';
+        loading.style.transform = 'scale(0.9)';
+        
+        setTimeout(() => {
+            loading.style.display = 'none';
+        }, 300);
+    }
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
         </div>
     `;
     
-    // Agregar estilos del dashboard
-    const dashboardStyles = document.createElement('link');
-    dashboardStyles.rel = 'stylesheet';
-    dashboardStyles.href = 'css/dashboard.css';
-    document.head.appendChild(dashboardStyles);
+    // Estilos elegantes
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 16px;
+        color: white;
+        font-weight: 600;
+        z-index: 1000;
+        animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 350px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    `;
     
-    // Agregar funciones del dashboard
-    window.navigateToCreatePlaylist = function() {
-        // Mostrar la sección de playlist
-        if (playlistSection) {
-            playlistSection.style.display = 'block';
-        }
-        // Limpiar el dashboard
-        mainContent.innerHTML = '';
-        // Recargar la página para mostrar la funcionalidad completa
-        window.location.reload();
+    // Colores según tipo
+    const colors = {
+        success: 'linear-gradient(135deg, #10b981, #059669)',
+        error: 'linear-gradient(135deg, #ef4444, #dc2626)',
+        warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+        info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
     };
     
-    window.navigateToModifyPlaylists = function() {
-        alert('Funcionalidad en desarrollo');
-    };
+    notification.style.background = colors[type] || colors.info;
     
-    window.navigateToStatistics = function() {
-        alert('Funcionalidad en desarrollo');
-    };
+    // Contenido de la notificación
+    notification.querySelector('.notification-content').style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover después de 4 segundos
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 400);
+    }, 4000);
 }
 
-// Ejecutar la verificación al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    checkLoginAndShowDashboard();
-}); 
+// ===== FUNCIONES GLOBALES =====
+window.addArtistInput = addArtistInput;
+window.removeArtist = removeArtist;
+window.showNotification = showNotification;
+window.showLoadingAnimation = showLoadingAnimation;
+window.hideLoadingAnimation = hideLoadingAnimation; 

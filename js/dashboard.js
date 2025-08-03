@@ -1,62 +1,122 @@
-// Dashboard JavaScript
+// Dashboard JavaScript Elegante
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard cargado');
-    
-    // Verificar si el usuario está autenticado
+    console.log('Dashboard elegante cargado');
     checkAuthStatus();
-    
-    // Agregar efectos de hover a las tarjetas
-    initializeCardEffects();
+    initCustomCursor();
+    initHoverEffects();
+    initEntranceAnimations();
+    initParticleEffects();
 });
 
 // Verificar estado de autenticación
 function checkAuthStatus() {
-    // Verificar si ya tenemos un token válido en localStorage
     const accessToken = localStorage.getItem('spotify_access_token');
     const tokenExpires = localStorage.getItem('spotify_token_expires');
 
     if (accessToken && tokenExpires) {
-        // Verificar si el token ha expirado
         if (Date.now() < parseInt(tokenExpires)) {
             console.log('Token válido, usuario autenticado');
-            return; // Usuario autenticado, continuar
+            return;
         } else {
-            // Token expirado - limpiar y redirigir
             console.log('Token expirado, redirigiendo al login');
             logout();
             return;
         }
     }
-
-    // No hay token válido - redirigir al login
     console.log('No hay token válido, redirigiendo al login');
     window.location.href = 'index.html';
 }
 
-// Inicializar efectos de las tarjetas
-function initializeCardEffects() {
-    const cards = document.querySelectorAll('.dashboard-card:not(.disabled)');
+// Cursor personalizado
+function initCustomCursor() {
+    const cursor = document.querySelector('.custom-cursor');
+    const follower = document.querySelector('.custom-cursor-follower');
     
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-8px)';
+    if (!cursor || !follower) return;
+    
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        
+        setTimeout(() => {
+            follower.style.left = e.clientX + 'px';
+            follower.style.top = e.clientY + 'px';
+        }, 50);
+    });
+    
+    // Efectos de hover
+    const interactiveElements = document.querySelectorAll('button, .action-card, .stat-card, .social-link');
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'scale(1.5)';
+            follower.style.transform = 'scale(1.5)';
         });
         
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-        
-        card.addEventListener('click', function() {
-            // Agregar efecto de click
-            this.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                this.style.transform = 'translateY(-8px)';
-            }, 150);
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'scale(1)';
+            follower.style.transform = 'scale(1)';
         });
     });
 }
 
-// Navegar a crear playlist (página principal del sitio)
+// Efectos de hover en tarjetas de acción
+function initHoverEffects() {
+    const actionCards = document.querySelectorAll('.action-card:not(.disabled)');
+    
+    actionCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const glow = this.querySelector('.card-glow');
+            const icon = this.querySelector('.icon-container');
+            const particles = this.querySelectorAll('.particle');
+            
+            if (glow) glow.style.opacity = '0.2';
+            if (icon) icon.style.transform = 'scale(1.1)';
+            
+            particles.forEach((particle, index) => {
+                particle.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const glow = this.querySelector('.card-glow');
+            const icon = this.querySelector('.icon-container');
+            
+            if (glow) glow.style.opacity = '0';
+            if (icon) icon.style.transform = 'scale(1)';
+        });
+    });
+}
+
+// Animaciones de entrada
+function initEntranceAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    const elements = document.querySelectorAll('.welcome-card, .action-card, .section-header');
+    elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.6s ease';
+        el.style.transitionDelay = `${index * 0.1}s`;
+        observer.observe(el);
+    });
+}
+
+// Efectos de partículas
+function initParticleEffects() {
+    const shapes = document.querySelectorAll('.shape');
+    shapes.forEach((shape, index) => {
+        shape.style.animationDelay = `${index * 1}s`;
+    });
+}
+
+// Navegar a crear playlist (formulario en index.html)
 function navigateToCreatePlaylist() {
     console.log('Navegando a crear playlist');
     
@@ -64,9 +124,9 @@ function navigateToCreatePlaylist() {
     const card = event.currentTarget;
     card.classList.add('loading');
     
-    // Redirigir a la página principal del sitio web
+    // Redirigir al formulario de crear playlist en index.html
     setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = 'index.html#playlist-section';
     }, 500);
 }
 
@@ -78,7 +138,7 @@ function navigateToModifyPlaylists() {
     const card = event.currentTarget;
     card.classList.add('loading');
     
-    // Por ahora redirigir a una página temporal
+    // Redirigir a la página de modificar playlists
     setTimeout(() => {
         window.location.href = 'modify_playlists.html';
     }, 500);
@@ -92,26 +152,32 @@ function navigateToStatistics() {
     const card = event.currentTarget;
     card.classList.add('loading');
     
-    // Por ahora redirigir a una página temporal
+    // Redirigir a la página de estadísticas
     setTimeout(() => {
         window.location.href = 'statistics.html';
     }, 500);
 }
 
-// Función de logout
+// Función de logout mejorada
 function logout() {
     console.log('Cerrando sesión');
-    
-    // Mostrar confirmación
-    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+    const confirmed = confirm('¿Estás seguro de que quieres cerrar sesión?');
+    if (confirmed) {
+        // Efecto de salida
+        document.body.style.opacity = '0';
+        document.body.style.transform = 'scale(0.95)';
+        document.body.style.transition = 'all 0.3s ease';
+        
         // Limpiar localStorage
         localStorage.removeItem('spotify_access_token');
         localStorage.removeItem('spotify_token_expires');
         localStorage.removeItem('spotify_refresh_token');
         localStorage.removeItem('spotify_auth_state');
         
-        // Redirigir al sitio web principal
-        window.location.href = 'index.html';
+        // Redirigir después de la animación
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 300);
     }
 }
 
@@ -125,7 +191,6 @@ function isAuthenticated() {
     const token = getAccessToken();
     if (!token) return false;
     
-    // Verificar si el token no ha expirado
     const tokenExpires = localStorage.getItem('spotify_token_expires');
     if (!tokenExpires) return false;
     
@@ -153,7 +218,6 @@ async function callSpotifyAPI(endpoint, options = {}) {
     
     if (!response.ok) {
         if (response.status === 401) {
-            // Token expirado, redirigir al login
             logout();
             return;
         }
@@ -163,55 +227,69 @@ async function callSpotifyAPI(endpoint, options = {}) {
     return await response.json();
 }
 
-// Función para mostrar notificaciones
+// Función para mostrar notificaciones elegantes
 function showNotification(message, type = 'info') {
-    // Crear elemento de notificación
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    notification.textContent = message;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
     
-    // Agregar estilos
+    // Estilos elegantes
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
         padding: 1rem 1.5rem;
-        border-radius: 8px;
+        border-radius: 16px;
         color: white;
-        font-weight: 500;
+        font-weight: 600;
         z-index: 1000;
-        animation: slideIn 0.3s ease;
-        max-width: 300px;
+        animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 350px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     `;
     
     // Colores según tipo
     const colors = {
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#f59e0b',
-        info: '#3b82f6'
+        success: 'linear-gradient(135deg, #10b981, #059669)',
+        error: 'linear-gradient(135deg, #ef4444, #dc2626)',
+        warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+        info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
     };
     
-    notification.style.backgroundColor = colors[type] || colors.info;
+    notification.style.background = colors[type] || colors.info;
     
-    // Agregar al DOM
+    // Contenido de la notificación
+    notification.querySelector('.notification-content').style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    `;
+    
     document.body.appendChild(notification);
     
-    // Remover después de 3 segundos
+    // Remover después de 4 segundos
     setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
+        notification.style.animation = 'slideOutRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
             }
-        }, 300);
-    }, 3000);
+        }, 400);
+    }, 4000);
 }
 
-// Agregar estilos CSS para las notificaciones
+// Agregar estilos CSS para las notificaciones elegantes
 const notificationStyles = document.createElement('style');
 notificationStyles.textContent = `
-    @keyframes slideIn {
+    @keyframes slideInRight {
         from {
             transform: translateX(100%);
             opacity: 0;
@@ -222,7 +300,7 @@ notificationStyles.textContent = `
         }
     }
     
-    @keyframes slideOut {
+    @keyframes slideOutRight {
         from {
             transform: translateX(0);
             opacity: 1;
