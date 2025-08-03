@@ -37,7 +37,7 @@ class ModifyPlaylistsManager {
 
     setupMultiSelectButtons() {
         // Agregar botones de selección múltiple al HTML
-        const playlistsContainer = document.querySelector('.playlists-grid');
+        const playlistsContainer = document.getElementById('playlists-grid');
         if (playlistsContainer) {
             const multiSelectContainer = document.createElement('div');
             multiSelectContainer.className = 'multi-select-container';
@@ -340,28 +340,58 @@ class ModifyPlaylistsManager {
     }
 
     displayPlaylists() {
-        const container = document.querySelector('.playlists-grid');
-        if (!container) return;
-
-        if (this.filteredPlaylists.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-music"></i>
-                    <h3>No se encontraron playlists</h3>
-                    <p>Intenta con una búsqueda diferente o crea una nueva playlist</p>
-                </div>
-            `;
+        console.log('=== INICIANDO DISPLAY PLAYLISTS ===');
+        console.log(`Playlists a mostrar: ${this.filteredPlaylists.length}`);
+        
+        const container = document.getElementById('playlists-grid');
+        console.log('Contenedor encontrado:', container);
+        
+        if (!container) {
+            console.error('❌ No se encontró el contenedor #playlists-grid');
             return;
         }
 
+        // Ocultar estados de carga y error
+        const loadingState = document.getElementById('loading-state');
+        const errorState = document.getElementById('error-state');
+        const emptyState = document.getElementById('empty-state');
+        
+        if (loadingState) loadingState.style.display = 'none';
+        if (errorState) errorState.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'none';
+
+        if (this.filteredPlaylists.length === 0) {
+            console.log('No hay playlists para mostrar, mostrando estado vacío');
+            if (emptyState) {
+                emptyState.style.display = 'block';
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-music"></i>
+                        <h3>No se encontraron playlists</h3>
+                        <p>Intenta con una búsqueda diferente o crea una nueva playlist</p>
+                    </div>
+                `;
+            }
+            return;
+        }
+
+        console.log('Generando HTML para las playlists...');
         const playlistsHTML = this.filteredPlaylists.map(playlist => {
             const isSelected = this.selectedPlaylists.has(playlist.id);
+            console.log(`Generando card para playlist: ${playlist.name} (ID: ${playlist.id})`);
             return this.createPlaylistCard(playlist, isSelected);
         }).join('');
 
+        console.log('HTML generado, actualizando contenedor...');
         container.innerHTML = playlistsHTML;
+        container.style.display = 'grid';
+        
+        console.log('Configurando event listeners...');
         this.setupPlaylistCardListeners();
         this.updateMultiSelectButtons();
+        
+        console.log('=== DISPLAY PLAYLISTS COMPLETADO ===');
     }
 
     createPlaylistCard(playlist, isSelected = false) {
