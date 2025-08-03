@@ -186,7 +186,14 @@ class LoginManager {
             // Generar PKCE
             const codeVerifier = this.generateCodeVerifier();
             const codeChallenge = await this.generateCodeChallenge(codeVerifier);
+            
+            console.log('🔐 Guardando code_verifier en localStorage...');
             localStorage.setItem('spotify_code_verifier', codeVerifier);
+            console.log('✅ Code verifier guardado:', codeVerifier.substring(0, 20) + '...');
+            
+            // Verificar que se guardó correctamente
+            const savedCodeVerifier = localStorage.getItem('spotify_code_verifier');
+            console.log('🔍 Verificación - Code verifier guardado:', savedCodeVerifier ? 'SÍ' : 'NO');
             
             // Construir URL
             const authUrl = this.buildAuthUrl(state, codeChallenge);

@@ -129,9 +129,15 @@
         async function exchangeCodeForToken(code, state) {
             try {
                 console.log('🔍 Verificando code_verifier...');
+                console.log('🔍 localStorage disponible:', typeof localStorage !== 'undefined');
+                console.log('🔍 localStorage keys:', Object.keys(localStorage));
+                
                 const codeVerifier = localStorage.getItem('spotify_code_verifier');
+                console.log('🔍 Code verifier encontrado:', codeVerifier ? 'SÍ' : 'NO');
                 
                 if (!codeVerifier) {
+                    console.error('❌ No se encontró el code_verifier en localStorage');
+                    console.error('🔍 Contenido de localStorage:', localStorage);
                     throw new Error('No se encontró el code_verifier');
                 }
                 console.log('✅ Code verifier encontrado');
