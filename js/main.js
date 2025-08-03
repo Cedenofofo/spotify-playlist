@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar eventos de formulario
     setupFormEvents();
     
+    // Configurar listener de hash
+    setupHashListener();
+    
     // Verificar si viene del dashboard para mostrar el formulario de crear playlist
     checkHashAndShowPlaylistForm();
     
@@ -435,44 +438,78 @@ async function exportToSpotify() {
 
 // ===== VERIFICAR HASH Y MOSTRAR FORMULARIO =====
 function checkHashAndShowPlaylistForm() {
+    console.log('Verificando hash de URL:', window.location.hash);
+    
     // Verificar si hay un hash en la URL
     if (window.location.hash === '#playlist-section') {
         console.log('Detectado hash #playlist-section, mostrando formulario de crear playlist');
         
-        // Ocultar las secciones principales
-        const heroSection = document.querySelector('.hero-parallax');
-        const featuresSection = document.querySelector('.features-section');
+        // Esperar un poco para asegurar que el DOM esté completamente cargado
+        setTimeout(() => {
+            showPlaylistForm();
+        }, 100);
+    } else {
+        console.log('No se detectó hash #playlist-section');
+    }
+}
+
+// ===== MOSTRAR FORMULARIO DE PLAYLIST =====
+function showPlaylistForm() {
+    console.log('Mostrando formulario de playlist...');
+    
+    // Ocultar las secciones principales
+    const heroSection = document.querySelector('.hero-parallax');
+    const featuresSection = document.querySelector('.features-section');
+    
+    if (heroSection) {
+        console.log('Ocultando sección hero');
+        heroSection.style.display = 'none';
+    }
+    
+    if (featuresSection) {
+        console.log('Ocultando sección features');
+        featuresSection.style.display = 'none';
+    }
+    
+    // Mostrar la sección de playlist
+    const playlistSection = document.getElementById('playlist-section');
+    if (playlistSection) {
+        console.log('Mostrando sección de playlist');
+        playlistSection.style.display = 'block';
         
-        if (heroSection) heroSection.style.display = 'none';
-        if (featuresSection) featuresSection.style.display = 'none';
+        // Scroll suave hacia el formulario
+        setTimeout(() => {
+            playlistSection.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }, 100);
         
-        // Mostrar la sección de playlist
-        const playlistSection = document.getElementById('playlist-section');
-        if (playlistSection) {
-            playlistSection.style.display = 'block';
-            
-            // Scroll suave hacia el formulario
-            setTimeout(() => {
-                playlistSection.scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 100);
-            
-            // Agregar animación de entrada
-            playlistSection.style.opacity = '0';
-            playlistSection.style.transform = 'translateY(30px)';
-            playlistSection.style.transition = 'all 0.6s ease';
-            
-            setTimeout(() => {
-                playlistSection.style.opacity = '1';
-                playlistSection.style.transform = 'translateY(0)';
-            }, 200);
-        }
+        // Agregar animación de entrada
+        playlistSection.style.opacity = '0';
+        playlistSection.style.transform = 'translateY(30px)';
+        playlistSection.style.transition = 'all 0.6s ease';
+        
+        setTimeout(() => {
+            playlistSection.style.opacity = '1';
+            playlistSection.style.transform = 'translateY(0)';
+        }, 200);
         
         // Limpiar el hash de la URL sin recargar la página
         history.replaceState(null, null, window.location.pathname);
+    } else {
+        console.error('No se encontró la sección de playlist');
     }
+}
+
+// ===== ESCUCHAR CAMBIOS EN EL HASH =====
+function setupHashListener() {
+    window.addEventListener('hashchange', function() {
+        console.log('Hash cambiado a:', window.location.hash);
+        if (window.location.hash === '#playlist-section') {
+            showPlaylistForm();
+        }
+    });
 }
 
 // ===== FUNCIONES AUXILIARES =====

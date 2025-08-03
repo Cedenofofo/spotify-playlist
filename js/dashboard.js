@@ -122,10 +122,13 @@ function navigateToCreatePlaylist() {
     
     // Agregar efecto de loading
     const card = event.currentTarget;
-    card.classList.add('loading');
+    if (card) {
+        card.classList.add('loading');
+    }
     
     // Redirigir al formulario de crear playlist en index.html
     setTimeout(() => {
+        console.log('Redirigiendo a index.html#playlist-section');
         window.location.href = 'index.html#playlist-section';
     }, 500);
 }
