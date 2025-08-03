@@ -120,15 +120,6 @@ class ModifyPlaylistsManager {
                 }
             }
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    // Token expirado, redirigir al login
-                    this.auth.logout();
-                    return;
-                }
-                throw new Error(`Error en la API: ${response.status}`);
-            }
-
             this.playlists = allPlaylists;
             this.filteredPlaylists = [...this.playlists];
 
