@@ -401,39 +401,58 @@ class ModifyPlaylistsManager {
         
         return `
             <div class="playlist-card ${isSelected ? 'selected' : ''}" data-playlist-id="${playlist.id}">
-                <div class="playlist-checkbox">
-                    <input type="checkbox" id="playlist-${playlist.id}" ${isSelected ? 'checked' : ''} 
-                           onchange="modifyPlaylistsManager.togglePlaylistSelection('${playlist.id}')">
-                    <label for="playlist-${playlist.id}"></label>
-                </div>
-                <div class="playlist-image-container">
+                <!-- Header con imagen -->
+                <div class="playlist-card-header">
                     <img src="${imageUrl}" 
                          alt="${this.escapeHtml(playlist.name)}" 
-                         class="playlist-image"
-                         onerror="this.onerror=null; this.src='https://via.placeholder.com/80x80/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
-                         onload="this.classList.remove('placeholder-image');">
-                </div>
-                <div class="playlist-info">
-                    <h3 class="playlist-name">${this.escapeHtml(playlist.name)}</h3>
-                    <p class="playlist-description">${this.escapeHtml(playlist.description || 'Sin descripción')}</p>
-                    <div class="playlist-stats">
-                        <span class="stat-item">
-                            <i class="fas fa-music"></i>
-                            ${trackCount} canciones
-                        </span>
-                        <span class="stat-item">
-                            <i class="fas fa-eye"></i>
-                            ${isPublic}
-                        </span>
+                         class="playlist-card-image"
+                         onerror="this.onerror=null; this.src='${this.generatePlaylistPlaceholder(playlist.name)}'; this.classList.add('placeholder');"
+                         onload="this.classList.remove('placeholder');">
+                    
+                    <!-- Checkbox en la esquina superior izquierda -->
+                    <div class="playlist-card-checkbox">
+                        <input type="checkbox" id="playlist-${playlist.id}" ${isSelected ? 'checked' : ''} 
+                               onchange="modifyPlaylistsManager.togglePlaylistSelection('${playlist.id}')">
+                        <label for="playlist-${playlist.id}"></label>
                     </div>
                 </div>
-                <div class="playlist-actions">
-                    <button class="action-btn edit" onclick="modifyPlaylistsManager.editPlaylist('${playlist.id}')" title="Editar playlist">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete" onclick="modifyPlaylistsManager.deletePlaylist('${playlist.id}', '${this.escapeHtml(playlist.name)}')" title="Eliminar playlist">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                
+                <!-- Contenido de la card -->
+                <div class="playlist-card-content">
+                    <!-- Título y descripción -->
+                    <div>
+                        <h3 class="playlist-card-title" title="${this.escapeHtml(playlist.name)}">
+                            ${this.escapeHtml(playlist.name)}
+                        </h3>
+                        <p class="playlist-card-description" title="${this.escapeHtml(playlist.description || 'Sin descripción')}">
+                            ${this.escapeHtml(playlist.description || 'Sin descripción')}
+                        </p>
+                    </div>
+                    
+                    <!-- Estadísticas -->
+                    <div class="playlist-card-stats">
+                        <div class="playlist-card-stat">
+                            <i class="fas fa-music"></i>
+                            <span>${trackCount} canciones</span>
+                        </div>
+                        <div class="playlist-card-stat">
+                            <i class="fas fa-eye"></i>
+                            <span>${isPublic}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Acciones -->
+                    <div class="playlist-card-actions">
+                        <button class="playlist-card-action play" onclick="modifyPlaylistsManager.viewPlaylist('${playlist.id}')" title="Ver playlist">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="playlist-card-action edit" onclick="modifyPlaylistsManager.editPlaylist('${playlist.id}')" title="Editar playlist">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="playlist-card-action delete" onclick="modifyPlaylistsManager.deletePlaylist('${playlist.id}', '${this.escapeHtml(playlist.name)}')" title="Eliminar playlist">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
