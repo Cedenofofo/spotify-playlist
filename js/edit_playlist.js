@@ -300,6 +300,7 @@ class EditPlaylistManager {
             // Limpiar búsqueda
             document.getElementById('track-search').value = '';
 
+            console.log('Canción agregada. Total actual:', this.tracks.length);
             this.showNotification('Canción agregada a la playlist (cambios pendientes)', 'success');
 
         } catch (error) {
@@ -331,6 +332,7 @@ class EditPlaylistManager {
             this.displayTracks();
             this.updateTrackCount();
 
+            console.log('Canción eliminada. Total actual:', this.tracks.length);
             this.showNotification('Canción eliminada (cambios pendientes)', 'success');
 
         } catch (error) {
@@ -341,7 +343,12 @@ class EditPlaylistManager {
 
     updateTrackCount() {
         const tracksCount = document.getElementById('tracks-count');
-        tracksCount.textContent = this.tracks.length;
+        if (tracksCount) {
+            tracksCount.textContent = this.tracks.length;
+            console.log('Contador actualizado:', this.tracks.length, 'canciones');
+        } else {
+            console.error('Elemento tracks-count no encontrado');
+        }
     }
 
     async savePlaylistChanges() {
