@@ -212,15 +212,20 @@ function setupFormEvents() {
 
 // ===== AUTocompletado DE ARTISTAS =====
 function setupArtistAutocomplete() {
-    const artistInput = document.getElementById('artist-main');
-    const suggestionsDiv = document.getElementById('artist-main-suggestions');
+    // Configurar autocompletado para el artista principal
+    setupAutocompleteForArtist('artist-main');
+}
+
+function setupAutocompleteForArtist(artistId) {
+    const artistInput = document.getElementById(artistId);
+    const suggestionsDiv = document.getElementById(artistId + '-suggestions');
     
     if (!artistInput || !suggestionsDiv) {
-        console.error('No se encontraron elementos para autocompletado de artistas');
+        console.error(`No se encontraron elementos para autocompletado de artista: ${artistId}`);
         return;
     }
     
-    console.log('Configurando autocompletado para artistas');
+    console.log(`Configurando autocompletado para artista: ${artistId}`);
     let debounceTimeout;
     
     artistInput.addEventListener('input', function() {
@@ -521,14 +526,26 @@ function addArtistInput() {
     newRow.style.transform = 'translateX(-20px)';
     newRow.style.transition = 'all 0.3s ease';
     
+    // Crear ID único para este artista
+    const artistId = 'artist-' + Date.now();
+    
     newRow.innerHTML = `
-        <input type="text" class="form-input" placeholder="Nombre del artista adicional">
+        <div class="autocomplete-container">
+            <input type="text" class="form-input artist-autocomplete" 
+                   id="${artistId}" 
+                   placeholder="Nombre del artista adicional" 
+                   autocomplete="off">
+            <div class="autocomplete-suggestions" id="${artistId}-suggestions"></div>
+        </div>
         <button type="button" class="remove-artist-btn" onclick="removeArtist(this)">
             <i class="fas fa-times"></i>
         </button>
     `;
     
     artistInputs.appendChild(newRow);
+    
+    // Configurar autocompletado para el nuevo artista
+    setupAutocompleteForArtist(artistId);
     
     // Animación de entrada
     setTimeout(() => {
