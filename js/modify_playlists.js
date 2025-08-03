@@ -127,7 +127,7 @@ class ModifyPlaylistsManager {
                 throw new Error('No hay token de acceso');
             }
 
-            // Obtener TODAS las playlists del usuario usando el endpoint correcto
+            // Obtener TODAS las playlists del usuario usando múltiples estrategias
             let allPlaylists = [];
             let pageCount = 0;
             let totalPlaylists = 0;
@@ -138,8 +138,8 @@ class ModifyPlaylistsManager {
                 console.log('Obteniendo playlists creadas por el usuario:', userId);
             }
             
-            // Método principal: Cargar todas las playlists del usuario
-            console.log('=== CARGANDO TODAS LAS PLAYLISTS ===');
+            // Estrategia 1: Cargar playlists que el usuario sigue
+            console.log('=== ESTRATEGIA 1: Playlists seguidas ===');
             let nextUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
             
             // Actualizar mensaje de carga
@@ -191,8 +191,8 @@ class ModifyPlaylistsManager {
                 }
             }
 
-            // Cargar playlists creadas por el usuario usando el endpoint correcto
-            console.log('=== CARGANDO PLAYLISTS CREADAS POR EL USUARIO ===');
+            // Estrategia 2: Cargar playlists creadas por el usuario
+            console.log('=== ESTRATEGIA 2: Playlists creadas por el usuario ===');
             
             if (userId) {
                 try {
@@ -240,6 +240,53 @@ class ModifyPlaylistsManager {
                 } catch (error) {
                     console.warn('Error al cargar playlists del usuario:', error);
                 }
+            }
+            
+            // Estrategia 3: Intentar con diferentes parámetros y límites
+            console.log('=== ESTRATEGIA 3: Diferentes parámetros ===');
+            
+            try {
+                // Intentar con límite mayor
+                const largeLimitResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=100', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (largeLimitResponse.ok) {
+                    const largeLimitData = await largeLimitResponse.json();
+                    console.log(`Límite 100: ${largeLimitData.items?.length || 0} playlists encontradas`);
+                    console.log(`Total reportado por API: ${largeLimitData.total}`);
+                    
+                    // Agregar solo las playlists que no están ya en la lista
+                    const existingIds = allPlaylists.map(p => p.id);
+                    const newLargeLimitPlaylists = (largeLimitData.items || []).filter(p => !existingIds.includes(p.id));
+                    allPlaylists = allPlaylists.concat(newLargeLimitPlaylists);
+                    
+                    console.log(`Nuevas playlists agregadas: ${newLargeLimitPlaylists.length}`);
+                }
+                
+                // Intentar con offset
+                const offsetResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=50&offset=50', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (offsetResponse.ok) {
+                    const offsetData = await offsetResponse.json();
+                    console.log(`Offset 50: ${offsetData.items?.length || 0} playlists encontradas`);
+                    
+                    // Agregar solo las playlists que no están ya en la lista
+                    const existingIds = allPlaylists.map(p => p.id);
+                    const newOffsetPlaylists = (offsetData.items || []).filter(p => !existingIds.includes(p.id));
+                    allPlaylists = allPlaylists.concat(newOffsetPlaylists);
+                    
+                    console.log(`Nuevas playlists agregadas: ${newOffsetPlaylists.length}`);
+                }
+                
+            } catch (error) {
+                console.warn('Error en estrategia 3:', error);
             }
 
             this.playlists = allPlaylists;
