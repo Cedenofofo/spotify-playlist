@@ -29,9 +29,10 @@ class LoginManager {
     checkAuthStatus() {
         const accessToken = localStorage.getItem('spotify_access_token');
         const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
         const tokenFromUrl = urlParams.get('access_token');
         
-        if (accessToken || tokenFromUrl) {
+        if (accessToken || code || tokenFromUrl) {
             // Si ya está autenticado, redirigir al dashboard
             this.redirectToDashboard();
         }
@@ -303,6 +304,7 @@ class LoginManager {
         localStorage.removeItem('spotify_access_token');
         localStorage.removeItem('spotify_refresh_token');
         localStorage.removeItem('spotify_auth_state');
+        localStorage.removeItem('spotify_code_verifier');
         
         // Redirigir al login
         window.location.href = '../index.html';
@@ -338,14 +340,15 @@ async function validateToken(accessToken) {
 // Función para refrescar token
 async function refreshAccessToken(refreshToken) {
     try {
-        const response = await fetch('auth.php', {
+        const response = await fetch('https://accounts.spotify.com/api/token', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify({ 
+            body: new URLSearchParams({
+                grant_type: 'refresh_token',
                 refresh_token: refreshToken,
-                grant_type: 'refresh_token'
+                client_id: window.config.clientId
             })
         });
         
@@ -372,9 +375,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Manejar callback de autenticación si es necesario
     const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
     const tokenFromUrl = urlParams.get('access_token');
     
-    if (tokenFromUrl) {
+    if (code || tokenFromUrl) {
         window.loginManager.handleAuthCallback();
     }
 });
