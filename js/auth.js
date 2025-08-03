@@ -29,13 +29,18 @@ class Auth {
             // Limpiar la URL
             window.history.replaceState({}, document.title, window.location.pathname);
             
-            // Mostrar la sección de playlist
-            this.showPlaylistSection();
+            // Redirigir al dashboard
+            this.redirectToDashboard();
         } else if (localStorage.getItem('spotify_access_token')) {
             // Verificar si el token ha expirado
             const expiresAt = localStorage.getItem('token_expires');
             if (Date.now() < expiresAt) {
-                this.showPlaylistSection();
+                // Si estamos en la página principal y ya tenemos token, ir al dashboard
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
+                    this.redirectToDashboard();
+                } else {
+                    this.showPlaylistSection();
+                }
             } else {
                 this.logout();
             }
@@ -70,7 +75,11 @@ class Auth {
         localStorage.removeItem('spotify_access_token');
         localStorage.removeItem('token_expires');
         localStorage.removeItem('spotify_auth_state');
-        window.location.reload();
+        window.location.href = 'index.html';
+    }
+
+    redirectToDashboard() {
+        window.location.href = 'dashboard.html';
     }
 
     generateState() {
@@ -78,13 +87,19 @@ class Auth {
     }
 
     showPlaylistSection() {
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('playlist-section').style.display = 'block';
+        const loginSection = document.getElementById('login-section');
+        const playlistSection = document.getElementById('playlist-section');
+        
+        if (loginSection) loginSection.style.display = 'none';
+        if (playlistSection) playlistSection.style.display = 'block';
     }
 
     showLoginSection() {
-        document.getElementById('login-section').style.display = 'block';
-        document.getElementById('playlist-section').style.display = 'none';
+        const loginSection = document.getElementById('login-section');
+        const playlistSection = document.getElementById('playlist-section');
+        
+        if (loginSection) loginSection.style.display = 'block';
+        if (playlistSection) playlistSection.style.display = 'none';
     }
 
     getAccessToken() {
