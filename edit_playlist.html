@@ -10,373 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/responsive-fixes.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/search.css">
-    <style>
-        .edit-playlist-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-        }
-        
-        .edit-playlist-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-        
-        .playlist-info-card {
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .playlist-info-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #1db954, transparent);
-        }
-        
-        .playlist-header {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .playlist-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 12px;
-            object-fit: cover;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .playlist-image:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-        
-        .playlist-details h1 {
-            color: #ffffff;
-            margin: 0 0 0.5rem 0;
-            font-size: 2rem;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .playlist-details p {
-            color: #b3b3b3;
-            margin: 0 0 1rem 0;
-            font-size: 1rem;
-            line-height: 1.4;
-        }
-        
-        .playlist-stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1rem;
-        }
-        
-        .stat-item {
-            text-align: center;
-            color: #ffffff;
-            padding: 0.5rem 1rem;
-            background: rgba(29, 185, 84, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(29, 185, 84, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .stat-item:hover {
-            background: rgba(29, 185, 84, 0.15);
-            border-color: rgba(29, 185, 84, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1db954;
-            display: block;
-            margin-bottom: 0.25rem;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .edit-form-container {
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .edit-form-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #1db954, transparent);
-        }
-        
-        .form-section {
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .section-title {
-            color: #ffffff;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(29, 185, 84, 0.3);
-        }
-        
-        .section-title i {
-            color: #1db954;
-        }
-        
-        .tracks-list {
-            max-height: 400px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .track-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .track-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(29, 185, 84, 0.3);
-            transform: translateX(5px);
-        }
-        
-        .track-number {
-            color: #b3b3b3;
-            font-weight: 500;
-            min-width: 30px;
-        }
-        
-        .track-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        
-        .track-info {
-            flex: 1;
-        }
-        
-        .track-name {
-            color: #ffffff;
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        
-        .track-artist {
-            color: #b3b3b3;
-            font-size: 0.9rem;
-        }
-        
-        .track-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .action-btn {
-            background: none;
-            border: none;
-            color: #b3b3b3;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-        
-        .action-btn.remove {
-            color: #e74c3c;
-        }
-        
-        .action-btn.remove:hover {
-            background: rgba(231, 76, 60, 0.2);
-            color: #ff6b6b;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #1db954;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .back-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            margin-bottom: 2rem;
-        }
-        
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        /* Estilos para radio buttons */
-        .radio-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
-        
-        .radio-option {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            color: #ffffff;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .radio-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .radio-option input[type="radio"] {
-            display: none;
-        }
-        
-        .radio-custom {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #b3b3b3;
-            border-radius: 50%;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .radio-option input[type="radio"]:checked + .radio-custom {
-            border-color: #1db954;
-            background: #1db954;
-        }
-        
-        .radio-option input[type="radio"]:checked + .radio-custom::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 6px;
-            height: 6px;
-            background: white;
-            border-radius: 50%;
-        }
-        
-        /* Estilos para sugerencias de búsqueda */
-        .suggestion-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .suggestion-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        /* Estilos para botones de acción */
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            justify-content: center;
-        }
-        
-        .hero-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .hero-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-    </style>
+    <link rel="stylesheet" href="css/responsive-fixes.css">
 </head>
 <body>
     <!-- Cursor personalizado -->
     <div class="custom-cursor"></div>
     <div class="custom-cursor-follower"></div>
 
-    <!-- Header -->
+    <!-- Header elegante con glassmorphism -->
     <header class="elegant-header">
         <div class="header-container">
             <div class="brand-section">
@@ -386,66 +29,95 @@
                 </div>
                 <h1 class="brand-title">Tuneuptify</h1>
             </div>
+            
+            <nav class="header-nav">
+                <div class="nav-stats">
+                    <div class="stat-pill">
+                        <i class="fas fa-users"></i>
+                        <span>1.2k Usuarios</span>
+                    </div>
+                    <div class="stat-pill">
+                        <i class="fas fa-music"></i>
+                        <span>50k+ Playlists</span>
+                    </div>
+                </div>
+            </nav>
         </div>
     </header>
 
-    <!-- Contenido principal -->
+    <!-- Contenido principal con scroll suave -->
     <main class="elegant-main">
-        <div class="edit-playlist-container">
-            <!-- Botón de regreso -->
-            <a href="modify_playlists.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-                <span>Volver a mis playlists</span>
-            </a>
-
-            <!-- Header de la playlist -->
-            <div class="edit-playlist-header">
-                <div class="playlist-info-card">
-                    <div class="playlist-header">
-                        <img id="playlist-image" src="" alt="Playlist" class="playlist-image">
-                        <div class="playlist-details">
-                            <h1 id="playlist-name">Cargando...</h1>
-                            <p id="playlist-description" style="color: #b3b3b3; margin: 0;">Cargando descripción...</p>
-                            <div class="playlist-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value" id="tracks-count">-</div>
-                                    <div class="stat-label">Canciones</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="playlist-duration">-</div>
-                                    <div class="stat-label">Duración</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="playlist-visibility">-</div>
-                                    <div class="stat-label">Visibilidad</div>
+        <!-- Hero section con parallax -->
+        <section class="hero-parallax">
+            <div class="hero-bg">
+                <div class="floating-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                    <div class="shape shape-4"></div>
+                </div>
+            </div>
+            
+            <div class="hero-content">
+                <div class="welcome-card">
+                    <div class="welcome-header">
+                        <h2 class="welcome-title">Editar Playlist</h2>
+                        <p class="welcome-subtitle">Modifica y personaliza tu playlist de Spotify</p>
+                    </div>
+                    
+                    <!-- Información de la playlist actual -->
+                    <div id="current-playlist-info" class="current-playlist-info" style="display: none;">
+                        <div class="playlist-preview-card">
+                            <img id="playlist-image" src="" alt="Playlist" class="playlist-preview-image">
+                            <div class="playlist-preview-details">
+                                <h3 id="playlist-name">Cargando...</h3>
+                                <p id="playlist-description">Cargando descripción...</p>
+                                <div class="playlist-preview-stats">
+                                    <span id="tracks-count">- canciones</span>
+                                    <span id="playlist-duration">- duración</span>
+                                    <span id="playlist-visibility">- visibilidad</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="hero-actions">
+                        <a href="modify_playlists.html" class="hero-btn secondary">
+                            <div class="btn-content">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Volver a mis playlists</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </a>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Formulario de edición -->
-            <div class="edit-form-container">
-                <form id="edit-playlist-form" class="elegant-form">
-                    <!-- Información básica -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-edit"></i>
-                            Información de la playlist
-                        </h3>
-                        
+        <!-- Sección de edición de playlist -->
+        <section class="playlist-section" id="edit-playlist-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h3 class="section-title">Editar tu Playlist</h3>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div class="playlist-form-container">
+                    <form id="edit-playlist-form" class="elegant-form" aria-label="Formulario para editar playlist">
+                        <!-- Información básica de la playlist -->
                         <div class="form-group">
                             <div class="input-wrapper">
                                 <label for="edit-playlist-name" class="form-label">
                                     <i class="fas fa-heading"></i>
                                     <span>Nombre de la playlist</span>
                                 </label>
-                                <input type="text" id="edit-playlist-name" class="form-input" required>
+                                <input type="text" id="edit-playlist-name" class="form-input" required 
+                                       placeholder="Nombre de la playlist" aria-required="true">
                                 <div class="input-glow"></div>
                             </div>
                         </div>
 
+                        <!-- Descripción de la playlist -->
                         <div class="form-group">
                             <div class="input-wrapper">
                                 <label for="edit-playlist-description" class="form-label">
@@ -458,6 +130,7 @@
                             </div>
                         </div>
 
+                        <!-- Visibilidad de la playlist -->
                         <div class="form-group">
                             <div class="input-wrapper">
                                 <label class="form-label">
@@ -478,71 +151,110 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Búsqueda de canciones -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-search"></i>
-                            Agregar canciones
-                        </h3>
-                        
+                        <!-- Búsqueda de canciones para agregar -->
                         <div class="form-group">
                             <div class="input-wrapper">
                                 <label for="track-search" class="form-label">
-                                    <i class="fas fa-music"></i>
-                                    <span>Buscar canciones</span>
+                                    <i class="fas fa-search"></i>
+                                    <span>Agregar canciones</span>
                                 </label>
                                 <div class="autocomplete-container">
                                     <input type="text" id="track-search" class="form-input" 
                                            placeholder="Busca canciones para agregar..." 
-                                           autocomplete="off">
-                                    <div id="search-suggestions" class="autocomplete-suggestions"></div>
+                                           autocomplete="off" aria-autocomplete="list" 
+                                           aria-label="Buscar canciones para agregar">
+                                    <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
                                     <div class="input-glow"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Lista de canciones actuales -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-list"></i>
-                            Canciones en la playlist
-                        </h3>
-                        
-                        <div id="tracks-list" class="tracks-list">
-                            <div class="loading-spinner"></div>
-                            <p style="text-align: center; color: #b3b3b3;">Cargando canciones...</p>
+                        <!-- Canciones actuales en la playlist -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label class="form-label">
+                                    <i class="fas fa-music"></i>
+                                    <span>Canciones en la playlist</span>
+                                </label>
+                                <div id="tracks-list" class="selected-tracks-container">
+                                    <div class="loading-spinner"></div>
+                                    <p style="text-align: center; color: #b3b3b3;">Cargando canciones...</p>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Botones de acción -->
+                        <div class="form-actions">
+                            <button type="submit" id="save-changes-btn" class="action-btn primary" aria-label="Guardar cambios">
+                                <div class="btn-content">
+                                    <i class="fas fa-save"></i>
+                                    <span>Guardar cambios</span>
+                                </div>
+                                <div class="btn-ripple"></div>
+                            </button>
+                            
+                            <button type="button" id="cancel-btn" class="action-btn secondary" aria-label="Cancelar">
+                                <div class="btn-content">
+                                    <i class="fas fa-times"></i>
+                                    <span>Cancelar</span>
+                                </div>
+                                <div class="btn-ripple"></div>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Loading elegante -->
+                    <div id="loading" class="loading-container" style="display: none;">
+                        <div class="loading-spinner">
+                            <div class="spinner-ring"></div>
+                            <div class="spinner-ring"></div>
+                            <div class="spinner-ring"></div>
+                        </div>
+                        <p class="loading-text">
+                            <i class="fas fa-cog fa-spin"></i>
+                            Guardando cambios...
+                        </p>
                     </div>
 
-                    <!-- Botones de acción -->
-                    <div class="form-actions">
-                        <button type="submit" class="hero-btn primary" id="save-changes-btn">
-                            <div class="btn-content">
-                                <i class="fas fa-save"></i>
-                                <span>Guardar cambios</span>
-                            </div>
-                            <div class="btn-ripple"></div>
-                        </button>
-                        
-                        <button type="button" class="hero-btn secondary" id="cancel-btn">
-                            <div class="btn-content">
-                                <i class="fas fa-times"></i>
-                                <span>Cancelar</span>
-                            </div>
-                            <div class="btn-ripple"></div>
-                        </button>
-                    </div>
-                </form>
+                    <!-- Mensajes elegantes -->
+                    <div id="success-message" class="message-container" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer elegante -->
+    <footer class="elegant-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="footer-logo">
+                    <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en X (Twitter)">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://github.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Visita mi GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </main>
+    </footer>
 
     <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
     <script src="js/edit_playlist.js"></script>
 </body>
 </html> 

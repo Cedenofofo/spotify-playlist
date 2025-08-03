@@ -82,6 +82,10 @@ class EditPlaylistManager {
     }
 
     displayPlaylistInfo() {
+        // Mostrar la información de la playlist en el hero section
+        const currentPlaylistInfo = document.getElementById('current-playlist-info');
+        currentPlaylistInfo.style.display = 'block';
+
         // Imagen de la playlist con manejo mejorado
         const playlistImage = document.getElementById('playlist-image');
         const imageUrl = this.getPlaylistImageUrl(this.playlist);
@@ -98,61 +102,39 @@ class EditPlaylistManager {
 
         // Nombre de la playlist
         document.getElementById('playlist-name').textContent = this.playlist.name;
-        document.getElementById('edit-playlist-name').value = this.playlist.name;
 
-        // Descripción
-        const description = this.playlist.description || '';
+        // Descripción de la playlist
+        const description = this.playlist.description || 'Sin descripción';
         document.getElementById('playlist-description').textContent = description;
-        document.getElementById('edit-playlist-description').value = description;
 
-        // Estadísticas
-        document.getElementById('tracks-count').textContent = this.playlist.tracks?.total || 0;
+        // Llenar formulario con datos actuales
+        document.getElementById('edit-playlist-name').value = this.playlist.name;
+        document.getElementById('edit-playlist-description').value = description || '';
+
+        // Configurar visibilidad
+        const publicRadio = document.getElementById('public-playlist');
+        const privateRadio = document.getElementById('private-playlist');
         
-        // Duración (calculada)
-        const totalDuration = this.playlist.tracks?.items?.reduce((total, item) => {
-            return total + (item.track?.duration_ms || 0);
-        }, 0) || 0;
-        
-        const durationMinutes = Math.floor(totalDuration / 60000);
-        const durationHours = Math.floor(durationMinutes / 60);
-        const remainingMinutes = durationMinutes % 60;
-        
-        let durationText = '';
-        if (durationHours > 0) {
-            durationText = `${durationHours}h ${remainingMinutes}m`;
+        if (this.playlist.public) {
+            publicRadio.checked = true;
         } else {
-            durationText = `${durationMinutes}m`;
+            privateRadio.checked = true;
         }
-        
-        document.getElementById('playlist-duration').textContent = durationText;
-        
-        // Visibilidad
-        const visibility = this.playlist.public ? 'Pública' : 'Privada';
-        document.getElementById('playlist-visibility').textContent = visibility;
-        document.getElementById('public-playlist').checked = this.playlist.public;
     }
 
-    // Nuevo método para manejar URLs de imágenes de playlist
     getPlaylistImageUrl(playlist) {
-        // Si no hay imágenes, usar placeholder
         if (!playlist.images || playlist.images.length === 0) {
             return 'https://via.placeholder.com/120x120/1db954/ffffff?text=🎵';
         }
-
-        // Intentar con la primera imagen
         const firstImage = playlist.images[0];
         if (firstImage && firstImage.url) {
             return firstImage.url;
         }
-
-        // Si la primera imagen no tiene URL, buscar otra
         for (let i = 1; i < playlist.images.length; i++) {
             if (playlist.images[i] && playlist.images[i].url) {
                 return playlist.images[i].url;
             }
         }
-
-        // Fallback final
         return 'https://via.placeholder.com/120x120/1db954/ffffff?text=🎵';
     }
 
@@ -160,13 +142,13 @@ class EditPlaylistManager {
         try {
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
+                this.auth.logout();
+                return;
             }
 
             let allTracks = [];
             let nextUrl = `https://api.spotify.com/v1/playlists/${this.playlistId}/tracks?limit=100`;
 
-            // Cargar todas las canciones de la playlist
             while (nextUrl) {
                 const response = await fetch(nextUrl, {
                     headers: {
@@ -175,7 +157,7 @@ class EditPlaylistManager {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Error al cargar canciones: ${response.status}`);
+                    throw new Error(`Error al cargar tracks: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -183,81 +165,67 @@ class EditPlaylistManager {
                 nextUrl = data.next;
             }
 
-            // Filtrar canciones eliminadas localmente
-            this.tracks = allTracks.filter(track => 
-                !this.pendingChanges.tracksToRemove.includes(track.track.id)
-            );
+            // Filtrar tracks que no están marcados para eliminar
+            this.tracks = allTracks.filter(item => 
+                !this.pendingChanges.tracksToRemove.includes(item.track.id)
+            ).map(item => item.track);
 
             this.displayTracks();
             this.updateTrackCount();
 
         } catch (error) {
-            console.error('Error al cargar canciones:', error);
+            console.error('Error al cargar tracks:', error);
             this.showError('Error al cargar las canciones');
         }
     }
 
     displayTracks() {
-        const tracksContainer = document.getElementById('tracks-list');
-        tracksContainer.innerHTML = '';
-
+        const tracksList = document.getElementById('tracks-list');
+        
         if (this.tracks.length === 0) {
-            tracksContainer.innerHTML = '<p class="no-tracks">No hay canciones en esta playlist</p>';
+            tracksList.innerHTML = '<p style="text-align: center; color: #b3b3b3;">No hay canciones en esta playlist</p>';
             return;
         }
 
-        this.tracks.forEach((item, index) => {
-            const track = item.track;
-            if (!track) return;
-
+        const tracksHTML = this.tracks.map((track, index) => {
             const trackImageUrl = this.getTrackImageUrl(track);
-            
-            const trackElement = document.createElement('div');
-            trackElement.className = 'track-item';
-            trackElement.innerHTML = `
-                <div class="track-info">
-                    <span class="track-number">${index + 1}</span>
+            return `
+                <div class="selected-track-item" data-track-id="${track.id}">
+                    <div class="track-number">${index + 1}</div>
                     <img src="${trackImageUrl}" 
                          alt="Album cover" 
                          class="track-image"
                          onerror="this.onerror=null; this.src='https://via.placeholder.com/40x40/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
                          onload="this.classList.remove('placeholder-image');">
-                    <div class="track-details">
+                    <div class="track-info">
                         <div class="track-name">${this.escapeHtml(track.name)}</div>
-                        <div class="track-artist">${track.artists.map(artist => this.escapeHtml(artist.name)).join(', ')}</div>
+                        <div class="track-artist">${this.escapeHtml(track.artists.map(artist => artist.name).join(', '))}</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="action-btn remove" onclick="editPlaylistManager.removeTrack('${track.id}')" title="Eliminar canción">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="track-actions">
-                    <button class="action-btn remove" onclick="editPlaylistManager.removeTrack('${track.id}')" title="Eliminar canción">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
             `;
-            tracksContainer.appendChild(trackElement);
-        });
+        }).join('');
+
+        tracksList.innerHTML = tracksHTML;
     }
 
-    // Nuevo método para manejar URLs de imágenes de tracks
     getTrackImageUrl(track) {
-        // Si no hay álbum o imágenes, usar placeholder
         if (!track.album || !track.album.images || track.album.images.length === 0) {
             return 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎵';
         }
-
-        // Intentar con la primera imagen
         const firstImage = track.album.images[0];
         if (firstImage && firstImage.url) {
             return firstImage.url;
         }
-
-        // Si la primera imagen no tiene URL, buscar otra
         for (let i = 1; i < track.album.images.length; i++) {
             if (track.album.images[i] && track.album.images[i].url) {
                 return track.album.images[i].url;
             }
         }
-
-        // Fallback final
         return 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎵';
     }
 
@@ -270,7 +238,8 @@ class EditPlaylistManager {
         try {
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
+                this.auth.logout();
+                return;
             }
 
             const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
@@ -293,35 +262,30 @@ class EditPlaylistManager {
 
     displaySearchSuggestions(tracks) {
         const suggestionsContainer = document.getElementById('search-suggestions');
-        suggestionsContainer.innerHTML = '';
-
+        
         if (tracks.length === 0) {
-            suggestionsContainer.innerHTML = '<div class="suggestion-item no-results">No se encontraron canciones</div>';
+            suggestionsContainer.innerHTML = '<div class="suggestion-item"><p style="color: #b3b3b3; text-align: center;">No se encontraron canciones</p></div>';
             suggestionsContainer.style.display = 'block';
             return;
         }
 
-        tracks.forEach(track => {
+        const suggestionsHTML = tracks.map(track => {
             const trackImageUrl = this.getTrackImageUrl(track);
-            
-            const suggestionItem = document.createElement('div');
-            suggestionItem.className = 'suggestion-item';
-            suggestionItem.innerHTML = `
-                <img src="${trackImageUrl}" 
-                     alt="Album cover"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/30x30/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
-                     onload="this.classList.remove('placeholder-image');">
-                <div class="suggestion-info">
-                    <div class="suggestion-name">${this.escapeHtml(track.name)}</div>
-                    <div class="suggestion-artist">${track.artists.map(artist => this.escapeHtml(artist.name)).join(', ')}</div>
+            return `
+                <div class="suggestion-item" onclick="editPlaylistManager.addTrack('${track.id}')">
+                    <img src="${trackImageUrl}" 
+                         alt="Album cover"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/30x30/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
+                         onload="this.classList.remove('placeholder-image');">
+                    <div class="suggestion-info">
+                        <div class="suggestion-title">${this.escapeHtml(track.name)}</div>
+                        <div class="suggestion-subtitle">${this.escapeHtml(track.artists.map(artist => artist.name).join(', '))}</div>
+                    </div>
                 </div>
-                <button class="add-track-btn" onclick="editPlaylistManager.addTrack('${track.id}')">
-                    <i class="fas fa-plus"></i>
-                </button>
             `;
-            suggestionsContainer.appendChild(suggestionItem);
-        });
+        }).join('');
 
+        suggestionsContainer.innerHTML = suggestionsHTML;
         suggestionsContainer.style.display = 'block';
     }
 
@@ -334,17 +298,11 @@ class EditPlaylistManager {
         try {
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
-            }
-
-            // Verificar si la canción ya está en la playlist
-            const existingTrack = this.tracks.find(item => item.track.id === trackId);
-            if (existingTrack) {
-                this.showNotification('Esta canción ya está en la playlist', 'warning');
+                this.auth.logout();
                 return;
             }
 
-            // Obtener información de la canción
+            // Obtener información completa del track
             const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -352,71 +310,66 @@ class EditPlaylistManager {
             });
 
             if (!response.ok) {
-                throw new Error(`Error al obtener información de la canción: ${response.status}`);
+                throw new Error(`Error al obtener track: ${response.status}`);
             }
 
             const track = await response.json();
-            
+
+            // Verificar si ya existe en la lista
+            if (this.tracks.some(t => t.id === trackId)) {
+                this.showNotification('Esta canción ya está en la playlist', 'warning');
+                return;
+            }
+
             // Agregar a la lista local
-            this.tracks.push({ track: track });
+            this.tracks.push(track);
             this.pendingChanges.tracksToAdd.push(trackId);
-            
+
             // Actualizar display
             this.displayTracks();
             this.updateTrackCount();
             this.hideSuggestions();
-            
-            // Limpiar búsqueda
+
+            // Limpiar campo de búsqueda
             document.getElementById('track-search').value = '';
 
-            console.log('Canción agregada. Total actual:', this.tracks.length);
-            this.showNotification('Canción agregada a la playlist (cambios pendientes)', 'success');
+            this.showNotification('Canción agregada a la playlist', 'success');
 
         } catch (error) {
-            console.error('Error al agregar canción:', error);
+            console.error('Error al agregar track:', error);
             this.showError('Error al agregar la canción');
         }
     }
 
     removeTrack(trackId) {
-        const confirmed = confirm('¿Estás seguro de que quieres eliminar esta canción de la playlist?');
+        // Remover de la lista local
+        this.tracks = this.tracks.filter(track => track.id !== trackId);
         
-        if (!confirmed) return;
-
-        try {
-            // Encontrar la canción en la lista local
-            const trackIndex = this.tracks.findIndex(item => item.track.id === trackId);
-            if (trackIndex === -1) {
-                this.showError('Canción no encontrada');
-                return;
-            }
-
-            // Remover de la lista local
-            this.tracks.splice(trackIndex, 1);
-            
-            // Agregar a la lista de cambios pendientes
+        // Agregar a la lista de tracks a eliminar
+        if (!this.pendingChanges.tracksToRemove.includes(trackId)) {
             this.pendingChanges.tracksToRemove.push(trackId);
-            
-            // Actualizar display
-            this.displayTracks();
-            this.updateTrackCount();
-
-            console.log('Canción eliminada. Total actual:', this.tracks.length);
-            this.showNotification('Canción eliminada (cambios pendientes)', 'success');
-
-        } catch (error) {
-            console.error('Error al eliminar canción:', error);
-            this.showError('Error al eliminar la canción');
         }
+
+        // Remover de la lista de tracks a agregar si estaba ahí
+        this.pendingChanges.tracksToAdd = this.pendingChanges.tracksToAdd.filter(id => id !== trackId);
+
+        // Actualizar display
+        this.displayTracks();
+        this.updateTrackCount();
+
+        this.showNotification('Canción removida de la playlist', 'info');
     }
 
     updateTrackCount() {
-        const tracksCount = document.getElementById('tracks-count');
-        if (tracksCount) {
-            tracksCount.textContent = this.tracks.length;
-            console.log('Contador actualizado:', this.tracks.length, 'canciones');
-        } else {
-            console.error('Elemento tracks-count no encontrado');
+        const tracksCountElement = document.getElementById('tracks-count');
+        if (tracksCountElement) {
+            tracksCountElement.textContent = `${this.tracks.length} canciones`;
+        }
+        
+        // También actualizar en el hero section
+        const heroTracksCount = document.querySelector('#current-playlist-info .playlist-preview-stats span:first-child');
+        if (heroTracksCount) {
+            heroTracksCount.textContent = `${this.tracks.length} canciones`;
         }
     }
 
@@ -424,38 +377,38 @@ class EditPlaylistManager {
         try {
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
-            }
-
-            const name = document.getElementById('edit-playlist-name').value.trim();
-            const description = document.getElementById('edit-playlist-description').value.trim();
-            const isPublic = document.getElementById('public-playlist').checked;
-
-            if (!name) {
-                this.showError('El nombre de la playlist es requerido');
+                this.auth.logout();
                 return;
             }
 
-            // Actualizar información de la playlist
-            const infoResponse = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}`, {
+            // Mostrar loading
+            const loadingContainer = document.getElementById('loading');
+            loadingContainer.style.display = 'block';
+
+            // 1. Actualizar información básica de la playlist
+            const playlistName = document.getElementById('edit-playlist-name').value;
+            const playlistDescription = document.getElementById('edit-playlist-description').value;
+            const isPublic = document.getElementById('public-playlist').checked;
+
+            const updateResponse = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: name,
-                    description: description,
+                    name: playlistName,
+                    description: playlistDescription,
                     public: isPublic
                 })
             });
 
-            if (!infoResponse.ok) {
-                throw new Error(`Error al actualizar información de playlist: ${infoResponse.status}`);
+            if (!updateResponse.ok) {
+                throw new Error(`Error al actualizar playlist: ${updateResponse.status}`);
             }
 
-            // Eliminar canciones si hay cambios pendientes
-            if (this.pendingChanges.tracksToRemove.length > 0) {
+            // 2. Eliminar tracks marcados para eliminar
+            for (const trackId of this.pendingChanges.tracksToRemove) {
                 const removeResponse = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}/tracks`, {
                     method: 'DELETE',
                     headers: {
@@ -463,16 +416,16 @@ class EditPlaylistManager {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        tracks: this.pendingChanges.tracksToRemove.map(id => ({ uri: `spotify:track:${id}` }))
+                        tracks: [{ uri: `spotify:track:${trackId}` }]
                     })
                 });
 
                 if (!removeResponse.ok) {
-                    throw new Error(`Error al eliminar canciones: ${removeResponse.status}`);
+                    console.warn(`Error al eliminar track ${trackId}: ${removeResponse.status}`);
                 }
             }
 
-            // Agregar canciones si hay cambios pendientes
+            // 3. Agregar tracks marcados para agregar
             if (this.pendingChanges.tracksToAdd.length > 0) {
                 const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}/tracks`, {
                     method: 'POST',
@@ -486,14 +439,9 @@ class EditPlaylistManager {
                 });
 
                 if (!addResponse.ok) {
-                    throw new Error(`Error al agregar canciones: ${addResponse.status}`);
+                    throw new Error(`Error al agregar tracks: ${addResponse.status}`);
                 }
             }
-
-            // Actualizar información en la página
-            document.getElementById('playlist-name').textContent = name;
-            document.getElementById('playlist-description').textContent = description;
-            document.getElementById('playlist-visibility').textContent = isPublic ? 'Pública' : 'Privada';
 
             // Limpiar cambios pendientes
             this.pendingChanges = {
@@ -502,58 +450,39 @@ class EditPlaylistManager {
                 infoChanges: null
             };
 
+            // Ocultar loading
+            loadingContainer.style.display = 'none';
+
+            // Mostrar mensaje de éxito
             this.showNotification('Playlist actualizada exitosamente', 'success');
 
-            // Redirigir después de un momento
+            // Redirigir después de un breve delay
             setTimeout(() => {
                 window.location.href = 'modify_playlists.html';
-            }, 1500);
+            }, 2000);
 
         } catch (error) {
             console.error('Error al guardar cambios:', error);
             this.showError('Error al guardar los cambios');
+            
+            // Ocultar loading
+            document.getElementById('loading').style.display = 'none';
         }
     }
 
     showNotification(message, type = 'info') {
-        // Crear notificación
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed; top: 20px; right: 20px; 
-            padding: 1rem 1.5rem; border-radius: 10px; 
-            color: white; font-weight: 500; z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+        const messageContainer = document.getElementById('success-message');
+        messageContainer.innerHTML = `
+            <div class="message ${type}">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
         `;
+        messageContainer.style.display = 'block';
 
-        // Configurar colores según tipo
-        switch (type) {
-            case 'success':
-                notification.style.background = '#2ecc71';
-                break;
-            case 'error':
-                notification.style.background = '#e74c3c';
-                break;
-            case 'warning':
-                notification.style.background = '#f39c12';
-                break;
-            default:
-                notification.style.background = '#3498db';
-        }
-
-        notification.textContent = message;
-        document.body.appendChild(notification);
-
-        // Remover después de 3 segundos
         setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
+            messageContainer.style.display = 'none';
+        }, 5000);
     }
 
     showError(message) {
