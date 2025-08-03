@@ -82,7 +82,8 @@
                 message.includes('indexReact') ||
                 message.includes('accounts.spotify.com') ||
                 message.includes('google.com') ||
-                message.includes('spotifycdn')) {
+                message.includes('spotifycdn') ||
+                message.includes('favicon.ico')) {
                 return; // No mostrar estos errores
             }
             originalError.apply(console, args);
@@ -95,10 +96,23 @@
                 message.includes('indexReact') ||
                 message.includes('accounts.spotify.com') ||
                 message.includes('google.com') ||
-                message.includes('spotifycdn')) {
+                message.includes('spotifycdn') ||
+                message.includes('favicon.ico')) {
                 return; // No mostrar estos warnings
             }
             originalWarn.apply(console, args);
+        };
+        
+        // También filtrar console.log para mantener la consola limpia
+        const originalLog = console.log;
+        console.log = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('URL Parameters') || 
+                message.includes('favicon.ico') ||
+                message.includes('Auth callback params')) {
+                return; // No mostrar estos logs
+            }
+            originalLog.apply(console, args);
         };
         
         // Manejar callback de autenticación directamente en index.html
@@ -107,12 +121,6 @@
             const tokenFromUrl = urlParams.get('access_token');
             const code = urlParams.get('code');
             const error = urlParams.get('error');
-            
-            console.log('Index.html - URL Parameters:', {
-                code: code,
-                access_token: tokenFromUrl,
-                error: error
-            });
             
             if (tokenFromUrl || code || error) {
                 // Si hay parámetros de autenticación, procesarlos
