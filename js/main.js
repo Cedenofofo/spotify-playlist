@@ -442,13 +442,19 @@ function displayPlaylistPreview(data) {
     // Guardar los tracks en una variable global para poder eliminarlos
     window.currentPlaylistTracks = data.tracks;
     
+    // Obtener las canciones específicas seleccionadas
+    const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+    
+    // Combinar todas las canciones para la vista previa
+    const allTracks = [...data.tracks, ...selectedTracks];
+    
     previewDiv.innerHTML = `
         <div class="preview-header">
             <h4>Vista previa: ${data.playlistName}</h4>
-            <p>${data.tracks.length} canciones encontradas</p>
+            <p>${allTracks.length} canciones encontradas</p>
         </div>
         <div class="preview-tracks">
-            ${data.tracks.map((track, index) => `
+            ${allTracks.map((track, index) => `
                 <div class="preview-track" data-track-index="${index}">
                     <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
                     <div class="track-info">
@@ -529,7 +535,14 @@ async function exportToSpotify() {
         const playlistId = playlistData.id;
 
         // 3. Agregar las canciones a la playlist
-        const trackUris = window.currentPlaylistTracks.map(track => track.uri);
+        let trackUris = window.currentPlaylistTracks.map(track => track.uri);
+        
+        // Agregar también las canciones específicas seleccionadas
+        const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+        const selectedTrackUris = selectedTracks.map(track => track.uri);
+        
+        // Combinar todas las canciones (evitando duplicados)
+        const allTrackUris = [...new Set([...trackUris, ...selectedTrackUris])];
         
         const addTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
             method: 'POST',
@@ -538,7 +551,7 @@ async function exportToSpotify() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                uris: trackUris
+                uris: allTrackUris
             })
         });
 
