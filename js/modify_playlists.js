@@ -177,6 +177,10 @@ class ModifyPlaylistsManager {
                 nextUrl = data.next; // URL para la siguiente página
                 
                 console.log(`Página ${pageCount}: ${newPlaylists.length} playlists cargadas. Total: ${allPlaylists.length}/${totalPlaylists}`);
+                console.log(`¿Hay siguiente página? ${nextUrl ? 'SÍ' : 'NO'}`);
+                if (nextUrl) {
+                    console.log(`Siguiente URL: ${nextUrl}`);
+                }
                 
                 // Pequeña pausa para no sobrecargar la API
                 if (nextUrl) {
@@ -226,6 +230,10 @@ class ModifyPlaylistsManager {
                     allPlaylists = allPlaylists.concat(newUserPlaylists);
                     
                     console.log(`Página ${userPageCount}: ${userPlaylists.length} playlists del usuario, ${newUserPlaylists.length} nuevas agregadas`);
+                    console.log(`¿Hay siguiente página de usuario? ${userData.next ? 'SÍ' : 'NO'}`);
+                    if (userData.next) {
+                        console.log(`Siguiente URL de usuario: ${userData.next}`);
+                    }
                     
                     userPlaylistsUrl = userData.next;
                     
