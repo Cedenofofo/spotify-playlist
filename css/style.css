@@ -351,36 +351,6 @@ input[type="number"]::placeholder {
   box-shadow: var(--shadow-md);
 }
 
-.add-artist-btn {
-  background: var(--bg-card);
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md) var(--space-lg);
-  font-size: var(--text-base);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.add-artist-btn:hover {
-  background: var(--primary-gradient);
-  color: var(--text-primary);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: transparent;
-}
-
-.add-artist-btn:active {
-  transform: translateY(-1px);
-}
-
 /* ===== CANCIONES SELECCIONADAS ===== */
 .selected-track {
   display: flex;
@@ -446,7 +416,7 @@ input[type="number"]::placeholder {
   box-shadow: var(--shadow-md);
 }
 
-/* ===== BOTONES MODERNOS ===== */
+/* ===== BOTONES UNIFICADOS ===== */
 .btn {
   background: #1db954 !important;
   color: white !important;
@@ -467,6 +437,8 @@ input[type="number"]::placeholder {
   box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
+  min-width: 140px !important;
+  justify-content: center !important;
 }
 
 .btn::before {
@@ -495,9 +467,10 @@ input[type="number"]::placeholder {
 
 .btn:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.3);
 }
 
+/* Botón secundario (outline) */
 .btn-secondary {
   background: transparent !important;
   color: #1db954 !important;
@@ -512,32 +485,69 @@ input[type="number"]::placeholder {
   box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4) !important;
 }
 
+/* Botón de éxito (naranja) */
 .btn-success {
   background: #ff6b35 !important;
   color: white !important;
   border: none !important;
   box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
 }
 
 .btn-success:hover {
   background: #e55a2b !important;
   box-shadow: 0 12px 35px rgba(255, 107, 53, 0.6) !important;
-  transform: translateY(-2px) !important;
+  transform: translateY(-3px) !important;
 }
 
+/* Botón de error */
 .btn-error {
-  background: var(--error-color);
-  color: white;
-  border: 2px solid var(--error-color);
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  background: #e74c3c !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4) !important;
 }
 
 .btn-error:hover {
-  background: #c0392b;
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+  background: #c0392b !important;
+  box-shadow: 0 12px 35px rgba(231, 76, 60, 0.6) !important;
+  transform: translateY(-3px) !important;
+}
+
+/* Botón pequeño */
+.btn-sm {
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  min-width: 100px !important;
+}
+
+/* Botón grande */
+.btn-lg {
+  padding: 18px 40px !important;
+  font-size: 18px !important;
+  min-width: 180px !important;
+}
+
+/* Botón de icono */
+.btn-icon {
+  padding: 12px !important;
+  min-width: auto !important;
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+}
+
+/* Botón deshabilitado */
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.btn:disabled:hover,
+.btn.disabled:hover {
+  transform: none !important;
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4) !important;
 }
 
 /* ===== LOADING ANIMADO ===== */
