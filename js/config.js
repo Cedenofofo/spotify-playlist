@@ -19,11 +19,14 @@ window.config = {
     authUrl: 'https://accounts.spotify.com/authorize',
     apiUrl: 'https://api.spotify.com/v1',
     
-    // Scopes necesarios
+    // Scopes necesarios - AGREGADOS LOS SCOPES PARA LECTURA DE PLAYLISTS
     scopes: [
         'playlist-modify-public',
         'playlist-modify-private',
-        'user-read-private'
+        'playlist-read-private',
+        'playlist-read-collaborative',
+        'user-read-private',
+        'user-read-email'
     ]
 };
 console.log('Config.js cargado correctamente'); 

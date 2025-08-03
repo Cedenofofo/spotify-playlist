@@ -127,30 +127,29 @@ class ModifyPlaylistsManager {
                 throw new Error('No hay token de acceso');
             }
 
-            // Obtener TODAS las playlists del usuario usando múltiples estrategias
-            let allPlaylists = [];
-            let pageCount = 0;
-            let totalPlaylists = 0;
+            console.log('=== INICIANDO CARGA DE PLAYLISTS ===');
             
             // Obtener ID del usuario
             const userId = await this.getCurrentUserId();
-            if (userId) {
-                console.log('Obteniendo playlists creadas por el usuario:', userId);
-            }
+            console.log('ID del usuario:', userId);
             
-            // Estrategia 1: Cargar playlists que el usuario sigue
-            console.log('=== ESTRATEGIA 1: Playlists seguidas ===');
+            // Estrategia principal: Cargar todas las playlists usando paginación
+            let allPlaylists = [];
             let nextUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
+            let pageCount = 0;
+            let totalPlaylists = 0;
             
             // Actualizar mensaje de carga
             const loadingElement = document.querySelector('#loading-state h3');
             const loadingDesc = document.querySelector('#loading-state p');
             
-            // Primera fase: cargar playlists que el usuario sigue
+            console.log('Cargando playlists con paginación...');
+            
             while (nextUrl) {
                 pageCount++;
+                
                 if (loadingElement) {
-                    loadingElement.textContent = `Cargando playlists seguidas... (página ${pageCount})`;
+                    loadingElement.textContent = `Cargando playlists... (página ${pageCount})`;
                 }
                 if (loadingDesc) {
                     loadingDesc.textContent = `Se han cargado ${allPlaylists.length} playlists hasta ahora...`;
@@ -166,232 +165,90 @@ class ModifyPlaylistsManager {
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        // Token expirado, redirigir al login
+                        console.error('Token expirado, redirigiendo al login');
                         this.auth.logout();
                         return;
                     }
-                    throw new Error(`Error en la API: ${response.status}`);
+                    throw new Error(`Error en la API: ${response.status} - ${response.statusText}`);
                 }
 
                 const data = await response.json();
                 const newPlaylists = data.items || [];
-                allPlaylists = allPlaylists.concat(newPlaylists);
-                totalPlaylists = data.total || allPlaylists.length;
-                nextUrl = data.next; // URL para la siguiente página
+                totalPlaylists = data.total || 0;
                 
-                console.log(`Página ${pageCount}: ${newPlaylists.length} playlists cargadas. Total: ${allPlaylists.length}/${totalPlaylists}`);
-                console.log(`¿Hay siguiente página? ${nextUrl ? 'SÍ' : 'NO'}`);
+                console.log(`Página ${pageCount}: ${newPlaylists.length} playlists cargadas`);
+                console.log(`Total reportado por API: ${totalPlaylists}`);
+                
+                // Agregar las nuevas playlists
+                allPlaylists = allPlaylists.concat(newPlaylists);
+                
+                console.log(`Total acumulado: ${allPlaylists.length}/${totalPlaylists}`);
+                
+                // Obtener la URL de la siguiente página
+                nextUrl = data.next;
+                
                 if (nextUrl) {
                     console.log(`Siguiente URL: ${nextUrl}`);
-                }
-                
-                // Pequeña pausa para no sobrecargar la API
-                if (nextUrl) {
+                    // Pequeña pausa para no sobrecargar la API
                     await new Promise(resolve => setTimeout(resolve, 200));
-                }
-            }
-
-            // Estrategia 2: Cargar playlists creadas por el usuario
-            console.log('=== ESTRATEGIA 2: Playlists creadas por el usuario ===');
-            
-            if (userId) {
-                try {
-                    let userPlaylistsUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
-                    let userPageCount = 0;
-                    
-                    while (userPlaylistsUrl) {
-                        userPageCount++;
-                        console.log(`Cargando playlists del usuario página ${userPageCount}: ${userPlaylistsUrl}`);
-                        
-                        const userResponse = await fetch(userPlaylistsUrl, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-
-                        if (!userResponse.ok) {
-                            if (userResponse.status === 401) {
-                                this.auth.logout();
-                                return;
-                            }
-                            console.warn(`Error al cargar playlists del usuario: ${userResponse.status}`);
-                            break;
-                        }
-
-                        const userData = await userResponse.json();
-                        const userPlaylists = userData.items || [];
-                        
-                        console.log(`Página ${userPageCount}: ${userPlaylists.length} playlists del usuario encontradas`);
-                        console.log(`Total reportado por API de usuario: ${userData.total}`);
-                        
-                        // Agregar solo las playlists que no están ya en la lista
-                        const existingIds = allPlaylists.map(p => p.id);
-                        const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
-                        allPlaylists = allPlaylists.concat(newUserPlaylists);
-                        
-                        console.log(`Nuevas playlists agregadas: ${newUserPlaylists.length}`);
-                        
-                        userPlaylistsUrl = userData.next;
-                        
-                        if (userPlaylistsUrl) {
-                            await new Promise(resolve => setTimeout(resolve, 200));
-                        }
-                    }
-                } catch (error) {
-                    console.warn('Error al cargar playlists del usuario:', error);
+                } else {
+                    console.log('No hay más páginas disponibles');
                 }
             }
             
-            // Estrategia 3: Cargar TODAS las playlists de la biblioteca completa
-            console.log('=== ESTRATEGIA 3: Biblioteca completa ===');
+            // Verificar si obtuvimos todas las playlists
+            console.log(`RESUMEN: Se cargaron ${allPlaylists.length} playlists de un total de ${totalPlaylists}`);
             
-            try {
-                // Usar el endpoint que carga TODAS las playlists de la biblioteca
-                let libraryUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
-                let libraryPageCount = 0;
-                let totalLibraryPlaylists = 0;
+            if (allPlaylists.length < totalPlaylists) {
+                console.warn(`⚠️ ADVERTENCIA: Solo se cargaron ${allPlaylists.length} de ${totalPlaylists} playlists`);
                 
-                while (libraryUrl) {
-                    libraryPageCount++;
-                    console.log(`Cargando biblioteca página ${libraryPageCount}: ${libraryUrl}`);
-                    
-                    const libraryResponse = await fetch(libraryUrl, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (!libraryResponse.ok) {
-                        if (libraryResponse.status === 401) {
-                            this.auth.logout();
-                            return;
-                        }
-                        console.warn(`Error al cargar biblioteca: ${libraryResponse.status}`);
-                        break;
-                    }
-
-                    const libraryData = await libraryResponse.json();
-                    const libraryPlaylists = libraryData.items || [];
-                    totalLibraryPlaylists = libraryData.total || 0;
-                    
-                    console.log(`Página ${libraryPageCount}: ${libraryPlaylists.length} playlists de biblioteca`);
-                    console.log(`Total de biblioteca reportado por API: ${totalLibraryPlaylists}`);
-                    
-                    // Agregar TODAS las playlists de la biblioteca
-                    const existingIds = allPlaylists.map(p => p.id);
-                    const newLibraryPlaylists = libraryPlaylists.filter(p => !existingIds.includes(p.id));
-                    allPlaylists = allPlaylists.concat(newLibraryPlaylists);
-                    
-                    console.log(`Nuevas playlists de biblioteca agregadas: ${newLibraryPlaylists.length}`);
-                    console.log(`Total acumulado: ${allPlaylists.length}`);
-                    
-                    libraryUrl = libraryData.next;
-                    
-                    if (libraryUrl) {
-                        await new Promise(resolve => setTimeout(resolve, 300));
-                    }
-                }
+                // Intentar cargar las playlists faltantes con diferentes estrategias
+                console.log('Intentando cargar playlists faltantes...');
                 
-                console.log(`RESUMEN BIBLIOTECA: Se cargaron ${allPlaylists.length} playlists de un total de ${totalLibraryPlaylists} en la biblioteca`);
-                
-            } catch (error) {
-                console.warn('Error al cargar biblioteca completa:', error);
-            }
-            
-            // Estrategia 4: Carga forzada de TODAS las playlists
-            console.log('=== ESTRATEGIA 4: Carga forzada completa ===');
-            
-            try {
-                // Método 1: Cargar con diferentes límites
-                const limits = [20, 50, 100];
-                for (const limit of limits) {
-                    console.log(`Intentando con límite ${limit}...`);
-                    const limitResponse = await fetch(`https://api.spotify.com/v1/me/playlists?limit=${limit}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (limitResponse.ok) {
-                        const limitData = await limitResponse.json();
-                        const limitPlaylists = limitData.items || [];
-                        
-                        console.log(`Límite ${limit}: ${limitPlaylists.length} playlists encontradas`);
-                        console.log(`Total reportado por API: ${limitData.total}`);
-                        
-                        // Agregar solo las playlists que no están ya en la lista
-                        const existingIds = allPlaylists.map(p => p.id);
-                        const newLimitPlaylists = limitPlaylists.filter(p => !existingIds.includes(p.id));
-                        allPlaylists = allPlaylists.concat(newLimitPlaylists);
-                        
-                        console.log(`Nuevas playlists agregadas: ${newLimitPlaylists.length}`);
-                    }
-                    
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                }
-                
-                // Método 2: Cargar con diferentes offsets
-                console.log('Cargando con diferentes offsets...');
-                for (let offset = 0; offset <= 200; offset += 20) {
-                    const offsetResponse = await fetch(`https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (offsetResponse.ok) {
-                        const offsetData = await offsetResponse.json();
-                        const offsetPlaylists = offsetData.items || [];
-                        
-                        if (offsetPlaylists.length === 0) {
-                            console.log(`Offset ${offset}: No hay más playlists`);
-                            break;
-                        }
-                        
-                        console.log(`Offset ${offset}: ${offsetPlaylists.length} playlists encontradas`);
-                        
-                        // Agregar solo las playlists que no están ya en la lista
-                        const existingIds = allPlaylists.map(p => p.id);
-                        const newOffsetPlaylists = offsetPlaylists.filter(p => !existingIds.includes(p.id));
-                        allPlaylists = allPlaylists.concat(newOffsetPlaylists);
-                        
-                        console.log(`Nuevas playlists agregadas: ${newOffsetPlaylists.length}`);
-                    }
-                    
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                }
-                
-                // Método 3: Intentar con el endpoint de usuario específico
+                // Estrategia adicional: Cargar playlists del usuario específico
                 if (userId) {
-                    console.log('Intentando con endpoint de usuario específico...');
-                    const userResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=50`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+                    try {
+                        let userPlaylistsUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
+                        let userPageCount = 0;
+                        
+                        while (userPlaylistsUrl) {
+                            userPageCount++;
+                            console.log(`Cargando playlists del usuario página ${userPageCount}`);
+                            
+                            const userResponse = await fetch(userPlaylistsUrl, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
 
-                    if (userResponse.ok) {
-                        const userData = await userResponse.json();
-                        const userPlaylists = userData.items || [];
-                        
-                        console.log(`Usuario ${userId}: ${userPlaylists.length} playlists encontradas`);
-                        console.log(`Total reportado por API de usuario: ${userData.total}`);
-                        
-                        // Agregar solo las playlists que no están ya en la lista
-                        const existingIds = allPlaylists.map(p => p.id);
-                        const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
-                        allPlaylists = allPlaylists.concat(newUserPlaylists);
-                        
-                        console.log(`Nuevas playlists de usuario agregadas: ${newUserPlaylists.length}`);
+                            if (userResponse.ok) {
+                                const userData = await userResponse.json();
+                                const userPlaylists = userData.items || [];
+                                
+                                console.log(`Página ${userPageCount}: ${userPlaylists.length} playlists del usuario`);
+                                
+                                // Agregar solo las playlists que no están ya en la lista
+                                const existingIds = allPlaylists.map(p => p.id);
+                                const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
+                                allPlaylists = allPlaylists.concat(newUserPlaylists);
+                                
+                                console.log(`Nuevas playlists agregadas: ${newUserPlaylists.length}`);
+                                
+                                userPlaylistsUrl = userData.next;
+                                
+                                if (userPlaylistsUrl) {
+                                    await new Promise(resolve => setTimeout(resolve, 200));
+                                }
+                            } else {
+                                console.warn(`Error al cargar playlists del usuario: ${userResponse.status}`);
+                                break;
+                            }
+                        }
+                    } catch (error) {
+                        console.warn('Error al cargar playlists del usuario:', error);
                     }
                 }
-                
-            } catch (error) {
-                console.warn('Error en carga forzada:', error);
             }
-            
-            // Estrategia 5: Verificación final y reporte
-            console.log('=== ESTRATEGIA 5: Verificación final ===');
             
             // Eliminar duplicados por ID
             const uniquePlaylists = [];
@@ -405,21 +262,17 @@ class ModifyPlaylistsManager {
             }
             
             console.log(`TOTAL FINAL: ${uniquePlaylists.length} playlists únicas encontradas`);
-            console.log('IDs de playlists encontradas:', uniquePlaylists.map(p => p.id));
             
             // Mostrar nombres de las primeras 20 playlists para verificación
             console.log('Primeras 20 playlists encontradas:');
             uniquePlaylists.slice(0, 20).forEach((playlist, index) => {
-                console.log(`${index + 1}. ${playlist.name} (${playlist.id})`);
+                console.log(`${index + 1}. ${playlist.name} (${playlist.id}) - ${playlist.tracks?.total || 0} canciones`);
             });
             
-            allPlaylists = uniquePlaylists;
-
-            this.playlists = allPlaylists;
+            this.playlists = uniquePlaylists;
             this.filteredPlaylists = [...this.playlists];
 
-            console.log(`RESUMEN FINAL: Se cargaron ${this.playlists.length} playlists de un total de ${totalPlaylists}`);
-            console.log('IDs de playlists cargadas:', allPlaylists.map(p => p.id));
+            console.log(`RESUMEN FINAL: Se cargaron ${this.playlists.length} playlists únicas`);
 
             if (this.playlists.length === 0) {
                 this.showEmptyState();
