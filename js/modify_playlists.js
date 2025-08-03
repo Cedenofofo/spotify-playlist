@@ -191,33 +191,55 @@ class ModifyPlaylistsManager {
                 }
             }
 
-            // Intentar con diferentes límites para asegurar que se carguen todas
-            console.log('=== INTENTANDO CON DIFERENTES LÍMITES ===');
+            // Cargar playlists creadas por el usuario usando el endpoint correcto
+            console.log('=== CARGANDO PLAYLISTS CREADAS POR EL USUARIO ===');
             
-            // Intentar con límite de 100
-            try {
-                const largeLimitResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=100', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+            if (userId) {
+                try {
+                    let userPlaylistsUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
+                    let userPageCount = 0;
+                    
+                    while (userPlaylistsUrl) {
+                        userPageCount++;
+                        console.log(`Cargando playlists del usuario página ${userPageCount}: ${userPlaylistsUrl}`);
+                        
+                        const userResponse = await fetch(userPlaylistsUrl, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
 
-                if (largeLimitResponse.ok) {
-                    const largeLimitData = await largeLimitResponse.json();
-                    const largeLimitPlaylists = largeLimitData.items || [];
-                    
-                    console.log(`Límite 100: ${largeLimitPlaylists.length} playlists encontradas`);
-                    console.log(`Total reportado por API: ${largeLimitData.total}`);
-                    
-                    // Agregar solo las playlists que no están ya en la lista
-                    const existingIds = allPlaylists.map(p => p.id);
-                    const newLargeLimitPlaylists = largeLimitPlaylists.filter(p => !existingIds.includes(p.id));
-                    allPlaylists = allPlaylists.concat(newLargeLimitPlaylists);
-                    
-                    console.log(`Nuevas playlists agregadas: ${newLargeLimitPlaylists.length}`);
+                        if (!userResponse.ok) {
+                            if (userResponse.status === 401) {
+                                this.auth.logout();
+                                return;
+                            }
+                            console.warn(`Error al cargar playlists del usuario: ${userResponse.status}`);
+                            break;
+                        }
+
+                        const userData = await userResponse.json();
+                        const userPlaylists = userData.items || [];
+                        
+                        console.log(`Página ${userPageCount}: ${userPlaylists.length} playlists del usuario encontradas`);
+                        console.log(`Total reportado por API de usuario: ${userData.total}`);
+                        
+                        // Agregar solo las playlists que no están ya en la lista
+                        const existingIds = allPlaylists.map(p => p.id);
+                        const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
+                        allPlaylists = allPlaylists.concat(newUserPlaylists);
+                        
+                        console.log(`Nuevas playlists agregadas: ${newUserPlaylists.length}`);
+                        
+                        userPlaylistsUrl = userData.next;
+                        
+                        if (userPlaylistsUrl) {
+                            await new Promise(resolve => setTimeout(resolve, 200));
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Error al cargar playlists del usuario:', error);
                 }
-            } catch (error) {
-                console.warn('Error con límite 100:', error);
             }
 
             this.playlists = allPlaylists;
