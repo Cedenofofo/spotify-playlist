@@ -10,6 +10,7 @@ class EditPlaylistManager {
             tracksToAdd: [],
             infoChanges: null
         };
+        this.selectedTracks = new Set(); // Para selección múltiple
         this.setupEventListeners();
         this.loadPlaylistData();
     }
@@ -41,6 +42,48 @@ class EditPlaylistManager {
                 this.hideSuggestions();
             }
         });
+
+        // Botones de selección múltiple
+        this.setupMultiSelectButtons();
+    }
+
+    setupMultiSelectButtons() {
+        // Agregar botones de selección múltiple al HTML
+        const tracksList = document.getElementById('tracks-list');
+        if (tracksList) {
+            const multiSelectContainer = document.createElement('div');
+            multiSelectContainer.className = 'multi-select-container';
+            multiSelectContainer.innerHTML = `
+                <div class="multi-select-actions">
+                    <button type="button" id="select-all-btn" class="action-btn secondary">
+                        <i class="fas fa-check-square"></i>
+                        <span>Seleccionar todo</span>
+                    </button>
+                    <button type="button" id="deselect-all-btn" class="action-btn secondary" style="display: none;">
+                        <i class="fas fa-square"></i>
+                        <span>Deseleccionar todo</span>
+                    </button>
+                    <button type="button" id="delete-selected-btn" class="action-btn remove" style="display: none;">
+                        <i class="fas fa-trash"></i>
+                        <span>Eliminar seleccionadas</span>
+                    </button>
+                </div>
+            `;
+            tracksList.parentNode.insertBefore(multiSelectContainer, tracksList);
+
+            // Event listeners para botones de selección múltiple
+            document.getElementById('select-all-btn').addEventListener('click', () => {
+                this.selectAllTracks();
+            });
+
+            document.getElementById('deselect-all-btn').addEventListener('click', () => {
+                this.deselectAllTracks();
+            });
+
+            document.getElementById('delete-selected-btn').addEventListener('click', () => {
+                this.deleteSelectedTracks();
+            });
+        }
     }
 
     async loadPlaylistData() {
@@ -189,8 +232,14 @@ class EditPlaylistManager {
 
         const tracksHTML = this.tracks.map((track, index) => {
             const trackImageUrl = this.getTrackImageUrl(track);
+            const isSelected = this.selectedTracks.has(track.id);
             return `
-                <div class="selected-track-item" data-track-id="${track.id}">
+                <div class="selected-track-item ${isSelected ? 'selected' : ''}" data-track-id="${track.id}">
+                    <div class="track-checkbox">
+                        <input type="checkbox" id="track-${track.id}" ${isSelected ? 'checked' : ''} 
+                               onchange="editPlaylistManager.toggleTrackSelection('${track.id}')">
+                        <label for="track-${track.id}"></label>
+                    </div>
                     <div class="track-number">${index + 1}</div>
                     <img src="${trackImageUrl}" 
                          alt="Album cover" 
@@ -211,6 +260,7 @@ class EditPlaylistManager {
         }).join('');
 
         tracksList.innerHTML = tracksHTML;
+        this.updateMultiSelectButtons();
     }
 
     getTrackImageUrl(track) {
@@ -271,8 +321,9 @@ class EditPlaylistManager {
 
         const suggestionsHTML = tracks.map(track => {
             const trackImageUrl = this.getTrackImageUrl(track);
+            const isAlreadyInPlaylist = this.tracks.some(t => t.id === track.id);
             return `
-                <div class="suggestion-item" onclick="editPlaylistManager.addTrack('${track.id}')">
+                <div class="suggestion-item ${isAlreadyInPlaylist ? 'already-added' : ''}" onclick="editPlaylistManager.addTrack('${track.id}')">
                     <img src="${trackImageUrl}" 
                          alt="Album cover"
                          onerror="this.onerror=null; this.src='https://via.placeholder.com/30x30/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
@@ -280,6 +331,7 @@ class EditPlaylistManager {
                     <div class="suggestion-info">
                         <div class="suggestion-title">${this.escapeHtml(track.name)}</div>
                         <div class="suggestion-subtitle">${this.escapeHtml(track.artists.map(artist => artist.name).join(', '))}</div>
+                        ${isAlreadyInPlaylist ? '<div class="already-in-playlist">Ya en la playlist</div>' : ''}
                     </div>
                 </div>
             `;
@@ -302,6 +354,12 @@ class EditPlaylistManager {
                 return;
             }
 
+            // Verificar si ya existe en la lista
+            if (this.tracks.some(t => t.id === trackId)) {
+                this.showNotification('Esta canción ya está en la playlist', 'warning');
+                return;
+            }
+
             // Obtener información completa del track
             const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
                 headers: {
@@ -314,12 +372,6 @@ class EditPlaylistManager {
             }
 
             const track = await response.json();
-
-            // Verificar si ya existe en la lista
-            if (this.tracks.some(t => t.id === trackId)) {
-                this.showNotification('Esta canción ya está en la playlist', 'warning');
-                return;
-            }
 
             // Agregar a la lista local
             this.tracks.push(track);
@@ -353,11 +405,77 @@ class EditPlaylistManager {
         // Remover de la lista de tracks a agregar si estaba ahí
         this.pendingChanges.tracksToAdd = this.pendingChanges.tracksToAdd.filter(id => id !== trackId);
 
+        // Remover de la selección múltiple
+        this.selectedTracks.delete(trackId);
+
         // Actualizar display
         this.displayTracks();
         this.updateTrackCount();
 
         this.showNotification('Canción removida de la playlist', 'info');
+    }
+
+    // Funciones de selección múltiple
+    toggleTrackSelection(trackId) {
+        if (this.selectedTracks.has(trackId)) {
+            this.selectedTracks.delete(trackId);
+        } else {
+            this.selectedTracks.add(trackId);
+        }
+        this.updateMultiSelectButtons();
+    }
+
+    selectAllTracks() {
+        this.tracks.forEach(track => {
+            this.selectedTracks.add(track.id);
+        });
+        this.displayTracks();
+        this.updateMultiSelectButtons();
+    }
+
+    deselectAllTracks() {
+        this.selectedTracks.clear();
+        this.displayTracks();
+        this.updateMultiSelectButtons();
+    }
+
+    deleteSelectedTracks() {
+        if (this.selectedTracks.size === 0) {
+            this.showNotification('No hay canciones seleccionadas', 'warning');
+            return;
+        }
+
+        const confirmed = confirm(`¿Estás seguro de que quieres eliminar ${this.selectedTracks.size} canción(es) de la playlist?`);
+        if (!confirmed) return;
+
+        // Eliminar todas las canciones seleccionadas
+        this.selectedTracks.forEach(trackId => {
+            this.removeTrack(trackId);
+        });
+
+        this.selectedTracks.clear();
+        this.updateMultiSelectButtons();
+        this.showNotification(`${this.selectedTracks.size} canción(es) eliminada(s)`, 'success');
+    }
+
+    updateMultiSelectButtons() {
+        const selectAllBtn = document.getElementById('select-all-btn');
+        const deselectAllBtn = document.getElementById('deselect-all-btn');
+        const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+
+        if (this.selectedTracks.size === 0) {
+            selectAllBtn.style.display = 'inline-flex';
+            deselectAllBtn.style.display = 'none';
+            deleteSelectedBtn.style.display = 'none';
+        } else if (this.selectedTracks.size === this.tracks.length) {
+            selectAllBtn.style.display = 'none';
+            deselectAllBtn.style.display = 'inline-flex';
+            deleteSelectedBtn.style.display = 'inline-flex';
+        } else {
+            selectAllBtn.style.display = 'inline-flex';
+            deselectAllBtn.style.display = 'inline-flex';
+            deleteSelectedBtn.style.display = 'inline-flex';
+        }
     }
 
     updateTrackCount() {

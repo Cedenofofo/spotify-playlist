@@ -849,593 +849,18 @@ body {
 }
 
 .message-container.success {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
-  color: #10b981;
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
-.message-container.error {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
-}
-
-/* ===== FOOTER ELEGANTE ===== */
-.elegant-footer {
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--glass-border);
-  padding: 2rem;
-  margin-top: 4rem;
-}
-
-.footer-container {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
-
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.footer-logo {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-}
-
-.footer-brand p {
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.footer-social {
-  display: flex;
-  gap: 1rem;
-}
-
-.social-link {
-  width: 45px;
-  height: 45px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  font-size: 1.25rem;
-  transition: var(--transition-smooth);
-}
-
-.social-link:hover {
-  background: var(--accent-green);
-  color: #000;
-  transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(29, 185, 84, 0.3);
-}
-
-/* ===== ANIMACIONES ===== */
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.6;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(180deg);
-  }
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 1024px) {
-  .welcome-title {
-    font-size: 3rem;
-  }
-  
-  .quick-stats {
-    gap: 1.5rem;
-  }
-  
-  .features-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-  
-  .playlist-form-container {
-    padding: 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .elegant-header {
-    padding: 0 1rem;
-  }
-  
-  .header-nav {
-    gap: 1rem;
-  }
-  
-  .nav-stats {
-    display: none;
-  }
-  
-  .hero-parallax {
-    height: 70vh;
-  }
-  
-  .welcome-title {
-    font-size: 2.5rem;
-  }
-  
-  .welcome-subtitle {
-    font-size: 1rem;
-  }
-  
-  .quick-stats {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .features-section {
-    padding: 2rem 1rem;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-  }
-  
-  .playlist-form-container {
-    padding: 1.5rem;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .elegant-header {
-    height: 70px;
-  }
-  
-  .elegant-main {
-    margin-top: 70px;
-  }
-  
-  .hero-parallax {
-    height: 60vh;
-  }
-  
-  .welcome-title {
-    font-size: 2rem;
-  }
-  
-  .welcome-card {
-    padding: 2rem 1rem;
-  }
-  
-  .hero-btn {
-    min-width: 200px;
-    padding: 0.875rem 1.5rem;
-    font-size: 1rem;
-  }
-  
-  .section-title {
-    font-size: 1.75rem;
-  }
-  
-  .playlist-form-container {
-    padding: 1rem;
-  }
-  
-  .form-input {
-    padding: 0.875rem 1.25rem;
-  }
-}
-
-/* ===== UTILITIES ===== */
-.hidden {
-  display: none !important;
-}
-
-.text-center {
-  text-align: center;
-}
-
-/* ===== ESTILOS ESPECÍFICOS PARA ARTISTAS ===== */
-.artist-inputs {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
-  z-index: 1;
-}
-
-.artist-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-  z-index: 1;
-}
-
-.artist-row input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  outline: none;
-  position: relative;
-  z-index: 1;
-}
-
-.artist-row input::placeholder {
-  color: var(--text-secondary);
-}
-
-.artist-row button {
-  background: var(--accent-orange);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  font-size: 0.7rem;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 3;
-}
-
-.artist-row button:hover {
-  background: #dc2626;
-  transform: scale(1.1);
-}
-
-/* ===== VISTA PREVIA DE PLAYLIST ===== */
-.playlist-preview {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-soft);
-  animation: slideInUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.preview-header {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.preview-header h4 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  background: var(--spotify-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.preview-header p {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.preview-tracks {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 2rem;
-  overflow-x: visible;
-}
-
-.preview-tracks::-webkit-scrollbar {
-  width: 6px;
-}
-
-.preview-tracks::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-.preview-tracks::-webkit-scrollbar-thumb {
-  background: var(--accent-green);
-  border-radius: 3px;
-}
-
-.preview-tracks::-webkit-scrollbar-thumb:hover {
-  background: #1ed760;
-}
-
-.preview-track {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: var(--transition-smooth);
-  position: relative;
-  overflow: visible;
-}
-
-.preview-track:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(5px);
-  box-shadow: var(--shadow-soft);
-}
-
-.preview-track img {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.preview-track .track-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.preview-track .track-name {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.preview-track .track-artist {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Botón de eliminar en vista previa */
-.remove-track-btn {
-  position: absolute;
-  top: 50%;
-  right: 1rem;
-  transform: translateY(-50%);
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #ef4444;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  opacity: 1;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  z-index: 10;
-  pointer-events: auto;
-}
-
-.remove-track-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.5);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.remove-track-btn i {
-  font-size: 0.8rem;
-}
-
-/* ===== MEJORAS EN AUTocompletado ===== */
-.autocomplete-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  box-shadow: var(--shadow-strong);
-  z-index: 1000;
-  max-height: 300px;
-  overflow-y: auto;
-  margin-top: 0.5rem;
-  animation: slideInDown 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.autocomplete-suggestions::-webkit-scrollbar {
-  width: 6px;
-}
-
-.autocomplete-suggestions::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-.autocomplete-suggestions::-webkit-scrollbar-thumb {
-  background: var(--accent-green);
-  border-radius: 3px;
-}
-
-.autocomplete-suggestion {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  position: relative;
-  z-index: 1;
-}
-
-.autocomplete-suggestion:last-child {
-  border-bottom: none;
-}
-
-.autocomplete-suggestion:hover {
-  background: rgba(29, 185, 84, 0.1);
-  transform: translateX(5px);
-}
-
-.autocomplete-suggestion img {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  object-fit: cover;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-}
-
-.autocomplete-suggestion span {
-  flex: 1;
-  color: var(--text-primary);
-  font-weight: 500;
-  position: relative;
-  z-index: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ===== ANIMACIONES ===== */
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOutRight {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-}
-
-/* ===== NOTIFICACIONES ===== */
-.notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 1rem 1.5rem;
-  border-radius: 16px;
-  color: white;
-  font-weight: 600;
-  z-index: 1000;
-  animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  max-width: 350px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.notification-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.notification-success {
   background: linear-gradient(135deg, #10b981, #059669);
 }
 
-.notification-error {
+.message-container.error {
   background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
-.notification-warning {
+.message-container.warning {
   background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
-.notification-info {
+.message-container.info {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
 }
 
@@ -3022,3 +2447,561 @@ body {
         justify-content: center;
     }
 } 
+
+/* ===== CORRECCIONES PARA SUPERPOSICIONES ===== */
+
+/* Contenedor de sugerencias con z-index alto */
+.autocomplete-suggestions {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    z-index: 1000 !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    margin-top: 0.5rem !important;
+}
+
+/* Elementos de sugerencia sin superposición */
+.suggestion-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 0.75rem !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    color: #ffffff !important;
+    position: relative !important;
+    z-index: 1 !important;
+    min-height: 60px !important;
+}
+
+.suggestion-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.suggestion-item img {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 4px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+}
+
+.suggestion-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+.suggestion-title {
+    font-weight: 500 !important;
+    margin-bottom: 0.25rem !important;
+    font-size: 0.9rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: #ffffff !important;
+}
+
+.suggestion-subtitle {
+    color: #b3b3b3 !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Elementos de track sin superposición */
+.selected-track-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 0.75rem !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    margin-bottom: 0.5rem !important;
+    transition: all 0.3s ease !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    position: relative !important;
+    z-index: 1 !important;
+    min-height: 60px !important;
+}
+
+.selected-track-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(29, 185, 84, 0.3) !important;
+    transform: translateX(5px) !important;
+}
+
+.selected-track-item .track-number {
+    color: #b3b3b3 !important;
+    font-weight: 500 !important;
+    min-width: 30px !important;
+    font-size: 0.9rem !important;
+    flex-shrink: 0 !important;
+}
+
+.selected-track-item .track-image {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 6px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+}
+
+.selected-track-item .track-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+.selected-track-item .track-name {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.25rem !important;
+    font-size: 0.95rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.selected-track-item .track-artist {
+    color: #b3b3b3 !important;
+    font-size: 0.85rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.selected-track-item .track-actions {
+    display: flex !important;
+    gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+}
+
+.selected-track-item .action-btn {
+    background: none !important;
+    border: none !important;
+    color: #b3b3b3 !important;
+    cursor: pointer !important;
+    padding: 0.5rem !important;
+    border-radius: 50% !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.9rem !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.selected-track-item .action-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+.selected-track-item .action-btn.remove {
+    color: #e74c3c !important;
+}
+
+.selected-track-item .action-btn.remove:hover {
+    background: rgba(231, 76, 60, 0.2) !important;
+    color: #ff6b6b !important;
+}
+
+/* Contenedor de tracks sin superposición */
+.selected-tracks-container {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Responsive para evitar superposiciones */
+@media (max-width: 768px) {
+    .suggestion-item {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 0.5rem !important;
+        min-height: 80px !important;
+        padding: 1rem !important;
+    }
+    
+    .suggestion-info {
+        text-align: center !important;
+        width: 100% !important;
+    }
+    
+    .selected-track-item {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 0.5rem !important;
+        min-height: 80px !important;
+        padding: 1rem !important;
+    }
+    
+    .selected-track-item .track-actions {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    .selected-track-item .track-info {
+        text-align: center !important;
+        width: 100% !important;
+    }
+}
+
+/* ===== ESTILOS PARA SELECCIÓN MÚLTIPLE ===== */
+
+.multi-select-container {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.multi-select-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.multi-select-actions .action-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    min-width: auto;
+}
+
+/* Checkbox personalizado para tracks */
+.track-checkbox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.track-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.track-checkbox label {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.track-checkbox input[type="checkbox"]:checked + label {
+    background: #1db954;
+    border-color: #1db954;
+}
+
+.track-checkbox input[type="checkbox"]:checked + label::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.track-checkbox input[type="checkbox"]:hover + label {
+    border-color: #1db954;
+    background: rgba(29, 185, 84, 0.1);
+}
+
+/* Track seleccionado */
+.selected-track-item.selected {
+    background: rgba(29, 185, 84, 0.1) !important;
+    border-color: rgba(29, 185, 84, 0.3) !important;
+}
+
+.selected-track-item.selected:hover {
+    background: rgba(29, 185, 84, 0.15) !important;
+}
+
+/* Estilos para sugerencias ya agregadas */
+.suggestion-item.already-added {
+    opacity: 0.6;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.suggestion-item.already-added:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.already-in-playlist {
+    font-size: 0.75rem;
+    color: #1db954;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(29, 185, 84, 0.1);
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Responsive para selección múltiple */
+@media (max-width: 768px) {
+    .multi-select-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .multi-select-actions .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .track-checkbox {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .track-checkbox label {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* ===== ESTILOS PARA SELECCIÓN MÚLTIPLE DE PLAYLISTS ===== */
+
+/* Checkbox personalizado para playlists */
+.playlist-checkbox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+}
+
+.playlist-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.playlist-checkbox label {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.playlist-checkbox input[type="checkbox"]:checked + label {
+    background: #1db954;
+    border-color: #1db954;
+}
+
+.playlist-checkbox input[type="checkbox"]:checked + label::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.playlist-checkbox input[type="checkbox"]:hover + label {
+    border-color: #1db954;
+    background: rgba(29, 185, 84, 0.1);
+}
+
+/* Playlist seleccionada */
+.playlist-card.selected {
+    background: rgba(29, 185, 84, 0.1) !important;
+    border-color: rgba(29, 185, 84, 0.3) !important;
+    transform: scale(1.02) !important;
+}
+
+.playlist-card.selected:hover {
+    background: rgba(29, 185, 84, 0.15) !important;
+}
+
+/* Estilos para las cards de playlist con checkbox */
+.playlist-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.playlist-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(29, 185, 84, 0.3);
+    transform: translateY(-2px);
+}
+
+.playlist-image-container {
+    flex-shrink: 0;
+}
+
+.playlist-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.playlist-name {
+    color: #ffffff;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.playlist-description {
+    color: #b3b3b3;
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.playlist-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.playlist-stats .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #b3b3b3;
+    font-size: 0.85rem;
+}
+
+.playlist-stats .stat-item i {
+    color: #1db954;
+    font-size: 0.8rem;
+}
+
+.playlist-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.playlist-actions .action-btn {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playlist-actions .action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.playlist-actions .action-btn.edit:hover {
+    background: rgba(29, 185, 84, 0.2);
+    color: #1db954;
+}
+
+.playlist-actions .action-btn.delete:hover {
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+/* Responsive para playlists con selección múltiple */
+@media (max-width: 768px) {
+    .playlist-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .playlist-checkbox {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        margin-right: 0;
+    }
+    
+    .playlist-info {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .playlist-stats {
+        justify-content: center;
+    }
+    
+    .playlist-actions {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .playlist-checkbox {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .playlist-checkbox label {
+        width: 22px;
+        height: 22px;
+    }
+}

@@ -5,6 +5,7 @@ class ModifyPlaylistsManager {
         this.auth = new Auth();
         this.playlists = [];
         this.filteredPlaylists = [];
+        this.selectedPlaylists = new Set(); // Para selección múltiple
         this.setupEventListeners();
         this.checkAuth();
         console.log('ModifyPlaylistsManager inicializado');
@@ -29,6 +30,48 @@ class ModifyPlaylistsManager {
 
         // Cursor personalizado
         this.initCustomCursor();
+
+        // Botones de selección múltiple
+        this.setupMultiSelectButtons();
+    }
+
+    setupMultiSelectButtons() {
+        // Agregar botones de selección múltiple al HTML
+        const playlistsContainer = document.querySelector('.playlists-grid');
+        if (playlistsContainer) {
+            const multiSelectContainer = document.createElement('div');
+            multiSelectContainer.className = 'multi-select-container';
+            multiSelectContainer.innerHTML = `
+                <div class="multi-select-actions">
+                    <button type="button" id="select-all-playlists-btn" class="action-btn secondary">
+                        <i class="fas fa-check-square"></i>
+                        <span>Seleccionar todo</span>
+                    </button>
+                    <button type="button" id="deselect-all-playlists-btn" class="action-btn secondary" style="display: none;">
+                        <i class="fas fa-square"></i>
+                        <span>Deseleccionar todo</span>
+                    </button>
+                    <button type="button" id="delete-selected-playlists-btn" class="action-btn remove" style="display: none;">
+                        <i class="fas fa-trash"></i>
+                        <span>Eliminar seleccionadas</span>
+                    </button>
+                </div>
+            `;
+            playlistsContainer.parentNode.insertBefore(multiSelectContainer, playlistsContainer);
+
+            // Event listeners para botones de selección múltiple
+            document.getElementById('select-all-playlists-btn').addEventListener('click', () => {
+                this.selectAllPlaylists();
+            });
+
+            document.getElementById('deselect-all-playlists-btn').addEventListener('click', () => {
+                this.deselectAllPlaylists();
+            });
+
+            document.getElementById('delete-selected-playlists-btn').addEventListener('click', () => {
+                this.deleteSelectedPlaylists();
+            });
+        }
     }
 
     setupRippleEffect() {
@@ -100,63 +143,40 @@ class ModifyPlaylistsManager {
                 return userData.id;
             }
         } catch (error) {
-            console.error('Error al obtener ID del usuario:', error);
+            console.error('Error al obtener ID de usuario:', error);
         }
         return null;
     }
 
     checkAuth() {
         const token = localStorage.getItem('spotify_access_token');
-        const tokenExpires = localStorage.getItem('spotify_token_expires');
-
-        if (token && tokenExpires && Date.now() < parseInt(tokenExpires)) {
-            console.log('Usuario autenticado, cargando playlists');
-            this.loadPlaylists();
-        } else {
-            console.log('Usuario no autenticado, redirigiendo al login');
+        if (!token) {
             window.location.href = 'index.html';
+            return;
         }
+        this.loadPlaylists();
     }
 
     async loadPlaylists() {
-        this.showLoadingState();
-        
         try {
+            this.showLoadingState();
+            
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
+                this.auth.logout();
+                return;
             }
 
-            console.log('=== INICIANDO CARGA DE PLAYLISTS ===');
-            
-            // Obtener ID del usuario
             const userId = await this.getCurrentUserId();
-            console.log('ID del usuario:', userId);
-            
-            // Estrategia principal: Cargar todas las playlists usando paginación
+            if (!userId) {
+                throw new Error('No se pudo obtener el ID de usuario');
+            }
+
             let allPlaylists = [];
-            let nextUrl = 'https://api.spotify.com/v1/me/playlists?limit=50';
-            let pageCount = 0;
-            let totalPlaylists = 0;
-            
-            // Actualizar mensaje de carga
-            const loadingElement = document.querySelector('#loading-state h3');
-            const loadingDesc = document.querySelector('#loading-state p');
-            
-            console.log('Cargando playlists con paginación...');
-            
+            let nextUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
+
+            // Cargar todas las playlists del usuario
             while (nextUrl) {
-                pageCount++;
-                
-                if (loadingElement) {
-                    loadingElement.textContent = `Cargando playlists... (página ${pageCount})`;
-                }
-                if (loadingDesc) {
-                    loadingDesc.textContent = `Se han cargado ${allPlaylists.length} playlists hasta ahora...`;
-                }
-                
-                console.log(`Cargando página ${pageCount}: ${nextUrl}`);
-                
                 const response = await fetch(nextUrl, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -164,93 +184,30 @@ class ModifyPlaylistsManager {
                 });
 
                 if (!response.ok) {
-                    if (response.status === 401) {
-                        console.error('Token expirado, redirigiendo al login');
-                        this.auth.logout();
-                        return;
-                    }
-                    throw new Error(`Error en la API: ${response.status} - ${response.statusText}`);
+                    throw new Error(`Error al cargar playlists: ${response.status}`);
                 }
 
                 const data = await response.json();
-                const newPlaylists = data.items || [];
-                totalPlaylists = data.total || 0;
-                
-                console.log(`Página ${pageCount}: ${newPlaylists.length} playlists cargadas`);
-                console.log(`Total reportado por API: ${totalPlaylists}`);
-                
-                // Agregar las nuevas playlists
-                allPlaylists = allPlaylists.concat(newPlaylists);
-                
-                console.log(`Total acumulado: ${allPlaylists.length}/${totalPlaylists}`);
-                
-                // Obtener la URL de la siguiente página
+                allPlaylists = allPlaylists.concat(data.items);
                 nextUrl = data.next;
-                
-                if (nextUrl) {
-                    console.log(`Siguiente URL: ${nextUrl}`);
-                    // Pequeña pausa para no sobrecargar la API
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                } else {
-                    console.log('No hay más páginas disponibles');
-                }
             }
-            
-            // Verificar si obtuvimos todas las playlists
-            console.log(`RESUMEN: Se cargaron ${allPlaylists.length} playlists de un total de ${totalPlaylists}`);
-            
-            if (allPlaylists.length < totalPlaylists) {
-                console.warn(`⚠️ ADVERTENCIA: Solo se cargaron ${allPlaylists.length} de ${totalPlaylists} playlists`);
-                
-                // Intentar cargar las playlists faltantes con diferentes estrategias
-                console.log('Intentando cargar playlists faltantes...');
-                
-                // Estrategia adicional: Cargar playlists del usuario específico
-                if (userId) {
-                    try {
-                        let userPlaylistsUrl = `https://api.spotify.com/v1/users/${userId}/playlists?limit=50`;
-                        let userPageCount = 0;
-                        
-                        while (userPlaylistsUrl) {
-                            userPageCount++;
-                            console.log(`Cargando playlists del usuario página ${userPageCount}`);
-                            
-                            const userResponse = await fetch(userPlaylistsUrl, {
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
 
-                            if (userResponse.ok) {
-                                const userData = await userResponse.json();
-                                const userPlaylists = userData.items || [];
-                                
-                                console.log(`Página ${userPageCount}: ${userPlaylists.length} playlists del usuario`);
-                                
-                                // Agregar solo las playlists que no están ya en la lista
-                                const existingIds = allPlaylists.map(p => p.id);
-                                const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
-                                allPlaylists = allPlaylists.concat(newUserPlaylists);
-                                
-                                console.log(`Nuevas playlists agregadas: ${newUserPlaylists.length}`);
-                                
-                                userPlaylistsUrl = userData.next;
-                                
-                                if (userPlaylistsUrl) {
-                                    await new Promise(resolve => setTimeout(resolve, 200));
-                                }
-                            } else {
-                                console.warn(`Error al cargar playlists del usuario: ${userResponse.status}`);
-                                break;
-                            }
-                        }
-                    } catch (error) {
-                        console.warn('Error al cargar playlists del usuario:', error);
-                    }
+            // También cargar playlists colaborativas
+            const collaborativeResponse = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
+            });
+
+            if (collaborativeResponse.ok) {
+                const collaborativeData = await collaborativeResponse.json();
+                // Filtrar playlists que no están en la lista principal
+                const existingIds = new Set(allPlaylists.map(p => p.id));
+                const newCollaborative = collaborativeData.items.filter(p => !existingIds.has(p.id));
+                allPlaylists = allPlaylists.concat(newCollaborative);
             }
-            
-            // Eliminar duplicados por ID
+
+            // Eliminar duplicados
             const uniquePlaylists = [];
             const seenIds = new Set();
             
@@ -260,29 +217,12 @@ class ModifyPlaylistsManager {
                     uniquePlaylists.push(playlist);
                 }
             }
-            
-            console.log(`TOTAL FINAL: ${uniquePlaylists.length} playlists únicas encontradas`);
-            
-            // Mostrar nombres de las primeras 20 playlists para verificación
-            console.log('Primeras 20 playlists encontradas:');
-            uniquePlaylists.slice(0, 20).forEach((playlist, index) => {
-                console.log(`${index + 1}. ${playlist.name} (${playlist.id}) - ${playlist.tracks?.total || 0} canciones`);
-            });
-            
+
             this.playlists = uniquePlaylists;
             this.filteredPlaylists = [...this.playlists];
-
-            console.log(`RESUMEN FINAL: Se cargaron ${this.playlists.length} playlists únicas`);
-
-            if (this.playlists.length === 0) {
-                this.showEmptyState();
-            } else {
-                this.displayPlaylists();
-                const message = totalPlaylists > 0 && totalPlaylists !== this.playlists.length 
-                    ? `Se cargaron ${this.playlists.length} de ${totalPlaylists} playlists` 
-                    : `Se cargaron ${this.playlists.length} playlists`;
-                this.showNotification(message, 'success');
-            }
+            
+            console.log(`Cargadas ${this.playlists.length} playlists`);
+            this.displayPlaylists();
 
         } catch (error) {
             console.error('Error al cargar playlists:', error);
@@ -294,138 +234,124 @@ class ModifyPlaylistsManager {
         if (!query) {
             this.filteredPlaylists = [...this.playlists];
         } else {
-            this.filteredPlaylists = this.playlists.filter(playlist => 
+            this.filteredPlaylists = this.playlists.filter(playlist =>
                 playlist.name.toLowerCase().includes(query) ||
-                playlist.description?.toLowerCase().includes(query)
+                (playlist.description && playlist.description.toLowerCase().includes(query))
             );
         }
-        
         this.displayPlaylists();
     }
 
     displayPlaylists() {
-        const grid = document.getElementById('playlists-grid');
-        const loadingState = document.getElementById('loading-state');
-        const errorState = document.getElementById('error-state');
-        const emptyState = document.getElementById('empty-state');
-
-        // Ocultar todos los estados
-        loadingState.style.display = 'none';
-        errorState.style.display = 'none';
-        emptyState.style.display = 'none';
+        const container = document.querySelector('.playlists-grid');
+        if (!container) return;
 
         if (this.filteredPlaylists.length === 0) {
-            if (this.playlists.length === 0) {
-                this.showEmptyState();
-            } else {
-                // No hay resultados de búsqueda
-                grid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <div class="empty-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <h3>No se encontraron playlists</h3>
-                        <p>Intenta con otros términos de búsqueda.</p>
-                    </div>
-                `;
-                grid.style.display = 'grid';
-            }
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-music"></i>
+                    <h3>No se encontraron playlists</h3>
+                    <p>Intenta con una búsqueda diferente o crea una nueva playlist</p>
+                </div>
+            `;
             return;
         }
 
-        grid.innerHTML = this.filteredPlaylists.map(playlist => this.createPlaylistCard(playlist)).join('');
-        grid.style.display = 'grid';
+        const playlistsHTML = this.filteredPlaylists.map(playlist => {
+            const isSelected = this.selectedPlaylists.has(playlist.id);
+            return this.createPlaylistCard(playlist, isSelected);
+        }).join('');
 
-        // Agregar event listeners a los botones
+        container.innerHTML = playlistsHTML;
         this.setupPlaylistCardListeners();
+        this.updateMultiSelectButtons();
     }
 
-    createPlaylistCard(playlist) {
-        // Mejorar el manejo de imágenes con fallback robusto
+    createPlaylistCard(playlist, isSelected = false) {
         const imageUrl = this.getPlaylistImageUrl(playlist);
         const trackCount = playlist.tracks?.total || 0;
         const isPublic = playlist.public ? 'Pública' : 'Privada';
-
+        
         return `
-            <div class="playlist-card" data-playlist-id="${playlist.id}">
-                <div class="playlist-header">
+            <div class="playlist-card ${isSelected ? 'selected' : ''}" data-playlist-id="${playlist.id}">
+                <div class="playlist-checkbox">
+                    <input type="checkbox" id="playlist-${playlist.id}" ${isSelected ? 'checked' : ''} 
+                           onchange="modifyPlaylistsManager.togglePlaylistSelection('${playlist.id}')">
+                    <label for="playlist-${playlist.id}"></label>
+                </div>
+                <div class="playlist-image-container">
                     <img src="${imageUrl}" 
-                         alt="${playlist.name}" 
+                         alt="${this.escapeHtml(playlist.name)}" 
                          class="playlist-image"
                          onerror="this.onerror=null; this.src='https://via.placeholder.com/80x80/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
                          onload="this.classList.remove('placeholder-image');">
-                    <div class="playlist-info">
-                        <h3 title="${this.escapeHtml(playlist.name)}">${this.escapeHtml(playlist.name)}</h3>
-                        <p title="${this.escapeHtml(playlist.description || 'Sin descripción')}">${this.escapeHtml(playlist.description || 'Sin descripción')}</p>
+                </div>
+                <div class="playlist-info">
+                    <h3 class="playlist-name">${this.escapeHtml(playlist.name)}</h3>
+                    <p class="playlist-description">${this.escapeHtml(playlist.description || 'Sin descripción')}</p>
+                    <div class="playlist-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-music"></i>
+                            ${trackCount} canciones
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-eye"></i>
+                            ${isPublic}
+                        </span>
                     </div>
                 </div>
-                
-                <div class="playlist-stats">
-                    <div class="stat-item">
-                        <span class="stat-value">${trackCount}</span>
-                        <span class="stat-label">Canciones</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">${isPublic}</span>
-                        <span class="stat-label">Estado</span>
-                    </div>
-                </div>
-                
                 <div class="playlist-actions">
-                    <button class="action-btn btn-view" onclick="modifyPlaylistsManager.viewPlaylist('${playlist.id}')" title="Ver playlist">
-                        <i class="fas fa-eye"></i>
-                        <span>Ver</span>
-                    </button>
-                    <button class="action-btn btn-edit" onclick="modifyPlaylistsManager.editPlaylist('${playlist.id}')" title="Editar playlist">
+                    <button class="action-btn edit" onclick="modifyPlaylistsManager.editPlaylist('${playlist.id}')" title="Editar playlist">
                         <i class="fas fa-edit"></i>
-                        <span>Editar</span>
                     </button>
-                    <button class="action-btn btn-delete" onclick="modifyPlaylistsManager.deletePlaylist('${playlist.id}', '${this.escapeHtml(playlist.name)}')" title="Eliminar playlist">
+                    <button class="action-btn delete" onclick="modifyPlaylistsManager.deletePlaylist('${playlist.id}', '${this.escapeHtml(playlist.name)}')" title="Eliminar playlist">
                         <i class="fas fa-trash"></i>
-                        <span>Eliminar</span>
                     </button>
                 </div>
             </div>
         `;
     }
 
-    // Nuevo método para manejar URLs de imágenes de playlist
     getPlaylistImageUrl(playlist) {
-        // Si no hay imágenes, usar placeholder
         if (!playlist.images || playlist.images.length === 0) {
             return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
         }
-
-        // Intentar con la primera imagen
         const firstImage = playlist.images[0];
         if (firstImage && firstImage.url) {
             return firstImage.url;
         }
-
-        // Si la primera imagen no tiene URL, buscar otra
         for (let i = 1; i < playlist.images.length; i++) {
             if (playlist.images[i] && playlist.images[i].url) {
                 return playlist.images[i].url;
             }
         }
-
-        // Fallback final
         return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
     }
 
     setupPlaylistCardListeners() {
-        // Los event listeners se configuran directamente en los botones
-        // para evitar problemas con elementos dinámicos
+        // Event listeners para las cards de playlist
+        const playlistCards = document.querySelectorAll('.playlist-card');
+        playlistCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                // No activar si se hace clic en checkbox o botones
+                if (e.target.closest('.playlist-checkbox') || e.target.closest('.playlist-actions')) {
+                    return;
+                }
+                
+                const playlistId = card.dataset.playlistId;
+                this.editPlaylist(playlistId);
+            });
+        });
     }
 
     async viewPlaylist(playlistId) {
         try {
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
+                this.auth.logout();
+                return;
             }
 
-            // Obtener detalles de la playlist
             const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -433,73 +359,57 @@ class ModifyPlaylistsManager {
             });
 
             if (!response.ok) {
-                throw new Error(`Error al obtener playlist: ${response.status}`);
+                throw new Error(`Error al cargar playlist: ${response.status}`);
             }
 
             const playlist = await response.json();
-            
-            // Mostrar modal con detalles de la playlist
             this.showPlaylistDetailsModal(playlist);
 
         } catch (error) {
-            console.error('Error al ver playlist:', error);
+            console.error('Error al cargar playlist:', error);
             this.showNotification('Error al cargar la playlist', 'error');
         }
     }
 
     async editPlaylist(playlistId) {
-        try {
-            // Redirigir a la página de edición con el ID de la playlist
-            window.location.href = `edit_playlist.html?id=${playlistId}`;
-        } catch (error) {
-            console.error('Error al editar playlist:', error);
-            this.showNotification('Error al cargar la playlist', 'error');
-        }
+        window.location.href = `edit_playlist.html?id=${playlistId}`;
     }
 
     async deletePlaylist(playlistId, playlistName) {
-        const confirmed = confirm(`¿Estás seguro de que quieres eliminar la playlist "${playlistName}"?\n\nEsta acción no se puede deshacer.`);
-        
+        const confirmed = confirm(`¿Estás seguro de que quieres eliminar la playlist "${playlistName}"?`);
         if (!confirmed) return;
 
         try {
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
-            }
-
-            // Eliminar playlist (unfollow para playlists públicas, eliminar para privadas)
-            const playlist = this.playlists.find(p => p.id === playlistId);
-            if (!playlist) {
-                throw new Error('Playlist no encontrada');
-            }
-
-            if (playlist.public) {
-                // Para playlists públicas, hacer unfollow
-                const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Error al eliminar playlist: ${response.status}`);
-                }
-            } else {
-                // Para playlists privadas, eliminar directamente
-                // Nota: Spotify no permite eliminar playlists directamente via API
-                // Solo se puede hacer unfollow
-                this.showNotification('Las playlists privadas no se pueden eliminar desde la API de Spotify', 'warning');
+                this.auth.logout();
                 return;
             }
 
-            // Remover de la lista local
-            this.playlists = this.playlists.filter(p => p.id !== playlistId);
-            this.filteredPlaylists = this.filteredPlaylists.filter(p => p.id !== playlistId);
-            
-            this.displayPlaylists();
-            this.showNotification('Playlist eliminada exitosamente', 'success');
+            // Obtener el ID del usuario actual
+            const userId = await this.getCurrentUserId();
+            if (!userId) {
+                throw new Error('No se pudo obtener el ID de usuario');
+            }
+
+            const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                // Remover de la lista local
+                this.playlists = this.playlists.filter(p => p.id !== playlistId);
+                this.filteredPlaylists = this.filteredPlaylists.filter(p => p.id !== playlistId);
+                this.selectedPlaylists.delete(playlistId);
+                
+                this.displayPlaylists();
+                this.showNotification(`Playlist "${playlistName}" eliminada`, 'success');
+            } else {
+                throw new Error(`Error al eliminar playlist: ${response.status}`);
+            }
 
         } catch (error) {
             console.error('Error al eliminar playlist:', error);
@@ -507,232 +417,209 @@ class ModifyPlaylistsManager {
         }
     }
 
-    showPlaylistDetailsModal(playlist) {
-        const tracks = playlist.tracks?.items || [];
-        const tracksHtml = tracks.map((item, index) => {
-            const track = item.track;
-            return `
-                <div class="track-item" style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                    <span style="color: #b3b3b3; min-width: 30px;">${index + 1}</span>
-                    <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/40x40?text=🎵'}" 
-                         style="width: 40px; height: 40px; border-radius: 4px;" alt="${track.album.name}">
-                    <div style="flex: 1;">
-                        <div style="color: #ffffff; font-weight: 500;">${this.escapeHtml(track.name)}</div>
-                        <div style="color: #b3b3b3; font-size: 0.9rem;">${this.escapeHtml(track.artists.map(a => a.name).join(', '))}</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        const modalHtml = `
-            <div id="playlist-modal" style="
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                background: rgba(0,0,0,0.8); z-index: 1000; display: flex; 
-                align-items: center; justify-content: center; padding: 2rem;">
-                <div style="
-                    background: #1a1a1a; border-radius: 20px; padding: 2rem; 
-                    max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h2 style="color: #ffffff; margin: 0;">${this.escapeHtml(playlist.name)}</h2>
-                        <button onclick="this.closest('#playlist-modal').remove()" 
-                                style="background: none; border: none; color: #b3b3b3; font-size: 1.5rem; cursor: pointer;">×</button>
-                    </div>
-                    <p style="color: #b3b3b3; margin-bottom: 1rem;">${this.escapeHtml(playlist.description || 'Sin descripción')}</p>
-                    <div style="margin-bottom: 1rem;">
-                        <span style="color: #1db954; font-weight: 600;">${tracks.length} canciones</span>
-                    </div>
-                    <div style="max-height: 400px; overflow-y: auto;">
-                        ${tracksHtml}
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    // Funciones de selección múltiple para playlists
+    togglePlaylistSelection(playlistId) {
+        if (this.selectedPlaylists.has(playlistId)) {
+            this.selectedPlaylists.delete(playlistId);
+        } else {
+            this.selectedPlaylists.add(playlistId);
+        }
+        this.displayPlaylists();
+        this.updateMultiSelectButtons();
     }
 
-    showEditPlaylistModal(playlist) {
-        const modalHtml = `
-            <div id="edit-playlist-modal" style="
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                background: rgba(0,0,0,0.8); z-index: 1000; display: flex; 
-                align-items: center; justify-content: center; padding: 2rem;">
-                <div style="
-                    background: #1a1a1a; border-radius: 20px; padding: 2rem; 
-                    max-width: 500px; width: 100%;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h2 style="color: #ffffff; margin: 0;">Editar Playlist</h2>
-                        <button onclick="this.closest('#edit-playlist-modal').remove()" 
-                                style="background: none; border: none; color: #b3b3b3; font-size: 1.5rem; cursor: pointer;">×</button>
-                    </div>
-                    <form id="edit-playlist-form">
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; color: #ffffff; margin-bottom: 0.5rem;">Nombre:</label>
-                            <input type="text" id="edit-playlist-name" value="${this.escapeHtml(playlist.name)}" 
-                                   style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #333; background: #2a2a2a; color: #ffffff;">
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; color: #ffffff; margin-bottom: 0.5rem;">Descripción:</label>
-                            <textarea id="edit-playlist-description" rows="3" 
-                                      style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #333; background: #2a2a2a; color: #ffffff; resize: vertical;">${this.escapeHtml(playlist.description || '')}</textarea>
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: flex; align-items: center; color: #ffffff;">
-                                <input type="checkbox" id="edit-playlist-public" ${playlist.public ? 'checked' : ''} 
-                                       style="margin-right: 0.5rem;">
-                                Playlist pública
-                            </label>
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <button type="submit" style="
-                                flex: 1; padding: 0.75rem; background: linear-gradient(135deg, #1db954, #1ed760); 
-                                color: white; border: none; border-radius: 8px; cursor: pointer;">Guardar</button>
-                            <button type="button" onclick="this.closest('#edit-playlist-modal').remove()" style="
-                                flex: 1; padding: 0.75rem; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-        // Event listener para el formulario
-        document.getElementById('edit-playlist-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.savePlaylistChanges(playlist.id);
+    selectAllPlaylists() {
+        this.filteredPlaylists.forEach(playlist => {
+            this.selectedPlaylists.add(playlist.id);
         });
+        this.displayPlaylists();
+        this.updateMultiSelectButtons();
     }
 
-    async savePlaylistChanges(playlistId) {
+    deselectAllPlaylists() {
+        this.selectedPlaylists.clear();
+        this.displayPlaylists();
+        this.updateMultiSelectButtons();
+    }
+
+    async deleteSelectedPlaylists() {
+        if (this.selectedPlaylists.size === 0) {
+            this.showNotification('No hay playlists seleccionadas', 'warning');
+            return;
+        }
+
+        const confirmed = confirm(`¿Estás seguro de que quieres eliminar ${this.selectedPlaylists.size} playlist(s)?`);
+        if (!confirmed) return;
+
         try {
             const token = localStorage.getItem('spotify_access_token');
             if (!token) {
-                throw new Error('No hay token de acceso');
-            }
-
-            const name = document.getElementById('edit-playlist-name').value.trim();
-            const description = document.getElementById('edit-playlist-description').value.trim();
-            const isPublic = document.getElementById('edit-playlist-public').checked;
-
-            if (!name) {
-                this.showNotification('El nombre de la playlist es requerido', 'error');
+                this.auth.logout();
                 return;
             }
 
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: name,
-                    description: description,
-                    public: isPublic
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al actualizar playlist: ${response.status}`);
+            const userId = await this.getCurrentUserId();
+            if (!userId) {
+                throw new Error('No se pudo obtener el ID de usuario');
             }
 
-            // Actualizar en la lista local
-            const playlistIndex = this.playlists.findIndex(p => p.id === playlistId);
-            if (playlistIndex !== -1) {
-                this.playlists[playlistIndex].name = name;
-                this.playlists[playlistIndex].description = description;
-                this.playlists[playlistIndex].public = isPublic;
+            let deletedCount = 0;
+            for (const playlistId of this.selectedPlaylists) {
+                try {
+                    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        deletedCount++;
+                    }
+                } catch (error) {
+                    console.error(`Error al eliminar playlist ${playlistId}:`, error);
+                }
             }
 
-            // Cerrar modal y actualizar vista
-            document.getElementById('edit-playlist-modal').remove();
+            // Actualizar listas locales
+            this.playlists = this.playlists.filter(p => !this.selectedPlaylists.has(p.id));
+            this.filteredPlaylists = this.filteredPlaylists.filter(p => !this.selectedPlaylists.has(p.id));
+            this.selectedPlaylists.clear();
+
             this.displayPlaylists();
-            this.showNotification('Playlist actualizada exitosamente', 'success');
+            this.updateMultiSelectButtons();
+            this.showNotification(`${deletedCount} playlist(s) eliminada(s)`, 'success');
 
         } catch (error) {
-            console.error('Error al guardar cambios:', error);
-            this.showNotification('Error al actualizar la playlist', 'error');
+            console.error('Error al eliminar playlists seleccionadas:', error);
+            this.showNotification('Error al eliminar las playlists', 'error');
         }
     }
 
+    updateMultiSelectButtons() {
+        const selectAllBtn = document.getElementById('select-all-playlists-btn');
+        const deselectAllBtn = document.getElementById('deselect-all-playlists-btn');
+        const deleteSelectedBtn = document.getElementById('delete-selected-playlists-btn');
+
+        if (!selectAllBtn || !deselectAllBtn || !deleteSelectedBtn) return;
+
+        if (this.selectedPlaylists.size === 0) {
+            selectAllBtn.style.display = 'inline-flex';
+            deselectAllBtn.style.display = 'none';
+            deleteSelectedBtn.style.display = 'none';
+        } else if (this.selectedPlaylists.size === this.filteredPlaylists.length) {
+            selectAllBtn.style.display = 'none';
+            deselectAllBtn.style.display = 'inline-flex';
+            deleteSelectedBtn.style.display = 'inline-flex';
+        } else {
+            selectAllBtn.style.display = 'inline-flex';
+            deselectAllBtn.style.display = 'inline-flex';
+            deleteSelectedBtn.style.display = 'inline-flex';
+        }
+    }
+
+    showPlaylistDetailsModal(playlist) {
+        // Implementar modal de detalles si es necesario
+        console.log('Mostrar detalles de playlist:', playlist);
+    }
+
+    showEditPlaylistModal(playlist) {
+        // Implementar modal de edición si es necesario
+        console.log('Mostrar modal de edición:', playlist);
+    }
+
+    async savePlaylistChanges(playlistId) {
+        // Implementar guardado de cambios si es necesario
+        console.log('Guardar cambios para playlist:', playlistId);
+    }
+
     showLoadingState() {
-        document.getElementById('loading-state').style.display = 'flex';
-        document.getElementById('error-state').style.display = 'none';
-        document.getElementById('empty-state').style.display = 'none';
-        document.getElementById('playlists-grid').style.display = 'none';
+        const container = document.querySelector('.playlists-grid');
+        if (container) {
+            container.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner">
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                    </div>
+                    <p>Cargando playlists...</p>
+                </div>
+            `;
+        }
     }
 
     showErrorState() {
-        document.getElementById('loading-state').style.display = 'none';
-        document.getElementById('error-state').style.display = 'flex';
-        document.getElementById('empty-state').style.display = 'none';
-        document.getElementById('playlists-grid').style.display = 'none';
+        const container = document.querySelector('.playlists-grid');
+        if (container) {
+            container.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error al cargar playlists</h3>
+                    <p>Intenta recargar la página</p>
+                    <button onclick="modifyPlaylistsManager.loadPlaylists()" class="action-btn primary">
+                        Reintentar
+                    </button>
+                </div>
+            `;
+        }
     }
 
     showEmptyState() {
-        document.getElementById('loading-state').style.display = 'none';
-        document.getElementById('error-state').style.display = 'none';
-        document.getElementById('empty-state').style.display = 'flex';
-        document.getElementById('playlists-grid').style.display = 'none';
+        const container = document.querySelector('.playlists-grid');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-music"></i>
+                    <h3>No tienes playlists</h3>
+                    <p>Crea tu primera playlist para comenzar</p>
+                    <a href="index.html#playlist-section" class="action-btn primary">
+                        Crear playlist
+                    </a>
+                </div>
+            `;
+        }
     }
 
     showNotification(message, type = 'info') {
+        // Crear notificación
         const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        // Estilos elegantes
         notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
-            color: white;
-            font-weight: 600;
-            z-index: 1000;
-            animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            max-width: 350px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: fixed; top: 20px; right: 20px; 
+            padding: 1rem 1.5rem; border-radius: 10px; 
+            color: white; font-weight: 500; z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
         `;
-        
-        // Colores según tipo
-        const colors = {
-            success: 'linear-gradient(135deg, #10b981, #059669)',
-            error: 'linear-gradient(135deg, #ef4444, #dc2626)',
-            warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
-            info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
-        };
-        
-        notification.style.background = colors[type] || colors.info;
-        
-        // Contenido de la notificación
-        notification.querySelector('.notification-content').style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        `;
-        
+
+        // Configurar colores según tipo
+        switch (type) {
+            case 'success':
+                notification.style.background = '#2ecc71';
+                break;
+            case 'error':
+                notification.style.background = '#e74c3c';
+                break;
+            case 'warning':
+                notification.style.background = '#f39c12';
+                break;
+            default:
+                notification.style.background = '#3498db';
+        }
+
+        notification.textContent = message;
         document.body.appendChild(notification);
-        
-        // Remover después de 4 segundos
+
+        // Remover después de 3 segundos
         setTimeout(() => {
-            notification.style.animation = 'slideOutRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
-            }, 400);
-        }, 4000);
+            }, 300);
+        }, 3000);
     }
 
     escapeHtml(text) {
@@ -742,39 +629,11 @@ class ModifyPlaylistsManager {
     }
 }
 
-// Función global para volver al dashboard
-function goBack() {
-    window.location.href = 'dashboard.html';
-}
-
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     window.modifyPlaylistsManager = new ModifyPlaylistsManager();
 });
 
-// Agregar estilos CSS para las notificaciones
-const notificationStyles = document.createElement('style');
-notificationStyles.textContent = `
-    @keyframes slideInRight {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOutRight {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(notificationStyles); 
+function goBack() {
+    window.history.back();
+} 
