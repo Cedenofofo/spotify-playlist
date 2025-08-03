@@ -121,6 +121,13 @@
             
             const statusElement = document.getElementById('callback-status');
             
+            console.log('URL Parameters:', {
+                code: code,
+                access_token: tokenFromUrl,
+                error: error,
+                state: state
+            });
+            
             if (error) {
                 statusElement.innerHTML = `
                     <div class="callback-error">
@@ -165,18 +172,32 @@
                         window.location.href = 'index.html';
                     }, 3000);
                 }
-            } else {
-                // No hay parámetros de autenticación válidos
+            } else if (code) {
+                // Código de autorización recibido (Authorization Code Flow)
                 statusElement.innerHTML = `
                     <div class="callback-error">
                         <i class="fas fa-exclamation-triangle"></i>
-                        No se encontraron parámetros de autenticación válidos
+                        Se recibió un código de autorización, pero necesitamos un token directo.<br>
+                        Por favor, verifica la configuración de la aplicación de Spotify.
                     </div>
                 `;
                 
                 setTimeout(() => {
                     window.location.href = 'index.html';
-                }, 3000);
+                }, 5000);
+            } else {
+                // No hay parámetros de autenticación válidos
+                statusElement.innerHTML = `
+                    <div class="callback-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        No se encontraron parámetros de autenticación válidos<br>
+                        URL actual: ${window.location.href}
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 5000);
             }
         });
     </script>
