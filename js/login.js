@@ -29,10 +29,9 @@ class LoginManager {
     checkAuthStatus() {
         const accessToken = localStorage.getItem('spotify_access_token');
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
         const tokenFromUrl = urlParams.get('access_token');
         
-        if (accessToken || code || tokenFromUrl) {
+        if (accessToken || tokenFromUrl) {
             // Si ya está autenticado, redirigir al dashboard
             this.redirectToDashboard();
         }
@@ -62,7 +61,7 @@ class LoginManager {
     buildAuthUrl(state) {
         const params = new URLSearchParams({
             client_id: window.config.clientId,
-            response_type: 'code',
+            response_type: 'token',
             redirect_uri: window.config.redirectUri,
             state: state,
             scope: window.config.scopes.join(' '),
@@ -80,7 +79,6 @@ class LoginManager {
     
     async handleAuthCallback() {
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
         const tokenFromUrl = urlParams.get('access_token');
         const state = urlParams.get('state');
         const error = urlParams.get('error');
@@ -94,6 +92,14 @@ class LoginManager {
         if (tokenFromUrl) {
             try {
                 this.setLoadingState(true);
+                
+                // Verificar estado para prevenir CSRF
+                const savedState = localStorage.getItem('spotify_auth_state');
+                if (state && savedState && state !== savedState) {
+                    this.showMessage('Error de seguridad en la autenticación', 'error');
+                    this.setLoadingState(false);
+                    return;
+                }
                 
                 // Guardar token directamente
                 localStorage.setItem('spotify_access_token', tokenFromUrl);
@@ -109,89 +115,19 @@ class LoginManager {
                     this.redirectToDashboard();
                 }, 1500);
                 
-                return;
             } catch (error) {
                 console.error('Error handling direct token:', error);
                 this.showMessage('Error al procesar la autenticación', 'error');
                 this.setLoadingState(false);
-                return;
             }
-        }
-        
-        // Manejar código de autorización (Authorization Code Flow)
-        if (!code || !state) {
-            return;
-        }
-        
-        // Verificar estado para prevenir CSRF
-        const savedState = localStorage.getItem('spotify_auth_state');
-        if (state !== savedState) {
-            this.showMessage('Error de seguridad en la autenticación', 'error');
-            return;
-        }
-        
-        try {
-            this.setLoadingState(true);
-            
-            // Intercambiar código por token
-            const tokenData = await this.exchangeCodeForToken(code);
-            
-            if (tokenData && tokenData.access_token) {
-                // Guardar token
-                localStorage.setItem('spotify_access_token', tokenData.access_token);
-                if (tokenData.refresh_token) {
-                    localStorage.setItem('spotify_refresh_token', tokenData.refresh_token);
-                }
-                
-                // Limpiar estado
-                localStorage.removeItem('spotify_auth_state');
-                
-                // Mostrar mensaje de éxito
-                this.showMessage('¡Autenticación exitosa!', 'success');
-                
-                // Redirigir al dashboard después de un breve delay
-                setTimeout(() => {
-                    this.redirectToDashboard();
-                }, 1500);
-                
-            } else {
-                throw new Error('No se recibió el token de acceso');
-            }
-            
-        } catch (error) {
-            console.error('Error exchanging code for token:', error);
-            this.showMessage('Error al completar la autenticación', 'error');
+        } else {
+            // No hay token en la URL
+            this.showMessage('No se recibió el token de acceso', 'error');
             this.setLoadingState(false);
         }
     }
     
-    async exchangeCodeForToken(code) {
-        try {
-            const response = await fetch('auth.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ code })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            
-            return data;
-            
-        } catch (error) {
-            console.error('Error exchanging code for token:', error);
-            throw error;
-        }
-    }
+
     
     redirectToDashboard() {
         // Limpiar URL
@@ -323,10 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Manejar callback de autenticación si es necesario
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
     const tokenFromUrl = urlParams.get('access_token');
     
-    if (code || tokenFromUrl) {
+    if (tokenFromUrl) {
         window.loginManager.handleAuthCallback();
     }
 });

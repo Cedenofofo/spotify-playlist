@@ -168,104 +168,20 @@
                 return;
             }
             
-            if (code && state) {
-                // Código de autorización (Authorization Code Flow)
-                const savedState = localStorage.getItem('spotify_auth_state');
-                
-                if (state !== savedState) {
-                    statusElement.innerHTML = `
-                        <div class="callback-error">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Error de seguridad en la autenticación
-                        </div>
-                    `;
-                    
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 3000);
-                    return;
-                }
-                
-                // Intercambiar código por token
-                exchangeCodeForToken(code)
-                    .then(tokenData => {
-                        if (tokenData && tokenData.access_token) {
-                            localStorage.setItem('spotify_access_token', tokenData.access_token);
-                            if (tokenData.refresh_token) {
-                                localStorage.setItem('spotify_refresh_token', tokenData.refresh_token);
-                            }
-                            localStorage.removeItem('spotify_auth_state');
-                            
-                            statusElement.innerHTML = `
-                                <div class="callback-success">
-                                    <i class="fas fa-check-circle"></i>
-                                    ¡Autenticación exitosa!
-                                </div>
-                            `;
-                            
-                            setTimeout(() => {
-                                window.location.href = 'pages/dashboard.html';
-                            }, 2000);
-                        } else {
-                            throw new Error('No se recibió el token de acceso');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error exchanging code for token:', error);
-                        statusElement.innerHTML = `
-                            <div class="callback-error">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Error al completar la autenticación
-                            </div>
-                        `;
-                        
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 3000);
-                    });
-            } else {
-                // No hay parámetros de autenticación
-                statusElement.innerHTML = `
-                    <div class="callback-error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        No se encontraron parámetros de autenticación
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 3000);
-            }
-        });
-        
-        // Función para intercambiar código por token
-        async function exchangeCodeForToken(code) {
-            try {
-                const response = await fetch('auth.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                return data;
-                
-            } catch (error) {
-                console.error('Error exchanging code for token:', error);
-                throw error;
-            }
-        }
+                         } else {
+                 // No hay parámetros de autenticación válidos
+                 statusElement.innerHTML = `
+                     <div class="callback-error">
+                         <i class="fas fa-exclamation-triangle"></i>
+                         No se encontraron parámetros de autenticación válidos
+                     </div>
+                 `;
+                 
+                 setTimeout(() => {
+                     window.location.href = 'index.html';
+                 }, 3000);
+             }
+                 });
     </script>
 </body>
 </html> 
