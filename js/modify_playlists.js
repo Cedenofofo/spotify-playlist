@@ -298,12 +298,41 @@ class ModifyPlaylistsManager {
                 console.warn('Error al cargar biblioteca completa:', error);
             }
             
-            // Estrategia 4: Verificar si hay playlists privadas o adicionales
-            console.log('=== ESTRATEGIA 4: Verificación adicional ===');
+            // Estrategia 4: Carga forzada de TODAS las playlists
+            console.log('=== ESTRATEGIA 4: Carga forzada completa ===');
             
             try {
-                // Intentar con diferentes offsets para asegurar que no se pierda nada
-                for (let offset = 0; offset < 1000; offset += 50) {
+                // Método 1: Cargar con diferentes límites
+                const limits = [20, 50, 100];
+                for (const limit of limits) {
+                    console.log(`Intentando con límite ${limit}...`);
+                    const limitResponse = await fetch(`https://api.spotify.com/v1/me/playlists?limit=${limit}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (limitResponse.ok) {
+                        const limitData = await limitResponse.json();
+                        const limitPlaylists = limitData.items || [];
+                        
+                        console.log(`Límite ${limit}: ${limitPlaylists.length} playlists encontradas`);
+                        console.log(`Total reportado por API: ${limitData.total}`);
+                        
+                        // Agregar solo las playlists que no están ya en la lista
+                        const existingIds = allPlaylists.map(p => p.id);
+                        const newLimitPlaylists = limitPlaylists.filter(p => !existingIds.includes(p.id));
+                        allPlaylists = allPlaylists.concat(newLimitPlaylists);
+                        
+                        console.log(`Nuevas playlists agregadas: ${newLimitPlaylists.length}`);
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+                
+                // Método 2: Cargar con diferentes offsets
+                console.log('Cargando con diferentes offsets...');
+                for (let offset = 0; offset <= 200; offset += 20) {
                     const offsetResponse = await fetch(`https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
@@ -315,7 +344,7 @@ class ModifyPlaylistsManager {
                         const offsetPlaylists = offsetData.items || [];
                         
                         if (offsetPlaylists.length === 0) {
-                            console.log(`Offset ${offset}: No hay más playlists, deteniendo búsqueda`);
+                            console.log(`Offset ${offset}: No hay más playlists`);
                             break;
                         }
                         
@@ -327,21 +356,64 @@ class ModifyPlaylistsManager {
                         allPlaylists = allPlaylists.concat(newOffsetPlaylists);
                         
                         console.log(`Nuevas playlists agregadas: ${newOffsetPlaylists.length}`);
-                        
-                        if (newOffsetPlaylists.length === 0) {
-                            console.log(`Offset ${offset}: No se encontraron playlists nuevas, continuando...`);
-                        }
-                    } else {
-                        console.log(`Offset ${offset}: Error ${offsetResponse.status}, deteniendo búsqueda`);
-                        break;
                     }
                     
                     await new Promise(resolve => setTimeout(resolve, 200));
                 }
                 
+                // Método 3: Intentar con el endpoint de usuario específico
+                if (userId) {
+                    console.log('Intentando con endpoint de usuario específico...');
+                    const userResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=50`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (userResponse.ok) {
+                        const userData = await userResponse.json();
+                        const userPlaylists = userData.items || [];
+                        
+                        console.log(`Usuario ${userId}: ${userPlaylists.length} playlists encontradas`);
+                        console.log(`Total reportado por API de usuario: ${userData.total}`);
+                        
+                        // Agregar solo las playlists que no están ya en la lista
+                        const existingIds = allPlaylists.map(p => p.id);
+                        const newUserPlaylists = userPlaylists.filter(p => !existingIds.includes(p.id));
+                        allPlaylists = allPlaylists.concat(newUserPlaylists);
+                        
+                        console.log(`Nuevas playlists de usuario agregadas: ${newUserPlaylists.length}`);
+                    }
+                }
+                
             } catch (error) {
-                console.warn('Error en verificación adicional:', error);
+                console.warn('Error en carga forzada:', error);
             }
+            
+            // Estrategia 5: Verificación final y reporte
+            console.log('=== ESTRATEGIA 5: Verificación final ===');
+            
+            // Eliminar duplicados por ID
+            const uniquePlaylists = [];
+            const seenIds = new Set();
+            
+            for (const playlist of allPlaylists) {
+                if (!seenIds.has(playlist.id)) {
+                    seenIds.add(playlist.id);
+                    uniquePlaylists.push(playlist);
+                }
+            }
+            
+            console.log(`TOTAL FINAL: ${uniquePlaylists.length} playlists únicas encontradas`);
+            console.log('IDs de playlists encontradas:', uniquePlaylists.map(p => p.id));
+            
+            // Mostrar nombres de las primeras 20 playlists para verificación
+            console.log('Primeras 20 playlists encontradas:');
+            uniquePlaylists.slice(0, 20).forEach((playlist, index) => {
+                console.log(`${index + 1}. ${playlist.name} (${playlist.id})`);
+            });
+            
+            allPlaylists = uniquePlaylists;
 
             this.playlists = allPlaylists;
             this.filteredPlaylists = [...this.playlists];
