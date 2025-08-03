@@ -103,7 +103,7 @@ function initFormInteractions() {
     });
 }
 
-// ===== CONFIGURACIÓN DE AUTENTICACIÓN =====
+// ===== CONFIGURACIÓN DE EVENTOS DE AUTENTICACIÓN =====
 function setupAuthEvents() {
     const loginButton = document.getElementById('login-button');
     if (loginButton) {
@@ -118,43 +118,288 @@ function setupAuthEvents() {
                     ripple.style.height = '0';
                 }, 600);
             }
-            
-            // Efecto de salida
-            document.body.style.opacity = '0';
-            document.body.style.transform = 'scale(0.95)';
-            document.body.style.transition = 'all 0.3s ease';
-            
-            // Llamar a la función de login
-            setTimeout(() => {
-                if (window.auth && window.auth.login) {
-                    window.auth.login();
-                }
-            }, 300);
         });
     }
 }
 
-// ===== CONFIGURACIÓN DE FORMULARIO =====
+// ===== CONFIGURACIÓN DE EVENTOS DE FORMULARIO =====
 function setupFormEvents() {
-    const buttons = ['#add-artist', '#preview-playlist', '#export-spotify'];
+    // Event listener para agregar artista
+    const addArtistButton = document.getElementById('add-artist');
+    if (addArtistButton) {
+        addArtistButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            addArtistInput();
+            
+            // Efecto de ripple
+            const ripple = this.querySelector('.btn-ripple');
+            if (ripple) {
+                ripple.style.width = '300px';
+                ripple.style.height = '300px';
+                setTimeout(() => {
+                    ripple.style.width = '0';
+                    ripple.style.height = '0';
+                }, 600);
+            }
+        });
+    }
+
+    // Event listener para vista previa
+    const previewButton = document.getElementById('preview-playlist');
+    if (previewButton) {
+        previewButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            previewPlaylist();
+            
+            // Efecto de ripple
+            const ripple = this.querySelector('.btn-ripple');
+            if (ripple) {
+                ripple.style.width = '300px';
+                ripple.style.height = '300px';
+                setTimeout(() => {
+                    ripple.style.width = '0';
+                    ripple.style.height = '0';
+                }, 600);
+            }
+        });
+    }
+
+    // Event listener para exportar a Spotify
+    const exportButton = document.getElementById('export-spotify');
+    if (exportButton) {
+        exportButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            exportToSpotify();
+            
+            // Efecto de ripple
+            const ripple = this.querySelector('.btn-ripple');
+            if (ripple) {
+                ripple.style.width = '300px';
+                ripple.style.height = '300px';
+                setTimeout(() => {
+                    ripple.style.width = '0';
+                    ripple.style.height = '0';
+                }, 600);
+            }
+        });
+    }
+
+    // Configurar autocompletado para artistas
+    setupArtistAutocomplete();
+}
+
+// ===== AUTocompletado DE ARTISTAS =====
+function setupArtistAutocomplete() {
+    const artistInput = document.getElementById('artist-main');
+    const suggestionsDiv = document.getElementById('artist-main-suggestions');
     
-    buttons.forEach(selector => {
-        const button = document.querySelector(selector);
-        if (button) {
-            button.addEventListener('click', function(e) {
-                // Efecto de ripple
-                const ripple = this.querySelector('.btn-ripple');
-                if (ripple) {
-                    ripple.style.width = '300px';
-                    ripple.style.height = '300px';
-                    setTimeout(() => {
-                        ripple.style.width = '0';
-                        ripple.style.height = '0';
-                    }, 600);
-                }
-            });
+    if (!artistInput || !suggestionsDiv) return;
+    
+    let debounceTimeout;
+    
+    artistInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length < 2) {
+            suggestionsDiv.innerHTML = '';
+            return;
         }
+        
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            searchArtists(query, suggestionsDiv, artistInput);
+        }, 300);
     });
+    
+    artistInput.addEventListener('blur', () => {
+        setTimeout(() => {
+            suggestionsDiv.innerHTML = '';
+        }, 200);
+    });
+}
+
+async function searchArtists(query, suggestionsDiv, artistInput) {
+    try {
+        const token = localStorage.getItem('spotify_access_token');
+        if (!token) {
+            console.error('No hay token de acceso');
+            return;
+        }
+        
+        const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=5`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error en la API: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.artists && data.artists.items) {
+            displayArtistResults(data.artists.items, suggestionsDiv, artistInput);
+        }
+    } catch (error) {
+        console.error('Error al buscar artistas:', error);
+        suggestionsDiv.innerHTML = '<div class="error">Error al buscar artistas</div>';
+    }
+}
+
+function displayArtistResults(artists, suggestionsDiv, artistInput) {
+    suggestionsDiv.innerHTML = '';
+    
+    artists.forEach(artist => {
+        const artistDiv = document.createElement('div');
+        artistDiv.className = 'autocomplete-suggestion';
+        artistDiv.innerHTML = `
+            <img src="${artist.images[0]?.url || 'https://via.placeholder.com/32?text=🎤'}" alt="${artist.name}">
+            <span>${artist.name}</span>
+        `;
+        
+        artistDiv.addEventListener('click', () => {
+            artistInput.value = artist.name;
+            suggestionsDiv.innerHTML = '';
+        });
+        
+        suggestionsDiv.appendChild(artistDiv);
+    });
+}
+
+// ===== VISTA PREVIA DE PLAYLIST =====
+async function previewPlaylist() {
+    const playlistName = document.getElementById('playlist-name').value;
+    const artistMain = document.getElementById('artist-main').value;
+    const songsPerArtist = document.getElementById('songs-per-artist').value;
+    
+    if (!playlistName || !artistMain) {
+        showNotification('Por favor, completa el nombre de la playlist y el artista principal', 'error');
+        return;
+    }
+    
+    showLoadingAnimation();
+    
+    try {
+        // Recopilar todos los artistas
+        const artists = [artistMain];
+        const additionalArtists = document.querySelectorAll('#artist-inputs input');
+        additionalArtists.forEach(input => {
+            if (input.value.trim()) {
+                artists.push(input.value.trim());
+            }
+        });
+        
+        const response = await fetch('create_playlist.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playlistName: playlistName,
+                artists: artists,
+                trackCount: parseInt(songsPerArtist)
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayPlaylistPreview(data);
+            showNotification('Playlist creada exitosamente', 'success');
+        } else {
+            showNotification(data.error || 'Error al crear la playlist', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al crear la playlist', 'error');
+    } finally {
+        hideLoadingAnimation();
+    }
+}
+
+function displayPlaylistPreview(data) {
+    const previewDiv = document.getElementById('playlist-preview');
+    const exportButton = document.getElementById('export-spotify');
+    
+    if (!previewDiv) return;
+    
+    previewDiv.innerHTML = `
+        <div class="preview-header">
+            <h4>Vista previa: ${data.playlistName}</h4>
+            <p>${data.tracks.length} canciones encontradas</p>
+        </div>
+        <div class="preview-tracks">
+            ${data.tracks.map(track => `
+                <div class="preview-track">
+                    <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
+                    <div class="track-info">
+                        <div class="track-name">${track.name}</div>
+                        <div class="track-artist">${track.artist}</div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    previewDiv.style.display = 'block';
+    if (exportButton) {
+        exportButton.style.display = 'block';
+    }
+}
+
+// ===== EXPORTAR A SPOTIFY =====
+async function exportToSpotify() {
+    const playlistName = document.getElementById('playlist-name').value;
+    const artistMain = document.getElementById('artist-main').value;
+    const songsPerArtist = document.getElementById('songs-per-artist').value;
+    
+    if (!playlistName || !artistMain) {
+        showNotification('Por favor, completa el nombre de la playlist y el artista principal', 'error');
+        return;
+    }
+    
+    showLoadingAnimation();
+    
+    try {
+        // Recopilar todos los artistas
+        const artists = [artistMain];
+        const additionalArtists = document.querySelectorAll('#artist-inputs input');
+        additionalArtists.forEach(input => {
+            if (input.value.trim()) {
+                artists.push(input.value.trim());
+            }
+        });
+        
+        const response = await fetch('export_to_spotify.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playlistName: playlistName,
+                artists: artists,
+                trackCount: parseInt(songsPerArtist)
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Playlist exportada exitosamente a Spotify', 'success');
+            // Limpiar formulario
+            document.getElementById('playlist-form').reset();
+            document.getElementById('playlist-preview').style.display = 'none';
+            document.getElementById('export-spotify').style.display = 'none';
+            document.getElementById('artist-inputs').innerHTML = '';
+        } else {
+            showNotification(data.error || 'Error al exportar la playlist', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al exportar la playlist', 'error');
+    } finally {
+        hideLoadingAnimation();
+    }
 }
 
 // ===== VERIFICAR HASH Y MOSTRAR FORMULARIO =====

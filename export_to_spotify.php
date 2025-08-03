@@ -1,123 +1,192 @@
 <?php
+// Activar todos los errores para debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', 'php_errors.log');
+
+// Asegurarnos de que no haya output antes de los headers
+ob_start();
+
+// Log de los datos recibidos
+error_log("Received input: " . file_get_contents('php://input'));
+
 session_start();
 require_once 'config.php';
+require_once 'spotify_api.php';
 
+// Limpiar cualquier output anterior
+ob_clean();
+
+// Asegurar que siempre devolvemos JSON
 header('Content-Type: application/json');
+
+// Función para hacer log y devolver error
+function returnError($message, $code = 500) {
+    error_log("Error: " . $message);
+    http_response_code($code);
+    ob_clean(); // Limpiar cualquier output anterior
+    echo json_encode([
+        'success' => false,
+        'error' => $message
+    ]);
+    exit;
+}
+
+// Verificar si hay errores de PHP antes de continuar
+if (error_get_last()) {
+    error_log("PHP Error found: " . print_r(error_get_last(), true));
+    returnError('Internal PHP Error');
+}
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION[SPOTIFY_SESSION_TOKEN_KEY])) {
-    echo json_encode(['success' => false, 'error' => 'No autorizado']);
-    exit;
+    returnError('No hay sesión activa', 401);
 }
 
-// Obtener el cuerpo de la solicitud
-$data = json_decode(file_get_contents('php://input'), true);
+// Obtener y validar los datos de entrada
+$input = json_decode(file_get_contents('php://input'), true);
 
-if (!isset($data['playlistName']) || !isset($data['tracks'])) {
-    echo json_encode(['success' => false, 'error' => 'Datos de playlist incompletos']);
-    exit;
+if (!isset($input['playlistName']) || !isset($input['artists']) || !isset($input['trackCount'])) {
+    returnError('Faltan datos requeridos', 400);
 }
 
-$accessToken = $_SESSION[SPOTIFY_SESSION_TOKEN_KEY];
-
-// 1. Obtener el ID del usuario actual
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, 'https://api.spotify.com/v1/me');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $accessToken
-]);
-
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-if ($httpCode !== 200) {
-    echo json_encode(['success' => false, 'error' => 'Error al obtener información del usuario']);
-    exit;
+if (empty($input['artists'])) {
+    returnError('Debe proporcionar al menos un artista', 400);
 }
 
-$userInfo = json_decode($response, true);
-$userId = $userInfo['id'];
+$playlistName = $input['playlistName'];
+$artists = $input['artists'];
+$tracksPerArtist = $input['trackCount'];
 
-// 2. Crear la playlist
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://api.spotify.com/v1/users/{$userId}/playlists");
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $accessToken,
-    'Content-Type: application/json'
-]);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-    'name' => $data['playlistName'],
-    'description' => 'Playlist creada con Spotify Playlist Generator',
-    'public' => false
-]));
+try {
+    $allTracks = [];
+    $trackDetails = [];
+    
+    // Buscar canciones para cada artista
+    foreach ($artists as $artistQuery) {
+        if (empty(trim($artistQuery))) continue;
 
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+        // Buscar el artista con coincidencia exacta
+        $searchResult = makeSpotifyRequest(
+            SPOTIFY_API_URL . '/search?' . http_build_query([
+                'q' => $artistQuery,
+                'type' => 'artist',
+                'limit' => 5
+            ])
+        );
 
-if ($httpCode !== 201) {
-    echo json_encode(['success' => false, 'error' => 'Error al crear la playlist']);
-    exit;
-}
+        if ($searchResult['httpCode'] !== 200) {
+            continue;
+        }
 
-$playlistInfo = json_decode($response, true);
-$playlistId = $playlistInfo['id'];
-$playlistUrl = $playlistInfo['external_urls']['spotify'];
+        if (empty($searchResult['response']['artists']['items'])) {
+            continue;
+        }
 
-// 3. Agregar las canciones a la playlist
-$trackUris = array_map(function($track) {
-    return $track['uri'];
-}, $data['tracks']);
+        // Buscar coincidencia exacta
+        $artistId = null;
+        $artistName = null;
+        foreach ($searchResult['response']['artists']['items'] as $artist) {
+            if (strtolower(trim($artist['name'])) === strtolower(trim($artistQuery))) {
+                $artistId = $artist['id'];
+                $artistName = $artist['name'];
+                break;
+            }
+        }
 
-// Dividir las canciones en grupos de 100 (límite de la API)
-$trackChunks = array_chunk($trackUris, 100);
+        // Si no hay coincidencia exacta, usar el primer resultado
+        if (!$artistId) {
+            $artistId = $searchResult['response']['artists']['items'][0]['id'];
+            $artistName = $searchResult['response']['artists']['items'][0]['name'];
+        }
 
-foreach ($trackChunks as $chunk) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://api.spotify.com/v1/playlists/{$playlistId}/tracks");
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . $accessToken,
-        'Content-Type: application/json'
-    ]);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-        'uris' => $chunk
-    ]));
+        // Obtener las mejores canciones del artista
+        $tracksResult = makeSpotifyRequest(
+            SPOTIFY_API_URL . "/artists/{$artistId}/top-tracks?" . http_build_query([
+                'market' => 'ES'
+            ])
+        );
 
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+        if ($tracksResult['httpCode'] !== 200) {
+            continue;
+        }
 
-    if ($httpCode !== 201) {
-        echo json_encode(['success' => false, 'error' => 'Error al agregar canciones a la playlist']);
-        exit;
+        $tracks = array_slice($tracksResult['response']['tracks'], 0, $tracksPerArtist);
+        foreach ($tracks as $track) {
+            $allTracks[] = $track['uri'];
+            $trackDetails[] = [
+                'uri' => $track['uri'],
+                'name' => $track['name'],
+                'artist' => $artistName,
+                'duration' => $track['duration_ms'],
+                'preview_url' => $track['preview_url'],
+                'external_url' => $track['external_urls']['spotify'],
+                'album' => [
+                    'name' => $track['album']['name'],
+                    'image' => isset($track['album']['images'][0]) ? $track['album']['images'][0]['url'] : null
+                ]
+            ];
+        }
     }
+
+    if (empty($trackDetails)) {
+        returnError('No se encontraron canciones para los artistas proporcionados');
+    }
+
+    // Obtener el ID del usuario
+    $userResult = makeSpotifyRequest(SPOTIFY_API_URL . '/me');
+    if ($userResult['httpCode'] !== 200) {
+        returnError('No se pudo obtener la información del usuario');
+    }
+    
+    $userId = $userResult['response']['id'];
+
+    // Crear la playlist en Spotify
+    $playlistData = [
+        'name' => $playlistName,
+        'description' => 'Playlist creada con Tuneuptify',
+        'public' => true
+    ];
+
+    $createPlaylistResult = makeSpotifyRequest(
+        SPOTIFY_API_URL . "/users/{$userId}/playlists",
+        'POST',
+        json_encode($playlistData)
+    );
+
+    if ($createPlaylistResult['httpCode'] !== 201) {
+        returnError('No se pudo crear la playlist en Spotify');
+    }
+
+    $playlistId = $createPlaylistResult['response']['id'];
+
+    // Agregar canciones a la playlist (máximo 100 por request)
+    $trackUris = array_chunk($allTracks, 100);
+    
+    foreach ($trackUris as $trackBatch) {
+        $addTracksResult = makeSpotifyRequest(
+            SPOTIFY_API_URL . "/playlists/{$playlistId}/tracks",
+            'POST',
+            json_encode(['uris' => $trackBatch])
+        );
+
+        if ($addTracksResult['httpCode'] !== 201) {
+            returnError('No se pudieron agregar todas las canciones a la playlist');
+        }
+    }
+
+    // Devolver respuesta exitosa
+    echo json_encode([
+        'success' => true,
+        'message' => 'Playlist creada exitosamente en Spotify',
+        'playlistId' => $playlistId,
+        'playlistName' => $playlistName,
+        'playlistUrl' => $createPlaylistResult['response']['external_urls']['spotify'],
+        'tracks' => $trackDetails
+    ]);
+
+} catch (Exception $e) {
+    returnError($e->getMessage());
 }
-
-// 4. Seguir la playlist (agregarla a la biblioteca)
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://api.spotify.com/v1/playlists/{$playlistId}/followers");
-curl_setopt($ch, CURLOPT_PUT, true);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $accessToken,
-    'Content-Type: application/json'
-]);
-
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-// Devolver la respuesta exitosa
-echo json_encode([
-    'success' => true,
-    'playlistId' => $playlistId,
-    'playlistUrl' => $playlistUrl,
-    'message' => 'Playlist creada y agregada a tu biblioteca'
-]);
 ?> 
