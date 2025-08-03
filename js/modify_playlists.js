@@ -448,22 +448,23 @@ class ModifyPlaylistsManager {
         // Buscar la mejor imagen disponible
         let bestImage = null;
         
-        // Priorizar imágenes cuadradas de tamaño medio
+        // Estrategia 1: Buscar imágenes que NO sean collages (evitar URLs con múltiples imágenes)
         for (const image of playlist.images) {
             if (image && image.url) {
-                // Preferir imágenes de 300x300 o similares
-                if (image.width && image.width >= 200 && image.width <= 400) {
+                // Evitar URLs que parezcan collages o múltiples imágenes
+                const url = image.url.toLowerCase();
+                if (!url.includes('mosaic') && 
+                    !url.includes('collage') && 
+                    !url.includes('multiple') &&
+                    !url.includes('grid') &&
+                    url.includes('spotify')) {
                     bestImage = image.url;
                     break;
-                }
-                // Si no hay dimensiones específicas, usar la primera
-                if (!bestImage) {
-                    bestImage = image.url;
                 }
             }
         }
 
-        // Si no encontramos una imagen buena, usar la primera disponible
+        // Estrategia 2: Si no encontramos una imagen única, usar la primera disponible
         if (!bestImage) {
             for (const image of playlist.images) {
                 if (image && image.url) {
@@ -473,12 +474,43 @@ class ModifyPlaylistsManager {
             }
         }
 
+        // Estrategia 3: Si la imagen parece ser un collage, usar placeholder personalizado
+        if (bestImage) {
+            const url = bestImage.toLowerCase();
+            if (url.includes('mosaic') || 
+                url.includes('collage') || 
+                url.includes('multiple') ||
+                url.includes('grid')) {
+                // Usar placeholder personalizado en lugar de collage
+                return this.generatePlaylistPlaceholder(playlist.name);
+            }
+        }
+
         // Fallback final
         if (!bestImage) {
-            return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
+            return this.generatePlaylistPlaceholder(playlist.name);
         }
 
         return bestImage;
+    }
+
+    // Generar placeholder personalizado basado en el nombre de la playlist
+    generatePlaylistPlaceholder(playlistName) {
+        const colors = [
+            '#1db954', '#1ed760', '#2ecc71', '#27ae60', '#16a085',
+            '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#e74c3c',
+            '#c0392b', '#f39c12', '#e67e22', '#f1c40f', '#f7dc6f'
+        ];
+        
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        const initials = playlistName
+            .split(' ')
+            .map(word => word.charAt(0))
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+        
+        return `https://via.placeholder.com/80x80/${randomColor.replace('#', '')}/ffffff?text=${encodeURIComponent(initials)}`;
     }
 
     setupPlaylistCardListeners() {

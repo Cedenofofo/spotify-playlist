@@ -3405,3 +3405,96 @@ body {
         padding: 0.15rem 0.3rem !important;
     }
 }
+
+/* ===== MEJORAS PARA PLACEHOLDERS DE PLAYLIST ===== */
+
+/* Estilos para placeholders de playlist */
+.playlist-image[src*="placeholder"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    filter: none !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    letter-spacing: 1px !important;
+}
+
+/* Eliminar efectos de collage */
+.playlist-image {
+    filter: 
+        brightness(1.0) 
+        contrast(1.0) 
+        saturate(1.0) 
+        hue-rotate(0deg) !important;
+}
+
+/* Efecto de placeholder mejorado */
+.playlist-image.placeholder {
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.8rem !important;
+    font-weight: bold !important;
+    color: white !important;
+    filter: none !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    letter-spacing: 2px !important;
+}
+
+/* Hover effect para placeholders */
+.playlist-image[src*="placeholder"]:hover,
+.playlist-image.placeholder:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+
+/* Estilos específicos para diferentes tipos de placeholders */
+.playlist-image[src*="text=EL"] { background: linear-gradient(135deg, #1db954, #1ed760) !important; }
+.playlist-image[src*="text=SK"] { background: linear-gradient(135deg, #3498db, #2980b9) !important; }
+.playlist-image[src*="text=BA"] { background: linear-gradient(135deg, #9b59b6, #8e44ad) !important; }
+.playlist-image[src*="text=SH"] { background: linear-gradient(135deg, #e74c3c, #c0392b) !important; }
+.playlist-image[src*="text=FY"] { background: linear-gradient(135deg, #f39c12, #e67e22) !important; }
+.playlist-image[src*="text=RE"] { background: linear-gradient(135deg, #16a085, #27ae60) !important; }
+
+/* Animación sutil para placeholders */
+@keyframes placeholder-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.02);
+    }
+}
+
+.playlist-image[src*="placeholder"]:hover,
+.playlist-image.placeholder:hover {
+    animation: placeholder-pulse 2s ease-in-out infinite;
+}
+
+/* Mejorar contraste y legibilidad */
+.playlist-image[src*="placeholder"] {
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Responsive para placeholders */
+@media (max-width: 768px) {
+    .playlist-image[src*="placeholder"] {
+        font-size: 1.2rem !important;
+        letter-spacing: 0.5px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .playlist-image[src*="placeholder"] {
+        font-size: 1rem !important;
+        letter-spacing: 0.25px !important;
+    }
+}
