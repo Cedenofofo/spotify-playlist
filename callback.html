@@ -106,9 +106,9 @@
 
                     document.getElementById('auth-message').textContent = '¡Autenticación exitosa! Redirigiendo...';
                     
-                    // Redirigir a la página principal con hash para mostrar el formulario
+                    // Redirigir al dashboard
                     setTimeout(() => {
-                        window.location.href = 'index.html#playlist-section';
+                        window.location.href = 'dashboard.html';
                     }, 1000);
                 } else {
                     throw new Error('No se recibió el token de acceso');

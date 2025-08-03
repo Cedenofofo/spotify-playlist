@@ -602,12 +602,6 @@ function checkHashAndShowPlaylistForm() {
 function showPlaylistForm() {
     console.log('Mostrando formulario de playlist...');
     
-    // Mostrar botón de atrás
-    const backButton = document.getElementById('back-to-dashboard');
-    if (backButton) {
-        backButton.style.display = 'flex';
-    }
-    
     // Ocultar las secciones principales
     const heroSection = document.querySelector('.hero-parallax');
     const featuresSection = document.querySelector('.features-section');
@@ -799,9 +793,4 @@ window.addArtistInput = addArtistInput;
 window.removeArtist = removeArtist;
 window.showNotification = showNotification;
 window.showLoadingAnimation = showLoadingAnimation;
-window.hideLoadingAnimation = hideLoadingAnimation;
-
-// Función para ir al dashboard
-function goToDashboard() {
-    window.location.href = 'dashboard.html';
-} 
+window.hideLoadingAnimation = hideLoadingAnimation; 
