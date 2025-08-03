@@ -1246,8 +1246,8 @@ body {
   top: 50%;
   right: 1rem;
   transform: translateY(-50%);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
   color: #ef4444;
   width: 32px;
   height: 32px;
@@ -1257,13 +1257,9 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-smooth);
-  opacity: 0;
+  opacity: 1;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-}
-
-.preview-track:hover .remove-track-btn {
-  opacity: 1;
 }
 
 .remove-track-btn:hover {
