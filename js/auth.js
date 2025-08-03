@@ -24,10 +24,19 @@ class Auth {
         if (accessToken && tokenExpires) {
             // Verificar si el token ha expirado
             if (Date.now() < parseInt(tokenExpires)) {
-                // Token válido - redirigir al dashboard si estamos en la página principal
+                // Token válido - verificar si viene del dashboard con hash específico
                 if (window.location.pathname.endsWith('index.html') || 
                     window.location.pathname.endsWith('/') || 
                     window.location.pathname === '') {
+                    
+                    // Si hay un hash #playlist-section, mostrar el formulario en lugar de redirigir
+                    if (window.location.hash === '#playlist-section') {
+                        console.log('Detectado hash #playlist-section, mostrando formulario de crear playlist');
+                        this.showPlaylistSection();
+                        return;
+                    }
+                    
+                    // Si no hay hash específico, redirigir al dashboard
                     this.redirectToDashboard();
                     return;
                 } else {
@@ -94,9 +103,36 @@ class Auth {
     showPlaylistSection() {
         const loginSection = document.getElementById('login-section');
         const playlistSection = document.getElementById('playlist-section');
+        const heroSection = document.querySelector('.hero-parallax');
+        const featuresSection = document.querySelector('.features-section');
         
+        // Ocultar secciones principales
+        if (heroSection) heroSection.style.display = 'none';
+        if (featuresSection) featuresSection.style.display = 'none';
         if (loginSection) loginSection.style.display = 'none';
-        if (playlistSection) playlistSection.style.display = 'block';
+        
+        // Mostrar sección de playlist
+        if (playlistSection) {
+            playlistSection.style.display = 'block';
+            
+            // Scroll suave hacia el formulario
+            setTimeout(() => {
+                playlistSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+            
+            // Agregar animación de entrada
+            playlistSection.style.opacity = '0';
+            playlistSection.style.transform = 'translateY(30px)';
+            playlistSection.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                playlistSection.style.opacity = '1';
+                playlistSection.style.transform = 'translateY(0)';
+            }, 200);
+        }
     }
 
     showLoginSection() {
