@@ -18,8 +18,16 @@ class Auth {
 
     setupEventListeners() {
         const loginButton = document.getElementById('login-button');
+        console.log('Buscando botón de login:', loginButton);
+        
         if (loginButton) {
-            loginButton.addEventListener('click', () => this.login());
+            console.log('Botón de login encontrado, agregando event listener');
+            loginButton.addEventListener('click', () => {
+                console.log('Botón de login clickeado');
+                this.login();
+            });
+        } else {
+            console.error('No se encontró el botón de login');
         }
     }
 
@@ -63,11 +71,15 @@ class Auth {
     }
 
     login() {
+        console.log('Función login llamada');
+        
         if (!this.config) {
             console.error('Configuración no disponible');
             return;
         }
 
+        console.log('Configuración disponible:', this.config);
+        
         const state = this.generateState();
         localStorage.setItem('spotify_auth_state', state);
 
@@ -80,7 +92,10 @@ class Auth {
             show_dialog: 'true'
         });
 
-        window.location.href = `${this.config.authUrl}?${params.toString()}`;
+        const authUrl = `${this.config.authUrl}?${params.toString()}`;
+        console.log('Redirigiendo a:', authUrl);
+        
+        window.location.href = authUrl;
     }
 
     logout() {
