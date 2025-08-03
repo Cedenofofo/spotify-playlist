@@ -5,6 +5,11 @@ class EditPlaylistManager {
         this.playlist = null;
         this.tracks = [];
         this.searchTimeout = null;
+        this.pendingChanges = {
+            tracksToRemove: [],
+            tracksToAdd: [],
+            infoChanges: null
+        };
         this.setupEventListeners();
         this.loadPlaylistData();
     }
@@ -108,17 +113,13 @@ class EditPlaylistManager {
         } else {
             durationText = `${durationMinutes}m`;
         }
-        document.getElementById('playlist-duration').textContent = durationText;
-
-        // Visibilidad
-        document.getElementById('playlist-visibility').textContent = this.playlist.public ? 'Pública' : 'Privada';
         
-        // Radio buttons
-        if (this.playlist.public) {
-            document.getElementById('public-playlist').checked = true;
-        } else {
-            document.getElementById('private-playlist').checked = true;
-        }
+        document.getElementById('playlist-duration').textContent = durationText;
+        
+        // Visibilidad
+        const visibility = this.playlist.public ? 'Pública' : 'Privada';
+        document.getElementById('playlist-visibility').textContent = visibility;
+        document.getElementById('public-playlist').checked = this.playlist.public;
     }
 
     async loadPlaylistTracks() {
@@ -128,10 +129,10 @@ class EditPlaylistManager {
                 throw new Error('No hay token de acceso');
             }
 
-            // Cargar todas las canciones de la playlist
             let allTracks = [];
             let nextUrl = `https://api.spotify.com/v1/playlists/${this.playlistId}/tracks?limit=100`;
 
+            // Cargar todas las canciones de la playlist
             while (nextUrl) {
                 const response = await fetch(nextUrl, {
                     headers: {
@@ -144,65 +145,56 @@ class EditPlaylistManager {
                 }
 
                 const data = await response.json();
-                const tracks = data.items || [];
-                allTracks = allTracks.concat(tracks);
+                allTracks = allTracks.concat(data.items);
                 nextUrl = data.next;
-
-                // Pequeña pausa para no sobrecargar la API
-                if (nextUrl) {
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                }
             }
 
-            this.tracks = allTracks;
+            // Filtrar canciones eliminadas localmente
+            this.tracks = allTracks.filter(track => 
+                !this.pendingChanges.tracksToRemove.includes(track.track.id)
+            );
+
             this.displayTracks();
+            this.updateTrackCount();
 
         } catch (error) {
             console.error('Error al cargar canciones:', error);
-            this.showError('Error al cargar las canciones de la playlist');
+            this.showError('Error al cargar las canciones');
         }
     }
 
     displayTracks() {
-        const tracksList = document.getElementById('tracks-list');
-        
+        const tracksContainer = document.getElementById('tracks-list');
+        tracksContainer.innerHTML = '';
+
         if (this.tracks.length === 0) {
-            tracksList.innerHTML = `
-                <div style="text-align: center; color: #b3b3b3; padding: 2rem;">
-                    <i class="fas fa-music" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                    <p>Esta playlist no tiene canciones</p>
-                </div>
-            `;
+            tracksContainer.innerHTML = '<p class="no-tracks">No hay canciones en esta playlist</p>';
             return;
         }
 
-        const tracksHtml = this.tracks.map((item, index) => {
+        this.tracks.forEach((item, index) => {
             const track = item.track;
-            if (!track) return '';
+            if (!track) return;
 
-            const duration = Math.floor(track.duration_ms / 60000);
-            const durationSeconds = Math.floor((track.duration_ms % 60000) / 1000);
-            const durationText = `${duration}:${durationSeconds.toString().padStart(2, '0')}`;
-
-            return `
-                <div class="track-item" data-track-id="${track.id}">
-                    <div class="track-number">${index + 1}</div>
-                    <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/50x50?text=🎵'}" 
-                         alt="${track.album.name}" class="track-image">
-                    <div class="track-info">
+            const trackElement = document.createElement('div');
+            trackElement.className = 'track-item';
+            trackElement.innerHTML = `
+                <div class="track-info">
+                    <span class="track-number">${index + 1}</span>
+                    <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/40x40'}" alt="Album cover" class="track-image">
+                    <div class="track-details">
                         <div class="track-name">${this.escapeHtml(track.name)}</div>
-                        <div class="track-artist">${this.escapeHtml(track.artists.map(a => a.name).join(', '))} • ${this.escapeHtml(track.album.name)} • ${durationText}</div>
-                    </div>
-                    <div class="track-actions">
-                        <button class="action-btn remove" onclick="editPlaylistManager.removeTrack('${track.id}')" title="Eliminar canción">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="track-artist">${track.artists.map(artist => this.escapeHtml(artist.name)).join(', ')}</div>
                     </div>
                 </div>
+                <div class="track-actions">
+                    <button class="action-btn remove" onclick="editPlaylistManager.removeTrack('${track.id}')" title="Eliminar canción">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             `;
-        }).join('');
-
-        tracksList.innerHTML = tracksHtml;
+            tracksContainer.appendChild(trackElement);
+        });
     }
 
     async searchTracks(query) {
@@ -217,7 +209,7 @@ class EditPlaylistManager {
                 throw new Error('No hay token de acceso');
             }
 
-            const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
+            const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -228,9 +220,7 @@ class EditPlaylistManager {
             }
 
             const data = await response.json();
-            const tracks = data.tracks?.items || [];
-            
-            this.displaySearchSuggestions(tracks);
+            this.displaySearchSuggestions(data.tracks.items);
 
         } catch (error) {
             console.error('Error en búsqueda:', error);
@@ -239,38 +229,30 @@ class EditPlaylistManager {
 
     displaySearchSuggestions(tracks) {
         const suggestionsContainer = document.getElementById('search-suggestions');
-        
+        suggestionsContainer.innerHTML = '';
+
         if (tracks.length === 0) {
-            suggestionsContainer.innerHTML = `
-                <div class="suggestion-item" style="color: #b3b3b3; padding: 1rem; text-align: center;">
-                    No se encontraron canciones
-                </div>
-            `;
+            suggestionsContainer.innerHTML = '<div class="suggestion-item no-results">No se encontraron canciones</div>';
             suggestionsContainer.style.display = 'block';
             return;
         }
 
-        const suggestionsHtml = tracks.map(track => {
-            const duration = Math.floor(track.duration_ms / 60000);
-            const durationSeconds = Math.floor((track.duration_ms % 60000) / 1000);
-            const durationText = `${duration}:${durationSeconds.toString().padStart(2, '0')}`;
-
-            return `
-                <div class="suggestion-item" onclick="editPlaylistManager.addTrack('${track.id}')">
-                    <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/40x40?text=🎵'}" 
-                         alt="${track.album.name}" style="width: 40px; height: 40px; border-radius: 4px;">
-                    <div style="flex: 1;">
-                        <div style="color: #ffffff; font-weight: 500;">${this.escapeHtml(track.name)}</div>
-                        <div style="color: #b3b3b3; font-size: 0.9rem;">${this.escapeHtml(track.artists.map(a => a.name).join(', '))} • ${durationText}</div>
-                    </div>
-                    <button style="background: #1db954; color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer;">
-                        <i class="fas fa-plus"></i>
-                    </button>
+        tracks.forEach(track => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.className = 'suggestion-item';
+            suggestionItem.innerHTML = `
+                <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/30x30'}" alt="Album cover">
+                <div class="suggestion-info">
+                    <div class="suggestion-name">${this.escapeHtml(track.name)}</div>
+                    <div class="suggestion-artist">${track.artists.map(artist => this.escapeHtml(artist.name)).join(', ')}</div>
                 </div>
+                <button class="add-track-btn" onclick="editPlaylistManager.addTrack('${track.id}')">
+                    <i class="fas fa-plus"></i>
+                </button>
             `;
-        }).join('');
+            suggestionsContainer.appendChild(suggestionItem);
+        });
 
-        suggestionsContainer.innerHTML = suggestionsHtml;
         suggestionsContainer.style.display = 'block';
     }
 
@@ -287,40 +269,38 @@ class EditPlaylistManager {
             }
 
             // Verificar si la canción ya está en la playlist
-            const existingTrack = this.tracks.find(item => item.track?.id === trackId);
+            const existingTrack = this.tracks.find(item => item.track.id === trackId);
             if (existingTrack) {
                 this.showNotification('Esta canción ya está en la playlist', 'warning');
                 return;
             }
 
-            // Agregar canción a la playlist
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}/tracks`, {
-                method: 'POST',
+            // Obtener información de la canción
+            const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    uris: [`spotify:track:${trackId}`]
-                })
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {
-                throw new Error(`Error al agregar canción: ${response.status}`);
+                throw new Error(`Error al obtener información de la canción: ${response.status}`);
             }
 
+            const track = await response.json();
+            
+            // Agregar a la lista local
+            this.tracks.push({ track: track });
+            this.pendingChanges.tracksToAdd.push(trackId);
+            
+            // Actualizar display
+            this.displayTracks();
+            this.updateTrackCount();
+            this.hideSuggestions();
+            
             // Limpiar búsqueda
             document.getElementById('track-search').value = '';
-            this.hideSuggestions();
 
-            // Recargar canciones
-            await this.loadPlaylistTracks();
-            
-            // Actualizar contador
-            const tracksCount = document.getElementById('tracks-count');
-            tracksCount.textContent = parseInt(tracksCount.textContent) + 1;
-
-            this.showNotification('Canción agregada exitosamente', 'success');
+            this.showNotification('Canción agregada a la playlist (cambios pendientes)', 'success');
 
         } catch (error) {
             console.error('Error al agregar canción:', error);
@@ -328,46 +308,40 @@ class EditPlaylistManager {
         }
     }
 
-    async removeTrack(trackId) {
+    removeTrack(trackId) {
         const confirmed = confirm('¿Estás seguro de que quieres eliminar esta canción de la playlist?');
         
         if (!confirmed) return;
 
         try {
-            const token = localStorage.getItem('spotify_access_token');
-            if (!token) {
-                throw new Error('No hay token de acceso');
+            // Encontrar la canción en la lista local
+            const trackIndex = this.tracks.findIndex(item => item.track.id === trackId);
+            if (trackIndex === -1) {
+                this.showError('Canción no encontrada');
+                return;
             }
 
-            // Eliminar canción de la playlist
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}/tracks`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    tracks: [{ uri: `spotify:track:${trackId}` }]
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al eliminar canción: ${response.status}`);
-            }
-
-            // Recargar canciones
-            await this.loadPlaylistTracks();
+            // Remover de la lista local
+            this.tracks.splice(trackIndex, 1);
             
-            // Actualizar contador
-            const tracksCount = document.getElementById('tracks-count');
-            tracksCount.textContent = parseInt(tracksCount.textContent) - 1;
+            // Agregar a la lista de cambios pendientes
+            this.pendingChanges.tracksToRemove.push(trackId);
+            
+            // Actualizar display
+            this.displayTracks();
+            this.updateTrackCount();
 
-            this.showNotification('Canción eliminada exitosamente', 'success');
+            this.showNotification('Canción eliminada (cambios pendientes)', 'success');
 
         } catch (error) {
             console.error('Error al eliminar canción:', error);
             this.showError('Error al eliminar la canción');
         }
+    }
+
+    updateTrackCount() {
+        const tracksCount = document.getElementById('tracks-count');
+        tracksCount.textContent = this.tracks.length;
     }
 
     async savePlaylistChanges() {
@@ -387,7 +361,7 @@ class EditPlaylistManager {
             }
 
             // Actualizar información de la playlist
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}`, {
+            const infoResponse = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -400,14 +374,57 @@ class EditPlaylistManager {
                 })
             });
 
-            if (!response.ok) {
-                throw new Error(`Error al actualizar playlist: ${response.status}`);
+            if (!infoResponse.ok) {
+                throw new Error(`Error al actualizar información de playlist: ${infoResponse.status}`);
+            }
+
+            // Eliminar canciones si hay cambios pendientes
+            if (this.pendingChanges.tracksToRemove.length > 0) {
+                const removeResponse = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}/tracks`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tracks: this.pendingChanges.tracksToRemove.map(id => ({ uri: `spotify:track:${id}` }))
+                    })
+                });
+
+                if (!removeResponse.ok) {
+                    throw new Error(`Error al eliminar canciones: ${removeResponse.status}`);
+                }
+            }
+
+            // Agregar canciones si hay cambios pendientes
+            if (this.pendingChanges.tracksToAdd.length > 0) {
+                const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${this.playlistId}/tracks`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        uris: this.pendingChanges.tracksToAdd.map(id => `spotify:track:${id}`)
+                    })
+                });
+
+                if (!addResponse.ok) {
+                    throw new Error(`Error al agregar canciones: ${addResponse.status}`);
+                }
             }
 
             // Actualizar información en la página
             document.getElementById('playlist-name').textContent = name;
             document.getElementById('playlist-description').textContent = description;
             document.getElementById('playlist-visibility').textContent = isPublic ? 'Pública' : 'Privada';
+
+            // Limpiar cambios pendientes
+            this.pendingChanges = {
+                tracksToRemove: [],
+                tracksToAdd: [],
+                infoChanges: null
+            };
 
             this.showNotification('Playlist actualizada exitosamente', 'success');
 
@@ -428,26 +445,37 @@ class EditPlaylistManager {
         notification.style.cssText = `
             position: fixed; top: 20px; right: 20px; 
             padding: 1rem 1.5rem; border-radius: 10px; 
-            color: white; font-weight: 500; z-index: 10000;
-            background: ${type === 'success' ? '#1db954' : type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#3498db'};
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
+            color: white; font-weight: 500; z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
         `;
+
+        // Configurar colores según tipo
+        switch (type) {
+            case 'success':
+                notification.style.background = '#2ecc71';
+                break;
+            case 'error':
+                notification.style.background = '#e74c3c';
+                break;
+            case 'warning':
+                notification.style.background = '#f39c12';
+                break;
+            default:
+                notification.style.background = '#3498db';
+        }
+
         notification.textContent = message;
-
         document.body.appendChild(notification);
-
-        // Animar entrada
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
 
         // Remover después de 3 segundos
         setTimeout(() => {
+            notification.style.opacity = '0';
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
             }, 300);
         }, 3000);
     }
