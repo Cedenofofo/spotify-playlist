@@ -285,13 +285,18 @@
                 
                 exchangeCodeForToken(code, state).then(tokenData => {
                     if (tokenData && tokenData.access_token) {
+                        console.log('💾 Guardando token en localStorage...');
                         localStorage.setItem('spotify_access_token', tokenData.access_token);
+                        console.log('✅ Token guardado:', tokenData.access_token.substring(0, 20) + '...');
+                        
                         if (tokenData.refresh_token) {
                             localStorage.setItem('spotify_refresh_token', tokenData.refresh_token);
+                            console.log('✅ Refresh token guardado');
                         }
                         
                         localStorage.removeItem('spotify_auth_state');
                         localStorage.removeItem('spotify_code_verifier');
+                        console.log('🧹 Datos temporales limpiados');
                         
                         statusElement.innerHTML = `
                             <div class="callback-success">
@@ -300,7 +305,9 @@
                             </div>
                         `;
                         
+                        console.log('🔄 Redirigiendo al dashboard en 2 segundos...');
                         setTimeout(() => {
+                            console.log('🚀 Redirigiendo a: pages/dashboard.html');
                             window.location.href = 'pages/dashboard.html';
                         }, 2000);
                     } else {
