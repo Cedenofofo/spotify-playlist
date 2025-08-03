@@ -4,68 +4,394 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tuneuptify - Modificar Playlists</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .playlists-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .playlists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .playlist-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(29, 185, 84, 0.3);
+        }
+
+        .playlist-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .playlist-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .playlist-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .playlist-info p {
+            margin: 0;
+            color: #b3b3b3;
+            font-size: 0.9rem;
+        }
+
+        .playlist-stats {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1db954;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #b3b3b3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .playlist-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(29, 185, 84, 0.2);
+            border-top: 4px solid #1db954;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #ef4444;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(29, 185, 84, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #b3b3b3;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .create-playlist-btn {
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .create-playlist-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(29, 185, 84, 0.3);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #b3b3b3;
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1db954;
+            box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #b3b3b3;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b3b3b3;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <img src="img/tuneuptify-logo.png" alt="Tuneuptify Logo">
-                <h1>Tuneuptify</h1>
+    <!-- Cursor personalizado -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-follower"></div>
+
+    <!-- Header elegante -->
+    <header class="elegant-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="brand-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="brand-title">Tuneuptify</h1>
             </div>
-            <nav class="nav">
-                <button class="btn btn-secondary" onclick="goBack()">
+            
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="goBack()">
                     <i class="fas fa-arrow-left"></i>
-                    Volver al Dashboard
+                    <span>Volver al Dashboard</span>
                 </button>
             </nav>
-        </header>
+        </div>
+    </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="content-container">
-                <h2 class="page-title">Modificar Playlists</h2>
+    <!-- Contenido principal -->
+    <main class="elegant-main">
+        <div class="playlists-container">
+            <!-- Header de la página -->
+            <div class="page-header">
+                <h1 class="page-title">Modificar Playlists</h1>
                 <p class="page-subtitle">Gestiona tus playlists existentes de Spotify</p>
                 
-                <div class="coming-soon">
-                    <div class="coming-soon-icon">
-                        <i class="fas fa-tools"></i>
+                <!-- Barra de búsqueda -->
+                <div class="search-container">
+                    <input type="text" id="search-playlists" class="search-input" placeholder="Buscar playlists...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+
+            <!-- Contenedor de playlists -->
+            <div id="playlists-content">
+                <!-- Estado de carga -->
+                <div id="loading-state" class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <h3>Cargando tus playlists...</h3>
+                    <p>Estamos obteniendo tus playlists de Spotify</p>
+                </div>
+
+                <!-- Estado de error -->
+                <div id="error-state" class="error-container" style="display: none;">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h3>Funcionalidad en Desarrollo</h3>
-                    <p>Esta funcionalidad estará disponible próximamente. Aquí podrás:</p>
-                    <ul>
-                        <li>Ver todas tus playlists de Spotify</li>
-                        <li>Modificar canciones en playlists existentes</li>
-                        <li>Eliminar playlists</li>
-                        <li>Reorganizar el orden de las canciones</li>
-                    </ul>
-                    <button class="btn btn-primary" onclick="goBack()">
-                        <i class="fas fa-arrow-left"></i>
-                        Volver al Dashboard
+                    <h3>Error al cargar playlists</h3>
+                    <p>No se pudieron cargar tus playlists. Verifica tu conexión y tu sesión de Spotify.</p>
+                    <button class="refresh-btn" onclick="loadPlaylists()">
+                        <i class="fas fa-redo"></i>
+                        Intentar de nuevo
                     </button>
                 </div>
-            </div>
-        </main>
 
-        <!-- Footer -->
-        <footer class="footer">
+                <!-- Estado vacío -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3>No tienes playlists</h3>
+                    <p>Crea tu primera playlist para comenzar a organizar tu música.</p>
+                    <a href="index.html#playlist-section" class="create-playlist-btn">
+                        <i class="fas fa-plus"></i>
+                        Crear Playlist
+                    </a>
+                </div>
+
+                <!-- Grid de playlists -->
+                <div id="playlists-grid" class="playlists-grid" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer elegante -->
+    <footer class="elegant-footer">
+        <div class="footer-container">
             <div class="footer-content">
-                <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
-                <div class="social-links">
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <div class="footer-brand">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="footer-logo">
+                    <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en X (Twitter)">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://github.com/Cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Ver en GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
                 </div>
             </div>
-        </footer>
-    </div>
+        </div>
+    </footer>
 
-    <script>
-        function goBack() {
-            window.location.href = 'dashboard.html';
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/modify_playlists.js"></script>
 </body>
 </html> 
