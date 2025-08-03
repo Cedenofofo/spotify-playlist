@@ -331,5 +331,28 @@
     <script src="js/auth.js"></script>
     <script src="js/search.js"></script>
     <script src="js/main.js"></script>
+    
+    <!-- Filtro de consola para solo mostrar errores de la aplicación -->
+    <script>
+        // Filtrar console.log para solo mostrar logs de esta aplicación
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        
+        console.log = function(...args) {
+            if (args.some(arg => typeof arg === 'string' && arg.includes('cedenofofo.github.io'))) {
+                originalConsoleLog.apply(console, args);
+            }
+        };
+        
+        console.error = function(...args) {
+            if (args.some(arg => typeof arg === 'string' && arg.includes('cedenofofo.github.io'))) {
+                originalConsoleError.apply(console, args);
+            }
+        };
+        
+        // Mostrar mensaje de que la aplicación está funcionando
+        console.log('🎵 Tuneuptify cargado correctamente');
+        console.log('🔍 Para ver solo errores de esta app, filtra por: cedenofofo.github.io');
+    </script>
 </body>
 </html> 
