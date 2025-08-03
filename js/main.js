@@ -45,9 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar listener de hash
     setupHashListener();
     
-    // Configurar botón de atrás
-    setupBackButton();
-    
     // Verificar si viene del dashboard para mostrar el formulario de crear playlist
     checkHashAndShowPlaylistForm();
     
@@ -601,16 +598,6 @@ function checkHashAndShowPlaylistForm() {
     }
 }
 
-// ===== CONFIGURAR BOTÓN DE ATRÁS =====
-function setupBackButton() {
-    const backButton = document.getElementById('back-to-dashboard');
-    if (backButton) {
-        backButton.addEventListener('click', () => {
-            window.location.href = 'dashboard.html';
-        });
-    }
-}
-
 // ===== MOSTRAR FORMULARIO DE PLAYLIST =====
 function showPlaylistForm() {
     console.log('Mostrando formulario de playlist...');
@@ -812,4 +799,9 @@ window.addArtistInput = addArtistInput;
 window.removeArtist = removeArtist;
 window.showNotification = showNotification;
 window.showLoadingAnimation = showLoadingAnimation;
-window.hideLoadingAnimation = hideLoadingAnimation; 
+window.hideLoadingAnimation = hideLoadingAnimation;
+
+// Función para ir al dashboard
+function goToDashboard() {
+    window.location.href = 'dashboard.html';
+} 
