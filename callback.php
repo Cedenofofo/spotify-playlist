@@ -37,9 +37,9 @@ if (isset($data['access_token'])) {
         $_SESSION[SPOTIFY_SESSION_REFRESH_TOKEN_KEY] = $data['refresh_token'];
     }
 
-    // Redirigir al sitio web principal con los datos necesarios
-    $redirectUrl = 'https://cedenofofo.github.io/spotify-playlist/?access_token=' . $data['access_token'] . 
-                  '&expires_in=' . $data['expires_in'] . '&show_dashboard=true';
+    // Redirigir al dashboard con los datos necesarios
+    $redirectUrl = 'https://cedenofofo.github.io/spotify-playlist/dashboard.html?access_token=' . $data['access_token'] . 
+                  '&expires_in=' . $data['expires_in'];
     header('Location: ' . $redirectUrl);
     exit;
 } else {
