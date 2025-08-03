@@ -9,188 +9,251 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Header fijo -->
-    <header class="dashboard-header">
-        <div class="header-content">
-            <div class="logo-section">
-                <img src="img/tuneuptify-logo.png" alt="Tuneuptify Logo" class="header-logo">
-                <h1 class="header-title">Tuneuptify</h1>
+    <!-- Cursor personalizado -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-follower"></div>
+
+    <!-- Header elegante con glassmorphism -->
+    <header class="elegant-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="brand-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="brand-title">Tuneuptify</h1>
             </div>
-            <div class="header-actions">
-                <button class="btn btn-secondary btn-sm" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="btn-text">Cerrar Sesión</span>
+            
+            <nav class="header-nav">
+                <div class="nav-stats">
+                    <div class="stat-pill">
+                        <i class="fas fa-music"></i>
+                        <span>12 Playlists</span>
+                    </div>
+                    <div class="stat-pill">
+                        <i class="fas fa-heart"></i>
+                        <span>89 Favoritos</span>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <div class="btn-content">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar Sesión</span>
+                    </div>
+                    <div class="btn-ripple"></div>
                 </button>
-            </div>
+            </nav>
         </div>
     </header>
 
-    <!-- Contenido principal -->
-    <main class="dashboard-main">
-        <div class="dashboard-container">
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <div class="hero-content">
-                    <h2 class="hero-title">Panel de Control</h2>
-                    <p class="hero-subtitle">¿Qué te gustaría hacer hoy?</p>
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-music"></i>
-                            <span class="stat-number">0</span>
-                            <span class="stat-label">Playlists</span>
+    <!-- Contenido principal con scroll suave -->
+    <main class="elegant-main">
+        <!-- Hero section con parallax -->
+        <section class="hero-parallax">
+            <div class="hero-bg">
+                <div class="floating-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                    <div class="shape shape-4"></div>
+                </div>
+            </div>
+            
+            <div class="hero-content">
+                <div class="welcome-card">
+                    <div class="welcome-header">
+                        <h2 class="welcome-title">¡Bienvenido de vuelta!</h2>
+                        <p class="welcome-subtitle">¿Qué te gustaría crear hoy?</p>
+                    </div>
+                    
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Playlists</div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <i class="fas fa-heart"></i>
-                            <span class="stat-number">0</span>
-                            <span class="stat-label">Favoritos</span>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">89</div>
+                                <div class="stat-label">Favoritos</div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <i class="fas fa-clock"></i>
-                            <span class="stat-number">0</span>
-                            <span class="stat-label">Horas</span>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">156</div>
+                                <div class="stat-label">Horas</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Grid de opciones -->
-            <section class="options-section">
-                <div class="options-grid">
+        <!-- Grid de acciones principales -->
+        <section class="actions-section">
+            <div class="actions-container">
+                <div class="section-header">
+                    <h3 class="section-title">Acciones Principales</h3>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div class="actions-grid">
                     <!-- Crear Playlist -->
-                    <div class="option-card primary" onclick="navigateToCreatePlaylist()">
-                        <div class="card-header">
-                            <div class="card-icon">
+                    <div class="action-card primary" onclick="navigateToCreatePlaylist()">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
                                 <i class="fas fa-plus-circle"></i>
+                                <div class="icon-pulse"></div>
                             </div>
                             <div class="card-badge">Nuevo</div>
-                        </div>
-                        <div class="card-content">
                             <h3 class="card-title">Crear Playlist</h3>
-                            <p class="card-description">Crea una nueva playlist personalizada con tus canciones favoritas</p>
+                            <p class="card-description">Crea playlists únicas con IA inteligente y personalización avanzada</p>
                             <div class="card-features">
-                                <span class="feature-tag">Artistas</span>
-                                <span class="feature-tag">Canciones</span>
-                                <span class="feature-tag">Personalizado</span>
+                                <span class="feature">Artistas múltiples</span>
+                                <span class="feature">Canciones específicas</span>
+                                <span class="feature">IA inteligente</span>
                             </div>
                         </div>
                         <div class="card-footer">
-                            <span class="card-action">Comenzar</span>
-                            <i class="fas fa-arrow-right"></i>
+                            <span class="action-text">Comenzar</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
                         </div>
                     </div>
 
-                    <!-- Modificar Playlists -->
-                    <div class="option-card secondary" onclick="navigateToModifyPlaylists()">
-                        <div class="card-header">
-                            <div class="card-icon">
+                    <!-- Gestionar Playlists -->
+                    <div class="action-card secondary" onclick="navigateToModifyPlaylists()">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
                                 <i class="fas fa-edit"></i>
+                                <div class="icon-pulse"></div>
                             </div>
                             <div class="card-badge">Gestionar</div>
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">Modificar Playlists</h3>
-                            <p class="card-description">Gestiona y modifica tus playlists existentes de Spotify</p>
+                            <h3 class="card-title">Gestionar Playlists</h3>
+                            <p class="card-description">Modifica y optimiza tus playlists existentes de Spotify</p>
                             <div class="card-features">
-                                <span class="feature-tag">Editar</span>
-                                <span class="feature-tag">Organizar</span>
-                                <span class="feature-tag">Optimizar</span>
+                                <span class="feature">Editar canciones</span>
+                                <span class="feature">Reorganizar</span>
+                                <span class="feature">Optimizar</span>
                             </div>
                         </div>
                         <div class="card-footer">
-                            <span class="card-action">Gestionar</span>
-                            <i class="fas fa-arrow-right"></i>
+                            <span class="action-text">Gestionar</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
                         </div>
                     </div>
 
                     <!-- Estadísticas -->
-                    <div class="option-card accent" onclick="navigateToStatistics()">
-                        <div class="card-header">
-                            <div class="card-icon">
+                    <div class="action-card accent" onclick="navigateToStatistics()">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
                                 <i class="fas fa-chart-bar"></i>
+                                <div class="icon-pulse"></div>
                             </div>
                             <div class="card-badge">Analizar</div>
-                        </div>
-                        <div class="card-content">
                             <h3 class="card-title">Estadísticas</h3>
-                            <p class="card-description">Analiza tus hábitos de escucha y estadísticas musicales</p>
+                            <p class="card-description">Analiza tus hábitos de escucha y tendencias musicales</p>
                             <div class="card-features">
-                                <span class="feature-tag">Gráficos</span>
-                                <span class="feature-tag">Tendencias</span>
-                                <span class="feature-tag">Insights</span>
+                                <span class="feature">Gráficos</span>
+                                <span class="feature">Tendencias</span>
+                                <span class="feature">Insights</span>
                             </div>
                         </div>
                         <div class="card-footer">
-                            <span class="card-action">Ver Stats</span>
-                            <i class="fas fa-arrow-right"></i>
+                            <span class="action-text">Ver Stats</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
                         </div>
                     </div>
 
                     <!-- Próximamente -->
-                    <div class="option-card disabled">
-                        <div class="card-header">
-                            <div class="card-icon">
+                    <div class="action-card disabled">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="icon-container">
                                 <i class="fas fa-cog"></i>
+                                <div class="icon-pulse"></div>
                             </div>
                             <div class="card-badge coming-soon">Próximo</div>
-                        </div>
-                        <div class="card-content">
                             <h3 class="card-title">Nuevas Funciones</h3>
                             <p class="card-description">Funcionalidades avanzadas en desarrollo</p>
                             <div class="card-features">
-                                <span class="feature-tag">IA</span>
-                                <span class="feature-tag">Colaboración</span>
-                                <span class="feature-tag">Avanzado</span>
+                                <span class="feature">IA Avanzada</span>
+                                <span class="feature">Colaboración</span>
+                                <span class="feature">Avanzado</span>
                             </div>
                         </div>
                         <div class="card-footer">
-                            <span class="card-action">Próximamente</span>
-                            <i class="fas fa-clock"></i>
+                            <span class="action-text">Próximamente</span>
+                            <div class="arrow-container">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="card-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
                         </div>
                     </div>
                 </div>
-            </section>
-
-            <!-- Sección de actividad reciente -->
-            <section class="recent-section">
-                <div class="section-header">
-                    <h3 class="section-title">Actividad Reciente</h3>
-                    <button class="btn btn-secondary btn-sm">Ver Todo</button>
-                </div>
-                <div class="recent-grid">
-                    <div class="recent-item">
-                        <div class="recent-icon">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <div class="recent-content">
-                            <h4>Nueva playlist creada</h4>
-                            <p>Hace 2 horas</p>
-                        </div>
-                    </div>
-                    <div class="recent-item">
-                        <div class="recent-icon">
-                            <i class="fas fa-edit"></i>
-                        </div>
-                        <div class="recent-content">
-                            <h4>Playlist modificada</h4>
-                            <p>Hace 1 día</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="dashboard-footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
-            </div>
-            <div class="footer-section">
-                <div class="social-links">
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    <!-- Footer elegante -->
+    <footer class="elegant-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="footer-logo">
+                    <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en X (Twitter)">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://github.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Visita mi GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
                 </div>
             </div>
         </div>
