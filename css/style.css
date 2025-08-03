@@ -1173,7 +1173,8 @@ body {
   gap: 1rem;
   max-height: 400px;
   overflow-y: auto;
-  padding-right: 0.5rem;
+  padding-right: 2rem;
+  overflow-x: visible;
 }
 
 .preview-tracks::-webkit-scrollbar {
@@ -1204,6 +1205,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: var(--transition-smooth);
   position: relative;
+  overflow: visible;
 }
 
 .preview-track:hover {
@@ -1262,6 +1264,8 @@ body {
   opacity: 1;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .remove-track-btn:hover {
