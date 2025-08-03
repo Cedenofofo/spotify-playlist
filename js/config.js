@@ -13,7 +13,7 @@ window.config = {
     clientSecret: '5c0c9086ef2a414d93e7e9385390053b',
     redirectUri: window.location.hostname.includes('github.io')
         ? 'https://cedenofofo.github.io/spotify-playlist/callback.html'
-        : 'http://127.0.0.1/spotify-playlist/callback.php',
+        : 'http://127.0.0.1/spotify-playlist-desktop/callback_local.html',
     
     // URLs de la API
     authUrl: 'https://accounts.spotify.com/authorize',
