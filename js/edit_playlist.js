@@ -48,9 +48,10 @@ class EditPlaylistManager {
     }
 
     setupMultiSelectButtons() {
-        // Agregar botones de selección múltiple al HTML
+        // Agregar botones de selección múltiple en la sección de tracks, no en las sugerencias
         const tracksList = document.getElementById('tracks-list');
         if (tracksList) {
+            // Crear contenedor para los botones de selección múltiple
             const multiSelectContainer = document.createElement('div');
             multiSelectContainer.className = 'multi-select-container';
             multiSelectContainer.innerHTML = `
@@ -69,7 +70,12 @@ class EditPlaylistManager {
                     </button>
                 </div>
             `;
-            tracksList.parentNode.insertBefore(multiSelectContainer, tracksList);
+            
+            // Insertar antes del contenedor de tracks, no dentro
+            const tracksContainer = tracksList.closest('.input-wrapper');
+            if (tracksContainer) {
+                tracksContainer.insertBefore(multiSelectContainer, tracksList);
+            }
 
             // Event listeners para botones de selección múltiple
             document.getElementById('select-all-btn').addEventListener('click', () => {

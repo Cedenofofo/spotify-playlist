@@ -4139,3 +4139,112 @@ body {
         font-size: 0.75rem !important;
     }
 }
+
+/* ===== CORRECCIONES PARA SUPERPOSICIONES EN EDITAR PLAYLIST ===== */
+
+/* Separación clara entre secciones */
+.form-group {
+    margin-bottom: 2rem !important;
+    position: relative !important;
+}
+
+/* Contenedor de búsqueda separado */
+.autocomplete-container {
+    position: relative !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Sugerencias de búsqueda con z-index alto */
+.autocomplete-suggestions {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    backdrop-filter: blur(20px) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Contenedor de tracks separado */
+.selected-tracks-container {
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 1rem !important;
+}
+
+/* Botones de selección múltiple en la sección correcta */
+.multi-select-container {
+    margin-bottom: 1rem !important;
+    padding: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.multi-select-actions {
+    display: flex !important;
+    gap: 0.75rem !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+}
+
+.multi-select-actions .action-btn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    cursor: pointer !important;
+}
+
+.multi-select-actions .action-btn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.multi-select-actions .action-btn.remove {
+    background: rgba(231, 76, 60, 0.2) !important;
+    border-color: rgba(231, 76, 60, 0.3) !important;
+    color: #e74c3c !important;
+}
+
+.multi-select-actions .action-btn.remove:hover {
+    background: rgba(231, 76, 60, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* Responsive para botones de selección múltiple */
+@media (max-width: 768px) {
+    .multi-select-actions {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    
+    .multi-select-actions .action-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .multi-select-container {
+        padding: 0.75rem !important;
+    }
+    
+    .multi-select-actions .action-btn {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.85rem !important;
+    }
+}
