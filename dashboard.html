@@ -8,132 +8,92 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="dashboard-body">
-    <!-- Header Full Width -->
-    <header class="dashboard-header">
-        <div class="header-container">
-            <div class="logo-section">
-                <img src="img/tuneuptify-logo.png" alt="Tuneuptify Logo" class="header-logo">
-                <h1 class="header-title">Tuneuptify</h1>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <img src="img/tuneuptify-logo.png" alt="Tuneuptify Logo">
+                <h1>Tuneuptify</h1>
             </div>
-            <nav class="header-nav">
-                <button class="btn btn-secondary btn-sm" onclick="logout()">
+            <nav class="nav">
+                <button class="btn btn-secondary" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span class="btn-text">Cerrar Sesión</span>
+                    Cerrar Sesión
                 </button>
             </nav>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content Full Width -->
-    <main class="dashboard-main">
-        <div class="dashboard-hero">
-            <div class="hero-content">
-                <h2 class="hero-title">Panel de Control</h2>
-                <p class="hero-subtitle">¿Qué te gustaría hacer hoy?</p>
-            </div>
-        </div>
-
-        <div class="dashboard-content">
-            <div class="cards-container">
-                <!-- Opción 1: Crear Playlist -->
-                <div class="feature-card" onclick="navigateToCreatePlaylist()">
-                    <div class="card-header">
-                        <div class="card-icon-wrapper">
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-container">
+                <h2 class="dashboard-title">Panel de Control</h2>
+                <p class="dashboard-subtitle">¿Qué te gustaría hacer hoy?</p>
+                
+                <div class="dashboard-grid">
+                    <!-- Opción 1: Crear Playlist -->
+                    <div class="dashboard-card" onclick="navigateToCreatePlaylist()">
+                        <div class="card-icon">
                             <i class="fas fa-plus-circle"></i>
                         </div>
+                        <h3>Crear Playlist</h3>
+                        <p>Crea una nueva playlist personalizada con tus canciones favoritas</p>
                         <div class="card-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Crear Playlist</h3>
-                        <p class="card-description">Crea una nueva playlist personalizada con tus canciones favoritas</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="card-action">Comenzar</span>
-                    </div>
-                </div>
 
-                <!-- Opción 2: Modificar Playlist Actuales -->
-                <div class="feature-card" onclick="navigateToModifyPlaylists()">
-                    <div class="card-header">
-                        <div class="card-icon-wrapper">
+                    <!-- Opción 2: Modificar Playlist Actuales -->
+                    <div class="dashboard-card" onclick="navigateToModifyPlaylists()">
+                        <div class="card-icon">
                             <i class="fas fa-edit"></i>
                         </div>
+                        <h3>Modificar Playlist Actuales</h3>
+                        <p>Gestiona y modifica tus playlists existentes de Spotify</p>
                         <div class="card-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Modificar Playlist Actuales</h3>
-                        <p class="card-description">Gestiona y modifica tus playlists existentes de Spotify</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="card-action">Gestionar</span>
-                    </div>
-                </div>
 
-                <!-- Opción 3: Estadísticas de Spotify -->
-                <div class="feature-card" onclick="navigateToStatistics()">
-                    <div class="card-header">
-                        <div class="card-icon-wrapper">
+                    <!-- Opción 3: Estadísticas de Spotify -->
+                    <div class="dashboard-card" onclick="navigateToStatistics()">
+                        <div class="card-icon">
                             <i class="fas fa-chart-bar"></i>
                         </div>
+                        <h3>Estadísticas de Spotify</h3>
+                        <p>Analiza tus hábitos de escucha y estadísticas musicales</p>
                         <div class="card-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Estadísticas de Spotify</h3>
-                        <p class="card-description">Analiza tus hábitos de escucha y estadísticas musicales</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="card-action">Ver Estadísticas</span>
-                    </div>
-                </div>
 
-                <!-- Opción 4: Reservada -->
-                <div class="feature-card disabled">
-                    <div class="card-header">
-                        <div class="card-icon-wrapper">
+                    <!-- Opción 4: Reservada -->
+                    <div class="dashboard-card disabled">
+                        <div class="card-icon">
                             <i class="fas fa-cog"></i>
                         </div>
+                        <h3>Próximamente</h3>
+                        <p>Nueva funcionalidad en desarrollo</p>
                         <div class="card-arrow">
                             <i class="fas fa-clock"></i>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Próximamente</h3>
-                        <p class="card-description">Nueva funcionalidad en desarrollo</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="card-action">En Desarrollo</span>
-                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- Footer Full Width -->
-    <footer class="dashboard-footer">
-        <div class="footer-container">
+        <!-- Footer -->
+        <footer class="footer">
             <div class="footer-content">
-                <p class="footer-text">&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
+                <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
                 <div class="social-links">
-                    <a href="#" aria-label="Twitter" class="social-link">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" aria-label="Instagram" class="social-link">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" aria-label="GitHub" class="social-link">
-                        <i class="fab fa-github"></i>
-                    </a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     <script src="js/dashboard.js"></script>
 </body>
