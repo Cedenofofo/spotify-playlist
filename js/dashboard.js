@@ -184,6 +184,9 @@ function logout() {
     }
 }
 
+// Hacer la función logout global
+window.logout = logout;
+
 // Función para obtener el token de acceso
 function getAccessToken() {
     return localStorage.getItem('spotify_access_token');
