@@ -473,54 +473,96 @@ function displayPlaylistPreview(data) {
 
 // ===== EXPORTAR A SPOTIFY =====
 async function exportToSpotify() {
-    const playlistName = document.getElementById('playlist-name').value;
-    const artistMain = document.getElementById('artist-main').value;
-    const songsPerArtist = document.getElementById('songs-per-artist').value;
-    
-    if (!playlistName || !artistMain) {
-        showNotification('Por favor, completa el nombre de la playlist y el artista principal', 'error');
+    const token = localStorage.getItem('spotify_access_token');
+    if (!token) {
+        showNotification('No hay token de acceso. Por favor, inicia sesión nuevamente.', 'error');
         return;
     }
-    
+
+    if (!window.currentPlaylistTracks || window.currentPlaylistTracks.length === 0) {
+        showNotification('No hay canciones en la playlist para exportar', 'error');
+        return;
+    }
+
+    const playlistName = document.getElementById('playlist-name').value;
+    if (!playlistName) {
+        showNotification('Por favor, ingresa un nombre para la playlist', 'error');
+        return;
+    }
+
     showLoadingAnimation();
     
     try {
-        // Recopilar todos los artistas
-        const artists = [artistMain];
-        const additionalArtists = document.querySelectorAll('#artist-inputs input');
-        additionalArtists.forEach(input => {
-            if (input.value.trim()) {
-                artists.push(input.value.trim());
+        // 1. Obtener el ID del usuario
+        const userResponse = await fetch('https://api.spotify.com/v1/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         });
-        
-        const response = await fetch('export_to_spotify.php', {
+
+        if (!userResponse.ok) {
+            throw new Error('Error al obtener información del usuario');
+        }
+
+        const userData = await userResponse.json();
+        const userId = userData.id;
+
+        // 2. Crear la playlist
+        const createPlaylistResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                playlistName: playlistName,
-                artists: artists,
-                trackCount: parseInt(songsPerArtist)
+                name: playlistName,
+                description: 'Playlist creada con Tuneuptify',
+                public: false
             })
         });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            showNotification('Playlist exportada exitosamente a Spotify', 'success');
-            // Limpiar formulario
-            document.getElementById('playlist-form').reset();
-            document.getElementById('playlist-preview').style.display = 'none';
-            document.getElementById('export-spotify').style.display = 'none';
-            document.getElementById('artist-inputs').innerHTML = '';
-        } else {
-            showNotification(data.error || 'Error al exportar la playlist', 'error');
+
+        if (!createPlaylistResponse.ok) {
+            throw new Error('Error al crear la playlist');
         }
+
+        const playlistData = await createPlaylistResponse.json();
+        const playlistId = playlistData.id;
+
+        // 3. Agregar las canciones a la playlist
+        const trackUris = window.currentPlaylistTracks.map(track => track.uri);
+        
+        const addTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uris: trackUris
+            })
+        });
+
+        if (!addTracksResponse.ok) {
+            throw new Error('Error al agregar canciones a la playlist');
+        }
+
+        showNotification('¡Playlist exportada exitosamente a Spotify!', 'success');
+        
+        // Limpiar formulario
+        document.getElementById('playlist-form').reset();
+        document.getElementById('playlist-preview').style.display = 'none';
+        document.getElementById('export-spotify').style.display = 'none';
+        document.getElementById('artist-inputs').innerHTML = '';
+        window.currentPlaylistTracks = [];
+
+        // Opcional: Abrir la playlist en Spotify
+        setTimeout(() => {
+            window.open(playlistData.external_urls.spotify, '_blank');
+        }, 1000);
+
     } catch (error) {
-        console.error('Error:', error);
-        showNotification('Error al exportar la playlist', 'error');
+        console.error('Error al exportar playlist:', error);
+        showNotification('Error al exportar la playlist: ' + error.message, 'error');
     } finally {
         hideLoadingAnimation();
     }
