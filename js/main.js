@@ -412,19 +412,25 @@ function displayPlaylistPreview(data) {
     
     if (!previewDiv) return;
     
+    // Guardar los tracks en una variable global para poder eliminarlos
+    window.currentPlaylistTracks = data.tracks;
+    
     previewDiv.innerHTML = `
         <div class="preview-header">
             <h4>Vista previa: ${data.playlistName}</h4>
             <p>${data.tracks.length} canciones encontradas</p>
         </div>
         <div class="preview-tracks">
-            ${data.tracks.map(track => `
-                <div class="preview-track">
+            ${data.tracks.map((track, index) => `
+                <div class="preview-track" data-track-index="${index}">
                     <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
                     <div class="track-info">
                         <div class="track-name">${track.name}</div>
                         <div class="track-artist">${track.artist}</div>
                     </div>
+                    <button class="remove-track-btn" onclick="removeTrackFromPreview(${index})" title="Eliminar canción">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             `).join('')}
         </div>
@@ -434,6 +440,24 @@ function displayPlaylistPreview(data) {
     if (exportButton) {
         exportButton.style.display = 'block';
     }
+}
+
+// Función para eliminar una canción de la vista previa
+function removeTrackFromPreview(index) {
+    if (!window.currentPlaylistTracks) return;
+    
+    // Eliminar la canción del array
+    window.currentPlaylistTracks.splice(index, 1);
+    
+    // Actualizar la vista previa
+    const data = {
+        success: true,
+        playlistName: document.getElementById('playlist-name').value,
+        tracks: window.currentPlaylistTracks
+    };
+    
+    displayPlaylistPreview(data);
+    showNotification('Canción eliminada de la playlist', 'info');
 }
 
 // ===== EXPORTAR A SPOTIFY =====
