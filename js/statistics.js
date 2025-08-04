@@ -93,7 +93,8 @@ class StatisticsManager {
 
     async loadRecentlyPlayed() {
         const api = new SpotifyAPI(this.auth);
-        const recentlyPlayed = await api.getRecentlyPlayed(50);
+        // Get more tracks to ensure we have enough data for filtering
+        const recentlyPlayed = await api.getRecentlyPlayed(100);
         
         // Filter tracks based on current time range
         if (recentlyPlayed && recentlyPlayed.items) {
@@ -119,6 +120,8 @@ class StatisticsManager {
                 return (now - playedAt) <= timeRangeMs;
             });
             
+            console.log(`Filtered ${filteredItems.length} tracks from ${recentlyPlayed.items.length} total for time range: ${this.currentTimeRange}`);
+            
             return { ...recentlyPlayed, items: filteredItems };
         }
         
@@ -130,11 +133,14 @@ class StatisticsManager {
         if (!container) return;
 
         const timeRangeLabel = this.getTimeRangeLabel();
+        
+        // Update the time range badge in the card header
+        const timeRangeBadge = container.closest('.content-card').querySelector('.time-range-badge');
+        if (timeRangeBadge) {
+            timeRangeBadge.textContent = timeRangeLabel;
+        }
+
         container.innerHTML = `
-            <div class="stats-header">
-                <h3><i class="fas fa-microphone"></i> Artistas Más Escuchados</h3>
-                <span class="time-range">${timeRangeLabel}</span>
-            </div>
             <div class="artists-grid">
                 ${artists.items.map((artist, index) => `
                     <div class="artist-card" data-artist-id="${artist.id}">
@@ -172,11 +178,14 @@ class StatisticsManager {
         if (!container) return;
 
         const timeRangeLabel = this.getTimeRangeLabel();
+        
+        // Update the time range badge in the card header
+        const timeRangeBadge = container.closest('.content-card').querySelector('.time-range-badge');
+        if (timeRangeBadge) {
+            timeRangeBadge.textContent = timeRangeLabel;
+        }
+
         container.innerHTML = `
-            <div class="stats-header">
-                <h3><i class="fas fa-music"></i> Canciones Más Reproducidas</h3>
-                <span class="time-range">${timeRangeLabel}</span>
-            </div>
             <div class="tracks-list">
                 ${tracks.items.map((track, index) => `
                     <div class="track-item" data-track-id="${track.id}">
@@ -227,9 +236,6 @@ class StatisticsManager {
 
         container.innerHTML = `
             <div class="activity-summary">
-                <div class="activity-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
                 <div class="activity-stats">
                     <div class="activity-stat-item">
                         <div class="stat-number">${totalTracks}</div>
@@ -260,24 +266,18 @@ class StatisticsManager {
         const totalHours = Math.floor(totalDuration / (1000 * 60 * 60));
         const totalMinutes = Math.floor((totalDuration % (1000 * 60 * 60)) / (1000 * 60));
 
+        const timeRangeLabel = this.getTimeRangeLabel();
+
         container.innerHTML = `
             <div class="listening-stats">
-                <div class="time-card">
-                    <div class="time-icon">
-                        <i class="fas fa-headphones"></i>
-                    </div>
-                    <div class="time-info">
-                        <h4>Tiempo Total de Escucha</h4>
-                        <div class="time-value">
-                            <span class="hours">${totalHours}</span>
-                            <span class="time-unit">h</span>
-                            <span class="minutes">${totalMinutes}</span>
-                            <span class="time-unit">min</span>
-                        </div>
-                        <div class="time-description">
-                            Basado en ${recentlyPlayed.items.length} canciones reproducidas recientemente
-                        </div>
-                    </div>
+                <div class="time-value">
+                    <span class="hours">${totalHours}</span>
+                    <span class="time-unit">h</span>
+                    <span class="minutes">${totalMinutes}</span>
+                    <span class="time-unit">min</span>
+                </div>
+                <div class="time-description">
+                    Basado en ${recentlyPlayed.items.length} canciones (${timeRangeLabel})
                 </div>
             </div>
         `;

@@ -44,43 +44,48 @@
 
     <!-- Main Content -->
     <main class="stats-container">
-        <!-- Page Title -->
-        <div class="page-header">
-            <h2 class="page-title">
-                <i class="fas fa-chart-line"></i>
-                Estadísticas de Spotify
-            </h2>
-            <p class="page-subtitle">Analiza tus hábitos de escucha y descubre insights sobre tu música</p>
-        </div>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2 class="hero-title">
+                        <i class="fas fa-chart-line"></i>
+                        Tu Música en Números
+                    </h2>
+                    <p class="hero-subtitle">Descubre insights únicos sobre tus hábitos de escucha</p>
+                </div>
+                
+                <div class="hero-controls">
+                    <div class="time-range-selector">
+                        <label for="time-range-select">Período:</label>
+                        <select id="time-range-select">
+                            <option value="short_term">Últimas 4 semanas</option>
+                            <option value="medium_term">Últimos 6 meses</option>
+                            <option value="long_term">Todo el tiempo</option>
+                        </select>
+                    </div>
+                    
+                    <button id="share-stats-button" class="share-button">
+                        <i class="fas fa-share-alt"></i>
+                        Compartir
+                    </button>
+                </div>
+            </div>
+        </section>
 
         <!-- Error Container -->
         <div id="error-container" class="error-container"></div>
 
-        <!-- Controls -->
-        <div class="stats-controls">
-            <div class="time-range-selector">
-                <label for="time-range-select">Período de tiempo:</label>
-                <select id="time-range-select">
-                    <option value="short_term">Últimas 4 semanas</option>
-                    <option value="medium_term">Últimos 6 meses</option>
-                    <option value="long_term">Todo el tiempo</option>
-                </select>
-            </div>
-            
-            <button id="share-stats-button" class="share-button">
-                <i class="fas fa-share-alt"></i>
-                Compartir en Redes
-            </button>
-        </div>
-
-        <!-- Horizontal Statistics Layout -->
-        <div class="horizontal-stats-layout">
-            <!-- Top Row - Main Stats -->
-            <div class="stats-row main-stats-row">
+        <!-- Key Metrics Section -->
+        <section class="metrics-section">
+            <div class="metrics-grid">
                 <!-- Activity Summary Card -->
-                <div class="stats-card activity-card" id="activity-summary-container">
-                    <div class="stats-header">
-                        <h3><i class="fas fa-chart-bar"></i> Resumen de Actividad</h3>
+                <div class="metric-card activity-metric" id="activity-summary-container">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Resumen de Actividad</h3>
                     </div>
                     <div class="loading-placeholder">
                         <div class="loading-spinner"></div>
@@ -89,9 +94,12 @@
                 </div>
 
                 <!-- Listening Time Card -->
-                <div class="stats-card time-card" id="listening-time-container">
-                    <div class="stats-header">
-                        <h3><i class="fas fa-clock"></i> Tiempo de Escucha</h3>
+                <div class="metric-card time-metric" id="listening-time-container">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Tiempo de Escucha</h3>
                     </div>
                     <div class="loading-placeholder">
                         <div class="loading-spinner"></div>
@@ -100,9 +108,12 @@
                 </div>
 
                 <!-- Uniqueness Card -->
-                <div class="stats-card uniqueness-card" id="uniqueness-container">
-                    <div class="stats-header">
-                        <h3><i class="fas fa-star"></i> Exclusividad de Gustos</h3>
+                <div class="metric-card uniqueness-metric" id="uniqueness-container">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Exclusividad</h3>
                     </div>
                     <div class="loading-placeholder">
                         <div class="loading-spinner"></div>
@@ -110,46 +121,59 @@
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Second Row - Artists and Tracks -->
-            <div class="stats-row content-row">
-                <!-- Artists Section -->
-                <div class="stats-section artists-section">
-                    <div class="stats-card" id="top-artists-container">
-                        <div class="stats-header">
-                            <h3><i class="fas fa-microphone"></i> Artistas Más Escuchados</h3>
-                            <span class="time-range">Últimas 4 semanas</span>
-                        </div>
-                        <div class="loading-placeholder">
-                            <div class="loading-spinner"></div>
-                            <p>Cargando artistas...</p>
-                        </div>
+        <!-- Content Sections -->
+        <section class="content-sections">
+            <!-- Top Artists Section -->
+            <div class="content-card artists-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-microphone"></i>
+                        <h3>Artistas Más Escuchados</h3>
+                    </div>
+                    <div class="card-actions">
+                        <span class="time-range-badge">Últimas 4 semanas</span>
                     </div>
                 </div>
-
-                <!-- Tracks Section -->
-                <div class="stats-section tracks-section">
-                    <div class="stats-card" id="top-tracks-container">
-                        <div class="stats-header">
-                            <h3><i class="fas fa-music"></i> Canciones Más Reproducidas</h3>
-                            <span class="time-range">Últimas 4 semanas</span>
-                        </div>
-                        <div class="loading-placeholder">
-                            <div class="loading-spinner"></div>
-                            <p>Cargando canciones...</p>
-                        </div>
+                <div class="card-content" id="top-artists-container">
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando artistas...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Third Row - Analysis -->
-            <div class="stats-row analysis-row">
+            <!-- Top Tracks Section -->
+            <div class="content-card tracks-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-music"></i>
+                        <h3>Canciones Más Reproducidas</h3>
+                    </div>
+                    <div class="card-actions">
+                        <span class="time-range-badge">Últimas 4 semanas</span>
+                    </div>
+                </div>
+                <div class="card-content" id="top-tracks-container">
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando canciones...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div class="analysis-grid">
                 <!-- Genre Analysis -->
-                <div class="stats-section genre-section">
-                    <div class="stats-card" id="genre-analysis-container">
-                        <div class="stats-header">
-                            <h3><i class="fas fa-tags"></i> Géneros Musicales Favoritos</h3>
+                <div class="content-card genre-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-tags"></i>
+                            <h3>Géneros Favoritos</h3>
                         </div>
+                    </div>
+                    <div class="card-content" id="genre-analysis-container">
                         <div class="loading-placeholder">
                             <div class="loading-spinner"></div>
                             <p>Analizando géneros...</p>
@@ -158,11 +182,14 @@
                 </div>
 
                 <!-- Mood Analysis -->
-                <div class="stats-section mood-section">
-                    <div class="stats-card" id="mood-analysis-container">
-                        <div class="stats-header">
-                            <h3><i class="fas fa-heart"></i> Estado de Ánimo Musical</h3>
+                <div class="content-card mood-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-heart"></i>
+                            <h3>Estado de Ánimo</h3>
                         </div>
+                    </div>
+                    <div class="card-content" id="mood-analysis-container">
                         <div class="loading-placeholder">
                             <div class="loading-spinner"></div>
                             <p>Analizando mood...</p>
@@ -170,13 +197,16 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Insights Section -->
-        <div class="insights-section">
-            <div class="stats-card insights-card">
-                <div class="stats-header">
-                    <h3><i class="fas fa-lightbulb"></i> Insights Personalizados</h3>
+        <section class="insights-section">
+            <div class="insights-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>Insights Personalizados</h3>
+                    </div>
                 </div>
                 <div class="insights-content">
                     <div class="insight-item">
@@ -210,135 +240,46 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
-            <div class="social-links">
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Compartir Estadísticas</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="share-image-container">
+                    <img id="share-image" src="" alt="Estadísticas de Spotify">
+                </div>
+                <div class="share-options">
+                    <button class="share-option twitter-share">
+                        <i class="fab fa-twitter"></i>
+                        Compartir en X
+                    </button>
+                    <button class="share-option facebook-share">
+                        <i class="fab fa-facebook"></i>
+                        Compartir en Facebook
+                    </button>
+                    <button class="share-option instagram-share">
+                        <i class="fab fa-instagram"></i>
+                        Copiar para Instagram
+                    </button>
+                    <button class="share-option download-share">
+                        <i class="fas fa-download"></i>
+                        Descargar Imagen
+                    </button>
+                </div>
             </div>
         </div>
-    </footer>
+    </div>
 
     <!-- Scripts -->
-    <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/spotify-api.js"></script>
     <script src="js/share-statistics.js"></script>
     <script src="js/statistics.js"></script>
-
-    <style>
-        /* Estilos adicionales para la página */
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 0 0 1rem 0;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        .page-subtitle {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0;
-        }
-
-        .loading-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .loading-placeholder .loading-spinner {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 1rem;
-        }
-
-        .insights-section {
-            margin-top: 2rem;
-        }
-
-        .insights-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 1rem;
-        }
-
-        .insight-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .insight-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .insight-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #1db954, #1ed760);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .insight-text h4 {
-            margin: 0 0 0.5rem 0;
-            color: #ffffff;
-            font-size: 1.1rem;
-        }
-
-        .insight-text p {
-            margin: 0;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.5;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 2rem;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .insights-content {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .insight-item {
-                padding: 1rem;
-            }
-        }
-    </style>
 </body>
 </html> 
