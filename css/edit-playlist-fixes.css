@@ -1,94 +1,137 @@
-/* ===== CORRECCIONES COMPLETAS PARA ELEMENTOS SUPERPUESTOS ===== */
+/* ===== NUEVA ESTRUCTURA SIMPLIFICADA PARA EDITAR PLAYLIST ===== */
 
-/* ===== LAYOUT PRINCIPAL ===== */
-.form-group {
-    margin-bottom: 2rem !important;
-    position: relative !important;
-    clear: both !important;
-    overflow: visible !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-.form-group .form-label {
-    margin-bottom: 0.5rem !important;
-    display: block !important;
-    position: relative !important;
-    z-index: 1 !important;
-    clear: both !important;
-    width: 100% !important;
-}
-
-.input-wrapper {
-    position: relative !important;
-    z-index: 1 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    margin-bottom: 0 !important;
-}
-
-/* ===== BÚSQUEDA DE CANCIONES ===== */
-.autocomplete-container {
-    position: relative !important;
-    z-index: 100 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    margin-bottom: 0 !important;
-}
-
-.autocomplete-suggestions {
-    position: absolute !important;
-    top: 100% !important;
-    left: 0 !important;
-    right: 0 !important;
-    background: rgba(20, 20, 20, 0.95) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+/* ===== SECCIONES PRINCIPALES ===== */
+.add-tracks-section {
+    margin: 2rem 0 !important;
+    padding: 1.5rem !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 16px !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    max-height: 250px !important;
-    overflow-y: auto !important;
-    z-index: 1000 !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    margin-top: 0.5rem !important;
-    padding: 0.5rem 0 !important;
 }
 
-.suggestion-item {
-    padding: 0.75rem 1rem !important;
+.current-tracks-section {
+    margin: 2rem 0 !important;
+    padding: 1.5rem !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.subsection-title {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    margin-bottom: 1.5rem !important;
     display: flex !important;
     align-items: center !important;
     gap: 0.75rem !important;
+}
+
+.subsection-title i {
+    color: #1db954 !important;
+}
+
+/* ===== OPCIONES DE BÚSQUEDA ===== */
+.search-option {
+    margin-bottom: 2rem !important;
+    padding: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.search-option h5 {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    color: #ffffff !important;
+    margin-bottom: 1rem !important;
+}
+
+.simple-search {
+    display: flex !important;
+    gap: 1rem !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+}
+
+.simple-search .form-input {
+    flex: 1 !important;
+    margin-bottom: 0 !important;
+}
+
+.simple-search .action-btn {
+    flex-shrink: 0 !important;
+    min-width: 120px !important;
+}
+
+.artist-search {
+    display: flex !important;
+    gap: 1rem !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+    flex-wrap: wrap !important;
+}
+
+.artist-search .form-input {
+    flex: 1 !important;
+    margin-bottom: 0 !important;
+    min-width: 200px !important;
+}
+
+.artist-search select {
+    flex-shrink: 0 !important;
+    min-width: 150px !important;
+}
+
+.artist-search .action-btn {
+    flex-shrink: 0 !important;
+    min-width: 160px !important;
+}
+
+/* ===== RESULTADOS DE BÚSQUEDA ===== */
+.search-results {
+    margin-top: 1rem !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    background: rgba(20, 20, 20, 0.8) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 0.5rem !important;
+}
+
+.search-result-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 0.75rem !important;
+    border-radius: 8px !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    position: relative !important;
-    z-index: 1 !important;
 }
 
-.suggestion-item:last-child {
+.search-result-item:last-child {
     border-bottom: none !important;
 }
 
-.suggestion-item:hover {
+.search-result-item:hover {
     background: rgba(255, 255, 255, 0.1) !important;
 }
 
-.suggestion-item img {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 4px !important;
+.search-result-item img {
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 6px !important;
     object-fit: cover !important;
     flex-shrink: 0 !important;
 }
 
-.suggestion-info {
+.search-result-info {
     flex: 1 !important;
     min-width: 0 !important;
-    overflow: hidden !important;
 }
 
-.suggestion-title {
+.search-result-title {
     font-weight: 600 !important;
     color: #ffffff !important;
     margin-bottom: 0.25rem !important;
@@ -97,7 +140,7 @@
     text-overflow: ellipsis !important;
 }
 
-.suggestion-subtitle {
+.search-result-subtitle {
     font-size: 0.85rem !important;
     color: #b3b3b3 !important;
     white-space: nowrap !important;
@@ -105,107 +148,146 @@
     text-overflow: ellipsis !important;
 }
 
-/* ===== BÚSQUEDA POR ARTISTAS ===== */
-.artists-search-container {
-    margin-top: 1rem !important;
-    position: relative !important;
-    z-index: 1 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-.artist-inputs {
-    margin-bottom: 1rem !important;
-    width: 100% !important;
-}
-
-.artist-row {
+.search-result-actions {
     display: flex !important;
-    gap: 0.75rem !important;
-    margin-bottom: 0.75rem !important;
+    gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+}
+
+.add-track-btn {
+    background: #1db954 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
     align-items: center !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    position: relative !important;
-    z-index: 1 !important;
+    gap: 0.5rem !important;
 }
 
-.artist-row .autocomplete-container {
+.add-track-btn:hover {
+    background: #1ed760 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* ===== LISTA DE CANCIONES ===== */
+.tracks-list {
+    margin-top: 1rem !important;
+}
+
+.track-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    margin-bottom: 0.75rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.track-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.track-item.selected {
+    background: rgba(29, 185, 84, 0.1) !important;
+    border-color: rgba(29, 185, 84, 0.3) !important;
+}
+
+.track-checkbox {
+    flex-shrink: 0 !important;
+}
+
+.track-checkbox input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+}
+
+.track-number {
+    font-weight: 600 !important;
+    color: #1db954 !important;
+    min-width: 30px !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+}
+
+.track-image {
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 6px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+}
+
+.track-info {
     flex: 1 !important;
-    margin-bottom: 0 !important;
-    position: relative !important;
-    z-index: 50 !important;
+    min-width: 0 !important;
 }
 
-.artist-row .autocomplete-suggestions {
-    z-index: 200 !important;
+.track-name {
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    margin-bottom: 0.25rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
-.remove-artist-btn {
+.track-artist {
+    font-size: 0.85rem !important;
+    color: #b3b3b3 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.track-actions {
+    display: flex !important;
+    gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+}
+
+.remove-track-btn {
     background: rgba(255, 59, 48, 0.8) !important;
     color: white !important;
     border: none !important;
-    border-radius: 50% !important;
+    border-radius: 6px !important;
     width: 32px !important;
     height: 32px !important;
     cursor: pointer !important;
-    font-size: 1.2rem !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.3s ease !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
-    z-index: 10 !important;
+    transition: all 0.2s ease !important;
 }
 
-.remove-artist-btn:hover {
+.remove-track-btn:hover {
     background: rgba(255, 59, 48, 1) !important;
     transform: scale(1.1) !important;
 }
 
-.add-artist-btn {
-    margin-bottom: 1rem !important;
-    width: 100% !important;
-    position: relative !important;
-    z-index: 1 !important;
-}
-
-#songs-per-artist {
-    margin-bottom: 1rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-#search-by-artists {
-    width: 100% !important;
-    margin-top: 0.5rem !important;
-    position: relative !important;
-    z-index: 1 !important;
-}
-
 /* ===== BOTONES DE SELECCIÓN MÚLTIPLE ===== */
 .multi-select-container {
-    margin: 1rem 0 !important;
+    margin-bottom: 1rem !important;
     padding: 1rem !important;
     background: rgba(255, 255, 255, 0.05) !important;
     border-radius: 12px !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    position: relative !important;
-    z-index: 10 !important;
-    clear: both !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
 }
 
 .multi-select-actions {
     display: flex !important;
     gap: 0.75rem !important;
     flex-wrap: wrap !important;
-    justify-content: flex-start !important;
     align-items: center !important;
-    margin-bottom: 0 !important;
-    width: 100% !important;
 }
 
 .multi-select-actions .action-btn {
@@ -222,39 +304,40 @@
     gap: 0.5rem !important;
     cursor: pointer !important;
     white-space: nowrap !important;
-    position: relative !important;
-    z-index: 1 !important;
-    flex-shrink: 0 !important;
 }
 
-/* ===== CONTENEDOR DE TRACKS ===== */
-.selected-tracks-container {
-    margin-top: 1rem !important;
-    position: relative !important;
-    z-index: 1 !important;
-    clear: both !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+.multi-select-actions .action-btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
 }
 
-.selected-track-item {
-    position: relative !important;
-    z-index: 1 !important;
-    margin-bottom: 0.5rem !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 8px !important;
-    padding: 0.75rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    transition: all 0.3s ease !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+.multi-select-actions .action-btn.remove {
+    background: rgba(255, 59, 48, 0.8) !important;
+    border-color: rgba(255, 59, 48, 0.3) !important;
+}
+
+.multi-select-actions .action-btn.remove:hover {
+    background: rgba(255, 59, 48, 1) !important;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+    .simple-search {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+    
+    .artist-search {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+    
+    .artist-search .form-input,
+    .artist-search select,
+    .artist-search .action-btn {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+    
     .multi-select-actions {
         flex-direction: column !important;
         gap: 0.5rem !important;
@@ -265,45 +348,38 @@
         justify-content: center !important;
     }
     
-    .artist-row {
-        flex-direction: column !important;
-        gap: 0.5rem !important;
+    .track-item {
+        flex-wrap: wrap !important;
+        gap: 0.75rem !important;
     }
     
-    .artist-row .autocomplete-container {
+    .track-actions {
         width: 100% !important;
-    }
-    
-    .remove-artist-btn {
-        align-self: flex-end !important;
-    }
-    
-    .suggestion-item {
-        padding: 0.5rem !important;
-    }
-    
-    .suggestion-item img {
-        width: 30px !important;
-        height: 30px !important;
+        justify-content: flex-end !important;
     }
 }
 
 @media (max-width: 480px) {
-    .multi-select-container {
+    .add-tracks-section,
+    .current-tracks-section {
+        padding: 1rem !important;
+    }
+    
+    .search-option {
         padding: 0.75rem !important;
     }
     
-    .multi-select-actions .action-btn {
-        padding: 0.4rem 0.8rem !important;
-        font-size: 0.85rem !important;
+    .track-item {
+        padding: 0.75rem !important;
     }
     
-    .suggestion-item {
-        padding: 0.4rem !important;
+    .track-image {
+        width: 40px !important;
+        height: 40px !important;
     }
     
-    .suggestion-item img {
-        width: 25px !important;
-        height: 25px !important;
+    .search-result-item img {
+        width: 40px !important;
+        height: 40px !important;
     }
 } 

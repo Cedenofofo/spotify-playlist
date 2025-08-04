@@ -95,7 +95,7 @@
             </div>
         </section>
 
-        <!-- Sección de edición de playlist -->
+        <!-- Nueva estructura simplificada -->
         <section class="playlist-section" id="edit-playlist-section">
             <div class="section-container">
                 <div class="section-header">
@@ -105,6 +105,7 @@
                 
                 <div class="playlist-form-container">
                     <form id="edit-playlist-form" class="elegant-form" aria-label="Formulario para editar playlist">
+                        
                         <!-- Información básica de la playlist -->
                         <div class="form-group">
                             <div class="input-wrapper">
@@ -153,71 +154,77 @@
                             </div>
                         </div>
 
-                        <!-- Búsqueda de canciones para agregar -->
-                        <div class="form-group">
-                            <div class="input-wrapper">
-                                <label for="track-search" class="form-label">
-                                    <i class="fas fa-search"></i>
-                                    <span>Agregar canciones</span>
-                                </label>
-                                <div class="autocomplete-container">
-                                    <input type="text" id="track-search" class="form-input" 
-                                           placeholder="Busca canciones para agregar..." 
-                                           autocomplete="off" aria-autocomplete="list" 
-                                           aria-label="Buscar canciones para agregar">
-                                    <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
-                                    <div class="input-glow"></div>
+                        <!-- Sección de agregar canciones - NUEVA ESTRUCTURA -->
+                        <div class="add-tracks-section">
+                            <h4 class="subsection-title">
+                                <i class="fas fa-plus-circle"></i>
+                                Agregar Canciones
+                            </h4>
+                            
+                            <!-- Opción 1: Búsqueda simple -->
+                            <div class="search-option">
+                                <h5>Buscar canción específica</h5>
+                                <div class="simple-search">
+                                    <input type="text" id="simple-track-search" class="form-input" 
+                                           placeholder="Nombre de la canción o artista...">
+                                    <button type="button" id="search-track-btn" class="action-btn primary">
+                                        <i class="fas fa-search"></i>
+                                        Buscar
+                                    </button>
                                 </div>
+                                <div id="search-results" class="search-results" style="display: none;"></div>
                             </div>
-                        </div>
 
-                        <!-- Búsqueda por artistas -->
-                        <div class="form-group">
-                            <div class="input-wrapper">
-                                <label class="form-label">
-                                    <i class="fas fa-microphone"></i>
-                                    <span>Agregar canciones por artista</span>
-                                </label>
-                                <div class="artists-search-container">
-                                    <div id="artist-inputs" class="artist-inputs"></div>
-                                    <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional">
-                                        <div class="btn-content">
-                                            <i class="fas fa-plus"></i>
-                                            <span>Agregar artista</span>
-                                        </div>
-                                        <div class="btn-ripple"></div>
-                                    </button>
-                                    <div class="form-group">
-                                        <label for="songs-per-artist" class="form-label">
-                                            <i class="fas fa-list-ol"></i>
-                                            <span>Canciones por artista</span>
-                                        </label>
-                                        <input type="number" id="songs-per-artist" class="form-input" 
-                                               min="1" max="50" value="5" step="1" required aria-required="true">
-                                        <div class="input-glow"></div>
-                                    </div>
-                                    <button type="button" id="search-by-artists" class="action-btn primary" aria-label="Buscar canciones por artistas">
-                                        <div class="btn-content">
-                                            <i class="fas fa-search"></i>
-                                            <span>Buscar canciones por artistas</span>
-                                        </div>
-                                        <div class="btn-ripple"></div>
+                            <!-- Opción 2: Búsqueda por artistas -->
+                            <div class="search-option">
+                                <h5>Agregar canciones por artista</h5>
+                                <div class="artist-search">
+                                    <input type="text" id="artist-search-input" class="form-input" 
+                                           placeholder="Nombre del artista...">
+                                    <select id="tracks-per-artist" class="form-input">
+                                        <option value="3">3 canciones</option>
+                                        <option value="5" selected>5 canciones</option>
+                                        <option value="10">10 canciones</option>
+                                        <option value="15">15 canciones</option>
+                                    </select>
+                                    <button type="button" id="search-artist-btn" class="action-btn primary">
+                                        <i class="fas fa-microphone"></i>
+                                        Buscar por artista
                                     </button>
                                 </div>
+                                <div id="artist-results" class="search-results" style="display: none;"></div>
                             </div>
                         </div>
 
                         <!-- Canciones actuales en la playlist -->
-                        <div class="form-group">
-                            <div class="input-wrapper">
-                                <label class="form-label">
-                                    <i class="fas fa-music"></i>
-                                    <span>Canciones en la playlist</span>
-                                </label>
-                                <div id="tracks-list" class="selected-tracks-container">
-                                    <div class="loading-spinner"></div>
-                                    <p style="text-align: center; color: #b3b3b3;">Cargando canciones...</p>
+                        <div class="current-tracks-section">
+                            <h4 class="subsection-title">
+                                <i class="fas fa-music"></i>
+                                Canciones en la Playlist
+                            </h4>
+                            
+                            <!-- Botones de selección múltiple -->
+                            <div id="multi-select-container" class="multi-select-container" style="display: none;">
+                                <div class="multi-select-actions">
+                                    <button type="button" id="select-all-btn" class="action-btn secondary">
+                                        <i class="fas fa-check-square"></i>
+                                        <span>Seleccionar todo</span>
+                                    </button>
+                                    <button type="button" id="deselect-all-btn" class="action-btn secondary" style="display: none;">
+                                        <i class="fas fa-square"></i>
+                                        <span>Deseleccionar todo</span>
+                                    </button>
+                                    <button type="button" id="delete-selected-btn" class="action-btn remove" style="display: none;">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Eliminar seleccionadas</span>
+                                    </button>
                                 </div>
+                            </div>
+
+                            <!-- Lista de canciones -->
+                            <div id="tracks-list" class="tracks-list">
+                                <div class="loading-spinner"></div>
+                                <p style="text-align: center; color: #b3b3b3;">Cargando canciones...</p>
                             </div>
                         </div>
 
