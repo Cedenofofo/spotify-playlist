@@ -493,47 +493,61 @@ class ShareStatistics {
     }
 
     shareToTwitter(imageDataUrl) {
-        // Para Twitter/X, intentamos usar la Web Share API con imagen
-        if (navigator.share && navigator.canShare) {
-            // Convertir la imagen a Blob para compartir
-            fetch(imageDataUrl)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
-                    
-                    if (navigator.canShare({ files: [file] })) {
-                        navigator.share({
-                            title: 'Mis Estadísticas de Spotify',
-                            text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
-                            files: [file]
-                        }).then(() => {
-                            this.showNotification('Compartido en X correctamente', 'success');
-                        }).catch((error) => {
-                            console.error('Error sharing:', error);
-                            // Fallback a URL de Twitter
-                            this.shareToTwitterFallback();
-                        });
-                    } else {
-                        // Fallback si no se puede compartir archivos
-                        this.shareToTwitterFallback();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error processing image:', error);
-                    this.shareToTwitterFallback();
-                });
-        } else {
-            // Fallback para navegadores que no soportan Web Share API
-            this.shareToTwitterFallback();
-        }
+        // Para Twitter/X, descargar imagen y dar instrucciones
+        this.downloadImage(imageDataUrl);
+        this.showTwitterInstructions();
     }
 
-    shareToTwitterFallback() {
-        const text = encodeURIComponent('Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify');
-        const url = encodeURIComponent('https://cedenofofo.github.io/spotify-playlist');
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-        window.open(twitterUrl, '_blank');
-        this.showNotification('Redirigiendo a X...', 'success');
+    showTwitterInstructions() {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+
+        const content = document.createElement('div');
+        content.style.cssText = `
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        `;
+
+        content.innerHTML = `
+            <h3 style="color: #1da1f2; margin-bottom: 1rem;">🐦 Compartir en X (Twitter)</h3>
+            <p style="margin-bottom: 1rem; color: #333;">
+                La imagen ya se descargó. Para compartir en X:
+            </p>
+            <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
+                <li>Abre X (Twitter) en tu navegador o app</li>
+                <li>Haz clic en "Post" o "Tweet"</li>
+                <li>Adjunta la imagen descargada</li>
+                <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
+                <li>Publica tu tweet</li>
+            </ol>
+            <button onclick="this.parentElement.parentElement.remove()" style="
+                background: #1da1f2;
+                color: white;
+                border: none;
+                padding: 0.8rem 1.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+            ">Entendido</button>
+        `;
+
+        modal.appendChild(content);
+        document.body.appendChild(modal);
     }
 
     shareToFacebook(imageDataUrl) {
