@@ -171,6 +171,42 @@
                             </div>
                         </div>
 
+                        <!-- Búsqueda por artistas -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label class="form-label">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Agregar canciones por artista</span>
+                                </label>
+                                <div class="artists-search-container">
+                                    <div id="artist-inputs" class="artist-inputs"></div>
+                                    <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional">
+                                        <div class="btn-content">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Agregar artista</span>
+                                        </div>
+                                        <div class="btn-ripple"></div>
+                                    </button>
+                                    <div class="form-group">
+                                        <label for="songs-per-artist" class="form-label">
+                                            <i class="fas fa-list-ol"></i>
+                                            <span>Canciones por artista</span>
+                                        </label>
+                                        <input type="number" id="songs-per-artist" class="form-input" 
+                                               min="1" max="50" value="5" step="1" required aria-required="true">
+                                        <div class="input-glow"></div>
+                                    </div>
+                                    <button type="button" id="search-by-artists" class="action-btn primary" aria-label="Buscar canciones por artistas">
+                                        <div class="btn-content">
+                                            <i class="fas fa-search"></i>
+                                            <span>Buscar canciones por artistas</span>
+                                        </div>
+                                        <div class="btn-ripple"></div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Canciones actuales en la playlist -->
                         <div class="form-group">
                             <div class="input-wrapper">

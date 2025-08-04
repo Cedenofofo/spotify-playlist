@@ -45,6 +45,9 @@ class EditPlaylistManager {
 
         // Botones de selección múltiple
         this.setupMultiSelectButtons();
+        
+        // Configurar búsqueda por artistas
+        this.setupArtistSearch();
     }
 
     setupMultiSelectButtons() {
@@ -625,6 +628,229 @@ class EditPlaylistManager {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // ===== FUNCIONES DE BÚSQUEDA POR ARTISTAS =====
+
+    setupArtistSearch() {
+        // Configurar botón de agregar artista
+        const addArtistBtn = document.getElementById('add-artist');
+        if (addArtistBtn) {
+            addArtistBtn.addEventListener('click', () => {
+                this.addArtistInput();
+            });
+        }
+
+        // Configurar botón de buscar por artistas
+        const searchByArtistsBtn = document.getElementById('search-by-artists');
+        if (searchByArtistsBtn) {
+            searchByArtistsBtn.addEventListener('click', () => {
+                this.searchByArtists();
+            });
+        }
+    }
+
+    addArtistInput() {
+        const artistInputs = document.getElementById('artist-inputs');
+        const newRow = document.createElement('div');
+        newRow.className = 'artist-row';
+        newRow.style.opacity = '0';
+        newRow.style.transform = 'translateX(-20px)';
+        newRow.style.transition = 'all 0.3s ease';
+        
+        // Crear ID único para este artista
+        const artistId = 'artist-' + Date.now();
+        
+        newRow.innerHTML = `
+            <div class="autocomplete-container">
+                <input type="text" class="form-input artist-autocomplete" 
+                       id="${artistId}" 
+                       placeholder="Nombre del artista" 
+                       autocomplete="off">
+                <div class="autocomplete-suggestions" id="${artistId}-suggestions"></div>
+            </div>
+            <button type="button" class="remove-artist-btn" onclick="editPlaylistManager.removeArtist(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        artistInputs.appendChild(newRow);
+        
+        // Configurar autocompletado para el nuevo artista
+        this.setupAutocompleteForArtist(artistId);
+        
+        // Animación de entrada
+        setTimeout(() => {
+            newRow.style.opacity = '1';
+            newRow.style.transform = 'translateX(0)';
+        }, 50);
+    }
+
+    removeArtist(button) {
+        const row = button.closest('.artist-row');
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(20px)';
+        
+        setTimeout(() => {
+            row.remove();
+        }, 300);
+    }
+
+    setupAutocompleteForArtist(artistId) {
+        const artistInput = document.getElementById(artistId);
+        const suggestionsDiv = document.getElementById(artistId + '-suggestions');
+        
+        if (!artistInput || !suggestionsDiv) {
+            console.error(`No se encontraron elementos para autocompletado de artista: ${artistId}`);
+            return;
+        }
+        
+        let debounceTimeout;
+        
+        artistInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            if (query.length < 2) {
+                suggestionsDiv.innerHTML = '';
+                return;
+            }
+            
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                editPlaylistManager.searchArtists(query, suggestionsDiv, artistInput);
+            }, 300);
+        });
+        
+        artistInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                suggestionsDiv.innerHTML = '';
+            }, 200);
+        });
+    }
+
+    async searchArtists(query, suggestionsDiv, artistInput) {
+        try {
+            const token = localStorage.getItem('spotify_access_token');
+            if (!token) {
+                console.error('No hay token de acceso');
+                return;
+            }
+            
+            const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=5`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Error en la API: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.artists && data.artists.items) {
+                this.displayArtistResults(data.artists.items, suggestionsDiv, artistInput);
+            }
+        } catch (error) {
+            console.error('Error al buscar artistas:', error);
+            suggestionsDiv.innerHTML = '<div class="error">Error al buscar artistas</div>';
+        }
+    }
+
+    displayArtistResults(artists, suggestionsDiv, artistInput) {
+        suggestionsDiv.innerHTML = '';
+        
+        artists.forEach(artist => {
+            const artistDiv = document.createElement('div');
+            artistDiv.className = 'autocomplete-suggestion';
+            artistDiv.innerHTML = `
+                <img src="${artist.images[0]?.url || 'https://via.placeholder.com/32?text=🎤'}" alt="${artist.name}">
+                <span>${artist.name}</span>
+            `;
+            
+            artistDiv.addEventListener('click', () => {
+                artistInput.value = artist.name;
+                suggestionsDiv.innerHTML = '';
+            });
+            
+            suggestionsDiv.appendChild(artistDiv);
+        });
+    }
+
+    async searchByArtists() {
+        const artistInputs = document.querySelectorAll('#artist-inputs input');
+        const songsPerArtist = document.getElementById('songs-per-artist').value;
+        
+        if (artistInputs.length === 0) {
+            this.showNotification('Por favor, agrega al menos un artista', 'error');
+            return;
+        }
+
+        const artists = Array.from(artistInputs).map(input => input.value.trim()).filter(name => name.length > 0);
+        
+        if (artists.length === 0) {
+            this.showNotification('Por favor, ingresa nombres de artistas', 'error');
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('spotify_access_token');
+            if (!token) {
+                this.auth.logout();
+                return;
+            }
+
+            this.showNotification('Buscando canciones por artistas...', 'info');
+
+            const allTracks = [];
+            
+            for (const artistName of artists) {
+                // Buscar el artista
+                const artistResponse = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(artistName)}&type=artist&limit=1`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!artistResponse.ok) continue;
+
+                const artistData = await artistResponse.json();
+                if (!artistData.artists || artistData.artists.items.length === 0) continue;
+
+                const artistId = artistData.artists.items[0].id;
+
+                // Buscar canciones del artista
+                const tracksResponse = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=ES`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!tracksResponse.ok) continue;
+
+                const tracksData = await tracksResponse.json();
+                const artistTracks = tracksData.tracks.slice(0, parseInt(songsPerArtist));
+                
+                allTracks.push(...artistTracks);
+            }
+
+            // Agregar las canciones encontradas a la playlist
+            for (const track of allTracks) {
+                if (!this.tracks.some(t => t.id === track.id)) {
+                    this.tracks.push(track);
+                    this.pendingChanges.tracksToAdd.push(track.id);
+                }
+            }
+
+            // Actualizar display
+            this.displayTracks();
+            this.updateTrackCount();
+            
+            this.showNotification(`Se agregaron ${allTracks.length} canciones de ${artists.length} artista(s)`, 'success');
+
+        } catch (error) {
+            console.error('Error al buscar por artistas:', error);
+            this.showError('Error al buscar canciones por artistas');
+        }
     }
 }
 
