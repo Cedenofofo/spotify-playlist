@@ -493,8 +493,44 @@ class ShareStatistics {
     }
 
     shareToTwitter(imageDataUrl) {
-        // Para Twitter/X, usar Web Share API con imagen
-        this.shareToSocialApp(imageDataUrl, 'twitter');
+        // Para Twitter/X, crear tweet con texto + link + imagen
+        this.createTwitterTweet(imageDataUrl);
+    }
+
+    async createTwitterTweet(imageDataUrl) {
+        try {
+            // Convertir la imagen a Blob
+            const response = await fetch(imageDataUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
+            
+            // Verificar si se puede compartir archivos
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                const shareData = {
+                    title: 'Mis Estadísticas de Spotify',
+                    text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify https://cedenofofo.github.io/spotify-playlist',
+                    files: [file]
+                };
+                
+                await navigator.share(shareData);
+                this.showNotification('Compartiendo en X...', 'success');
+            } else {
+                // Fallback: abrir Twitter con texto + link
+                const text = encodeURIComponent('Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify');
+                const url = encodeURIComponent('https://cedenofofo.github.io/spotify-playlist');
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+                window.open(twitterUrl, '_blank');
+                this.showNotification('Redirigiendo a X...', 'success');
+            }
+        } catch (error) {
+            console.error('Error sharing to Twitter:', error);
+            // Fallback: abrir Twitter con texto + link
+            const text = encodeURIComponent('Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify');
+            const url = encodeURIComponent('https://cedenofofo.github.io/spotify-playlist');
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            window.open(twitterUrl, '_blank');
+            this.showNotification('Redirigiendo a X...', 'success');
+        }
     }
 
     shareToFacebook(imageDataUrl) {
