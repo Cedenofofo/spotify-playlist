@@ -875,19 +875,14 @@ class StatisticsManager {
     }
 
     setupShareButtons(imageDataUrl) {
-        const shareButtons = document.querySelectorAll('.share-option');
+        const downloadButton = document.querySelector('.download-share');
         
-        shareButtons.forEach(button => {
-            button.onclick = (e) => {
+        if (downloadButton) {
+            downloadButton.onclick = (e) => {
                 e.preventDefault();
-                const platform = button.classList.contains('twitter-share') ? 'twitter' :
-                               button.classList.contains('facebook-share') ? 'facebook' :
-                               button.classList.contains('instagram-share') ? 'instagram' :
-                               button.classList.contains('download-share') ? 'download' : 'native';
-                
-                this.shareStats.shareToSocialMedia(imageDataUrl, platform);
+                this.shareStats.shareToSocialMedia(imageDataUrl, 'download');
             };
-        });
+        }
 
         // Setup modal close button
         const closeButton = document.querySelector('.close-modal');
