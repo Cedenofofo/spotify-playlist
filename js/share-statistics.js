@@ -85,24 +85,41 @@ class ShareStatistics {
         const cardHeight = 120;
         const cardSpacing = 20;
         
-        // Top Artist
+        // Tiempo de escucha
+        if (this.statsData.listeningTime) {
+            await this.drawStatCard('⏰ Tiempo de Escucha', this.statsData.listeningTime, startY);
+        }
+        
+        // Top 5 Artistas
         if (this.statsData.topArtists && this.statsData.topArtists.items.length > 0) {
-            await this.drawStatCard('🎤 Artista Favorito', this.statsData.topArtists.items[0].name, startY);
+            const topArtists = this.statsData.topArtists.items.slice(0, 5).map((artist, index) => 
+                `${index + 1}. ${artist.name}`
+            ).join('\n');
+            await this.drawStatCard('🎤 Top 5 Artistas', topArtists, startY + cardHeight + cardSpacing);
         }
         
-        // Top Track
+        // Top 5 Canciones
         if (this.statsData.topTracks && this.statsData.topTracks.items.length > 0) {
-            await this.drawStatCard('🎵 Canción Favorita', this.statsData.topTracks.items[0].name, startY + cardHeight + cardSpacing);
+            const topTracks = this.statsData.topTracks.items.slice(0, 5).map((track, index) => 
+                `${index + 1}. ${track.name} - ${track.artists[0].name}`
+            ).join('\n');
+            await this.drawStatCard('🎵 Top 5 Canciones', topTracks, startY + (cardHeight + cardSpacing) * 2);
         }
         
-        // Top Genre
+        // Top 3 Géneros
         if (this.statsData.genres && this.statsData.genres.length > 0) {
-            this.drawStatCard('🎼 Género Favorito', this.statsData.genres[0].name, startY + (cardHeight + cardSpacing) * 2);
+            const topGenres = this.statsData.genres.slice(0, 3).map((genre, index) => 
+                `${index + 1}. ${genre.name}`
+            ).join('\n');
+            this.drawStatCard('🎼 Top 3 Géneros', topGenres, startY + (cardHeight + cardSpacing) * 3);
         }
         
-        // Uniqueness Score
-        if (this.statsData.uniquenessScore) {
-            this.drawStatCard('⭐ Exclusividad', `${this.statsData.uniquenessScore}%`, startY + (cardHeight + cardSpacing) * 3);
+        // Top 3 Estados de ánimo
+        if (this.statsData.moods && this.statsData.moods.length > 0) {
+            const topMoods = this.statsData.moods.slice(0, 3).map((mood, index) => 
+                `${index + 1}. ${mood.name}`
+            ).join('\n');
+            this.drawStatCard('💫 Top 3 Estados de Ánimo', topMoods, startY + (cardHeight + cardSpacing) * 4);
         }
     }
 

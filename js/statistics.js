@@ -63,7 +63,7 @@ class StatisticsManager {
             // Procesar y mostrar estadísticas
             this.displayTopArtists(topArtists);
             this.displayTopTracks(topTracks);
-            this.displayUserProfile(userProfile);
+            this.displayActivitySummary(userProfile, recentlyPlayed);
             this.displayListeningTime(recentlyPlayed);
             this.displayGenreAnalysis(topArtists, topTracks);
             this.displayMoodAnalysis(topTracks);
@@ -186,36 +186,37 @@ class StatisticsManager {
         });
     }
 
-    displayUserProfile(profile) {
-        const container = document.getElementById('user-profile-container');
+    displayActivitySummary(profile, recentlyPlayed) {
+        const container = document.getElementById('activity-summary-container');
         if (!container) return;
 
+        // Calcular estadísticas de actividad
+        const totalTracks = recentlyPlayed?.items?.length || 0;
+        const uniqueArtists = new Set(recentlyPlayed?.items?.map(item => item.track.artists[0].name) || []).size;
+        const totalDuration = recentlyPlayed?.items?.reduce((total, item) => total + item.track.duration_ms, 0) || 0;
+        const avgDuration = totalTracks > 0 ? totalDuration / totalTracks : 0;
+
         container.innerHTML = `
-            <div class="stats-header">
-                <h3><i class="fas fa-user"></i> Tu Perfil Musical</h3>
-            </div>
-            <div class="profile-card">
-                <div class="profile-image">
-                    <img src="${profile.images[0]?.url || 'https://via.placeholder.com/120x120/1db954/ffffff?text=👤'}" 
-                         alt="${profile.display_name}" onerror="this.src='https://via.placeholder.com/120x120/1db954/ffffff?text=👤'">
+            <div class="activity-summary">
+                <div class="activity-icon">
+                    <i class="fas fa-chart-line"></i>
                 </div>
-                <div class="profile-info">
-                    <h4 class="profile-name">${this.escapeHtml(profile.display_name)}</h4>
-                    <p class="profile-email">${profile.email || 'Email no disponible'}</p>
-                    <div class="profile-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">País</span>
-                            <span class="stat-value">${profile.country || 'No especificado'}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Tipo de cuenta</span>
-                            <span class="stat-value">${profile.product}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Seguidores</span>
-                            <span class="stat-value">${profile.followers?.total || 0}</span>
-                        </div>
+                <div class="activity-stats">
+                    <div class="activity-stat-item">
+                        <div class="stat-number">${totalTracks}</div>
+                        <div class="stat-label">Canciones Escuchadas</div>
                     </div>
+                    <div class="activity-stat-item">
+                        <div class="stat-number">${uniqueArtists}</div>
+                        <div class="stat-label">Artistas Únicos</div>
+                    </div>
+                    <div class="activity-stat-item">
+                        <div class="stat-number">${Math.round(avgDuration / 60000)}</div>
+                        <div class="stat-label">Promedio (min)</div>
+                    </div>
+                </div>
+                <div class="activity-description">
+                    <p>Tu actividad musical muestra un patrón diverso de escucha con ${uniqueArtists} artistas diferentes en ${totalTracks} canciones.</p>
                 </div>
             </div>
         `;
@@ -225,44 +226,28 @@ class StatisticsManager {
         const container = document.getElementById('listening-time-container');
         if (!container) return;
 
-        // Calcular tiempo total de escucha (aproximado)
-        const totalMinutes = recentlyPlayed.items.length * 3; // Estimación de 3 minutos por canción
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
+        // Calcular tiempo total de escucha basado en duración real
+        const totalDuration = recentlyPlayed.items.reduce((total, item) => total + item.track.duration_ms, 0);
+        const totalHours = Math.floor(totalDuration / (1000 * 60 * 60));
+        const totalMinutes = Math.floor((totalDuration % (1000 * 60 * 60)) / (1000 * 60));
 
         container.innerHTML = `
-            <div class="stats-header">
-                <h3><i class="fas fa-clock"></i> Tiempo de Escucha</h3>
-            </div>
             <div class="listening-stats">
                 <div class="time-card">
                     <div class="time-icon">
                         <i class="fas fa-headphones"></i>
                     </div>
                     <div class="time-info">
-                        <h4>Tiempo Total Estimado</h4>
+                        <h4>Tiempo Total de Escucha</h4>
                         <div class="time-value">
-                            <span class="hours">${hours}</span>
-                            <span class="time-unit">horas</span>
-                            <span class="minutes">${minutes}</span>
+                            <span class="hours">${totalHours}</span>
+                            <span class="time-unit">h</span>
+                            <span class="minutes">${totalMinutes}</span>
                             <span class="time-unit">min</span>
                         </div>
-                    </div>
-                </div>
-                <div class="recent-activity">
-                    <h4>Actividad Reciente</h4>
-                    <div class="activity-list">
-                        ${recentlyPlayed.items.slice(0, 5).map(item => `
-                            <div class="activity-item">
-                                <img src="${item.track.album.images[0]?.url || 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎵'}" 
-                                     alt="${item.track.name}" onerror="this.src='https://via.placeholder.com/40x40/1db954/ffffff?text=🎵'">
-                                <div class="activity-info">
-                                    <span class="activity-track">${this.escapeHtml(item.track.name)}</span>
-                                    <span class="activity-artist">${item.track.artists[0].name}</span>
-                                </div>
-                                <span class="activity-time">${this.formatRelativeTime(item.played_at)}</span>
-                            </div>
-                        `).join('')}
+                        <div class="time-description">
+                            Basado en ${recentlyPlayed.items.length} canciones reproducidas recientemente
+                        </div>
                     </div>
                 </div>
             </div>
@@ -526,19 +511,29 @@ class StatisticsManager {
             topArtists: null,
             topTracks: null,
             genres: [],
-            moodAnalysis: {},
+            moods: [],
+            listeningTime: '',
             uniquenessScore: 0
         };
 
         try {
-            // Obtener datos de artistas y tracks
-            const [topArtists, topTracks] = await Promise.all([
+            // Obtener datos de artistas, tracks y actividad reciente
+            const [topArtists, topTracks, recentlyPlayed] = await Promise.all([
                 this.loadTopArtists(),
-                this.loadTopTracks()
+                this.loadTopTracks(),
+                this.loadRecentlyPlayed()
             ]);
 
             statsData.topArtists = topArtists;
             statsData.topTracks = topTracks;
+
+            // Calcular tiempo de escucha
+            if (recentlyPlayed && recentlyPlayed.items) {
+                const totalDuration = recentlyPlayed.items.reduce((total, item) => total + item.track.duration_ms, 0);
+                const totalHours = Math.floor(totalDuration / (1000 * 60 * 60));
+                const totalMinutes = Math.floor((totalDuration % (1000 * 60 * 60)) / (1000 * 60));
+                statsData.listeningTime = `${totalHours}h ${totalMinutes}min`;
+            }
 
             // Procesar géneros
             if (topArtists && topArtists.items) {
@@ -555,21 +550,37 @@ class StatisticsManager {
                     .slice(0, 5);
             }
 
+            // Procesar estados de ánimo (basado en características de las canciones)
+            if (topTracks && topTracks.items) {
+                const moodAnalysis = {
+                    'Energético': 0,
+                    'Relajado': 0,
+                    'Melancólico': 0,
+                    'Bailable': 0,
+                    'Romántico': 0
+                };
+
+                // Simular análisis de mood basado en popularidad y duración
+                topTracks.items.forEach(track => {
+                    if (track.popularity > 70) moodAnalysis['Energético']++;
+                    else if (track.popularity > 50) moodAnalysis['Bailable']++;
+                    else if (track.duration_ms > 240000) moodAnalysis['Relajado']++;
+                    else if (track.popularity < 30) moodAnalysis['Melancólico']++;
+                    else moodAnalysis['Romántico']++;
+                });
+
+                statsData.moods = Object.entries(moodAnalysis)
+                    .map(([name, count]) => ({ name, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+            }
+
             // Calcular score de exclusividad
             if (topArtists && topTracks) {
                 const avgArtistPopularity = topArtists.items.reduce((sum, artist) => sum + artist.popularity, 0) / topArtists.items.length;
                 const avgTrackPopularity = topTracks.items.reduce((sum, track) => sum + track.popularity, 0) / topTracks.items.length;
                 statsData.uniquenessScore = Math.round(100 - ((avgArtistPopularity + avgTrackPopularity) / 2));
             }
-
-            // Análisis de mood (simulado)
-            statsData.moodAnalysis = {
-                'Energético': 35,
-                'Relajado': 25,
-                'Melancólico': 20,
-                'Bailable': 15,
-                'Romántico': 5
-            };
 
         } catch (error) {
             console.error('Error collecting stats data:', error);
