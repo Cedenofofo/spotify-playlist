@@ -78,12 +78,12 @@ class StatisticsManager {
 
     async loadTopArtists() {
         const api = new SpotifyAPI(this.auth);
-        return await api.getTopArtists(this.currentTimeRange, 20);
+        return await api.getTopArtists(this.currentTimeRange, 10);
     }
 
     async loadTopTracks() {
         const api = new SpotifyAPI(this.auth);
-        return await api.getTopTracks(this.currentTimeRange, 20);
+        return await api.getTopTracks(this.currentTimeRange, 10);
     }
 
     async loadUserProfile() {
@@ -93,7 +93,36 @@ class StatisticsManager {
 
     async loadRecentlyPlayed() {
         const api = new SpotifyAPI(this.auth);
-        return await api.getRecentlyPlayed(50);
+        const recentlyPlayed = await api.getRecentlyPlayed(50);
+        
+        // Filter tracks based on current time range
+        if (recentlyPlayed && recentlyPlayed.items) {
+            const now = new Date();
+            let timeRangeMs;
+            
+            switch (this.currentTimeRange) {
+                case 'short_term':
+                    timeRangeMs = 4 * 7 * 24 * 60 * 60 * 1000; // 4 weeks
+                    break;
+                case 'medium_term':
+                    timeRangeMs = 6 * 30 * 24 * 60 * 60 * 1000; // 6 months
+                    break;
+                case 'long_term':
+                    timeRangeMs = 365 * 24 * 60 * 60 * 1000; // 1 year
+                    break;
+                default:
+                    timeRangeMs = 4 * 7 * 24 * 60 * 60 * 1000; // Default to 4 weeks
+            }
+            
+            const filteredItems = recentlyPlayed.items.filter(item => {
+                const playedAt = new Date(item.played_at);
+                return (now - playedAt) <= timeRangeMs;
+            });
+            
+            return { ...recentlyPlayed, items: filteredItems };
+        }
+        
+        return recentlyPlayed;
     }
 
     displayTopArtists(artists) {

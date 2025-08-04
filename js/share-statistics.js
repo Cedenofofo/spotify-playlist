@@ -19,265 +19,376 @@ class ShareStatistics {
         // Limpiar canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Crear gradiente de fondo
-        this.createBackground();
+        // Crear gradiente de fondo mejorado
+        this.createEnhancedBackground();
         
         // Agregar header con logo
-        this.drawHeader();
+        this.drawEnhancedHeader();
         
-        // Agregar estadísticas principales
-        await this.drawMainStats();
+        // Agregar estadísticas principales con mejor diseño
+        await this.drawEnhancedMainStats();
         
-        // Agregar gráficos
-        this.drawCharts();
+        // Agregar gráficos mejorados
+        this.drawEnhancedCharts();
         
-        // Agregar footer
-        this.drawFooter();
+        // Agregar footer mejorado
+        this.drawEnhancedFooter();
         
         return this.canvas.toDataURL('image/png');
     }
 
-    createBackground() {
-        // Gradiente de fondo
+    createEnhancedBackground() {
+        // Gradiente de fondo mejorado
         const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        gradient.addColorStop(0, '#1e3c72');
-        gradient.addColorStop(1, '#2a5298');
+        gradient.addColorStop(0, '#0f0f23');
+        gradient.addColorStop(0.3, '#1a1a2e');
+        gradient.addColorStop(0.7, '#16213e');
+        gradient.addColorStop(1, '#0f3460');
         
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Agregar patrón de puntos
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        for (let i = 0; i < 50; i++) {
+        // Agregar patrón de estrellas
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        for (let i = 0; i < 100; i++) {
             const x = Math.random() * this.canvas.width;
             const y = Math.random() * this.canvas.height;
-            const radius = Math.random() * 3 + 1;
+            const radius = Math.random() * 2 + 0.5;
             
             this.ctx.beginPath();
             this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
             this.ctx.fill();
         }
+        
+        // Agregar líneas decorativas
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.1)';
+        this.ctx.lineWidth = 1;
+        for (let i = 0; i < 5; i++) {
+            const y = 200 + i * 300;
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, y);
+            this.ctx.lineTo(this.canvas.width, y);
+            this.ctx.stroke();
+        }
     }
 
-    drawHeader() {
-        // Título principal
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 48px Inter, sans-serif';
+    drawEnhancedHeader() {
+        // Logo/Título principal con gradiente
+        const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+        gradient.addColorStop(0, '#1db954');
+        gradient.addColorStop(0.5, '#00cfff');
+        gradient.addColorStop(1, '#1db954');
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.font = 'bold 56px Inter, sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('Mis Estadísticas', this.canvas.width / 2, 120);
+        this.ctx.fillText('🎵 Mis Estadísticas', this.canvas.width / 2, 140);
         
-        // Subtítulo
-        this.ctx.font = '24px Inter, sans-serif';
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        this.ctx.fillText('Tuneuptify', this.canvas.width / 2, 160);
+        // Subtítulo con mejor diseño
+        this.ctx.font = 'bold 28px Inter, sans-serif';
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText('Tuneuptify', this.canvas.width / 2, 180);
         
-        // Línea decorativa
+        // Línea decorativa mejorada
         this.ctx.strokeStyle = '#1db954';
-        this.ctx.lineWidth = 3;
+        this.ctx.lineWidth = 4;
         this.ctx.beginPath();
-        this.ctx.moveTo(this.canvas.width / 2 - 100, 180);
-        this.ctx.lineTo(this.canvas.width / 2 + 100, 180);
+        this.ctx.moveTo(this.canvas.width / 2 - 120, 200);
+        this.ctx.lineTo(this.canvas.width / 2 + 120, 200);
         this.ctx.stroke();
+        
+        // Círculos decorativos
+        this.ctx.fillStyle = 'rgba(29, 185, 84, 0.3)';
+        this.ctx.beginPath();
+        this.ctx.arc(this.canvas.width / 2 - 130, 200, 8, 0, 2 * Math.PI);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(this.canvas.width / 2 + 130, 200, 8, 0, 2 * Math.PI);
+        this.ctx.fill();
     }
 
-    async drawMainStats() {
-        const startY = 250;
-        const cardHeight = 120;
-        const cardSpacing = 20;
+    async drawEnhancedMainStats() {
+        const startY = 280;
+        const cardHeight = 140;
+        const cardSpacing = 25;
         
-        // Tiempo de escucha
+        // Layout de 2 columnas
+        const leftColumn = 60;
+        const rightColumn = this.canvas.width / 2 + 30;
+        const cardWidth = (this.canvas.width - 180) / 2;
+        
+        // Tiempo de escucha (centrado arriba)
         if (this.statsData.listeningTime) {
-            await this.drawStatCard('⏰ Tiempo de Escucha', this.statsData.listeningTime, startY);
+            await this.drawEnhancedStatCard('⏰ Tiempo de Escucha', this.statsData.listeningTime, startY, this.canvas.width / 2 - cardWidth / 2, cardWidth);
         }
         
-        // Top 10 Artistas
+        // Top 5 Artistas (izquierda)
         if (this.statsData.topArtists && this.statsData.topArtists.items.length > 0) {
-            const topArtists = this.statsData.topArtists.items.slice(0, 10).map((artist, index) => 
+            const topArtists = this.statsData.topArtists.items.slice(0, 5).map((artist, index) => 
                 `${index + 1}. ${artist.name}`
             ).join('\n');
-            await this.drawStatCard('🎤 Top 10 Artistas', topArtists, startY + cardHeight + cardSpacing);
+            await this.drawEnhancedStatCard('🎤 Top 5 Artistas', topArtists, startY + cardHeight + cardSpacing, leftColumn, cardWidth);
         }
         
-        // Top 10 Canciones
+        // Top 5 Canciones (derecha)
         if (this.statsData.topTracks && this.statsData.topTracks.items.length > 0) {
-            const topTracks = this.statsData.topTracks.items.slice(0, 10).map((track, index) => 
+            const topTracks = this.statsData.topTracks.items.slice(0, 5).map((track, index) => 
                 `${index + 1}. ${track.name} - ${track.artists[0].name}`
             ).join('\n');
-            await this.drawStatCard('🎵 Top 10 Canciones', topTracks, startY + (cardHeight + cardSpacing) * 2);
+            await this.drawEnhancedStatCard('🎵 Top 5 Canciones', topTracks, startY + cardHeight + cardSpacing, rightColumn, cardWidth);
         }
         
-        // Top 3 Géneros
+        // Top 3 Géneros (izquierda)
         if (this.statsData.genres && this.statsData.genres.length > 0) {
             const topGenres = this.statsData.genres.slice(0, 3).map((genre, index) => 
                 `${index + 1}. ${genre.name}`
             ).join('\n');
-            this.drawStatCard('🎼 Top 3 Géneros', topGenres, startY + (cardHeight + cardSpacing) * 3);
+            this.drawEnhancedStatCard('🎼 Top 3 Géneros', topGenres, startY + (cardHeight + cardSpacing) * 2, leftColumn, cardWidth);
         }
         
-        // Top 3 Estados de ánimo
+        // Top 3 Estados de ánimo (derecha)
         if (this.statsData.moods && this.statsData.moods.length > 0) {
             const topMoods = this.statsData.moods.slice(0, 3).map((mood, index) => 
                 `${index + 1}. ${mood.name}`
             ).join('\n');
-            this.drawStatCard('💫 Top 3 Estados de Ánimo', topMoods, startY + (cardHeight + cardSpacing) * 4);
+            this.drawEnhancedStatCard('💫 Top 3 Estados de Ánimo', topMoods, startY + (cardHeight + cardSpacing) * 2, rightColumn, cardWidth);
         }
     }
 
-    async drawStatCard(title, value, y) {
-        const cardWidth = this.canvas.width - 80;
-        const cardHeight = 100;
-        const x = 40;
+    async drawEnhancedStatCard(title, value, y, x, cardWidth) {
+        const cardHeight = 120;
         
-        // Fondo de la tarjeta
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        this.ctx.roundRect(x, y, cardWidth, cardHeight, 15);
+        // Fondo de la tarjeta con gradiente
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + cardHeight);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.roundRect(x, y, cardWidth, cardHeight, 20);
         this.ctx.fill();
         
-        // Borde
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        this.ctx.lineWidth = 1;
+        // Borde con gradiente
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.3)';
+        this.ctx.lineWidth = 2;
         this.ctx.stroke();
         
-        // Título
+        // Sombra interna
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        this.ctx.fillRect(x + 2, y + 2, cardWidth - 4, cardHeight - 4);
+        
+        // Título con mejor diseño
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 20px Inter, sans-serif';
+        this.ctx.font = 'bold 18px Inter, sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(title, x + 20, y + 30);
+        this.ctx.fillText(title, x + 15, y + 30);
         
-        // Valor
+        // Línea separadora
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.5)';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 15, y + 40);
+        this.ctx.lineTo(x + cardWidth - 15, y + 40);
+        this.ctx.stroke();
+        
+        // Valor con mejor formato
         this.ctx.fillStyle = '#1db954';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
-        this.ctx.fillText(value, x + 20, y + 65);
+        this.ctx.font = 'bold 16px Inter, sans-serif';
+        
+        // Dividir el texto en líneas si es necesario
+        const lines = value.split('\n');
+        lines.forEach((line, index) => {
+            this.ctx.fillText(line, x + 15, y + 60 + (index * 20));
+        });
     }
 
-    drawCharts() {
-        const startY = 800;
+    drawEnhancedCharts() {
+        const startY = 1000;
         
-        // Gráfico de géneros
+        // Gráfico de géneros mejorado
         if (this.statsData.genres && this.statsData.genres.length > 0) {
-            this.drawGenreChart(startY);
+            this.drawEnhancedGenreChart(startY);
         }
         
-        // Gráfico de mood
-        if (this.statsData.moodAnalysis) {
-            this.drawMoodChart(startY + 300);
+        // Gráfico de mood mejorado
+        if (this.statsData.moods && this.statsData.moods.length > 0) {
+            this.drawEnhancedMoodChart(startY + 200);
         }
     }
 
-    drawGenreChart(startY) {
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('Géneros Favoritos', this.canvas.width / 2, startY);
+    drawEnhancedGenreChart(startY) {
+        // Título con gradiente
+        const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+        gradient.addColorStop(0, '#1db954');
+        gradient.addColorStop(1, '#00cfff');
         
-        const genres = this.statsData.genres.slice(0, 5);
-        const barHeight = 30;
-        const barSpacing = 10;
-        const startX = 100;
-        const maxWidth = this.canvas.width - 200;
+        this.ctx.fillStyle = gradient;
+        this.ctx.font = 'bold 32px Inter, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('🎼 Géneros Favoritos', this.canvas.width / 2, startY);
+        
+        const genres = this.statsData.genres.slice(0, 3);
+        const barHeight = 40;
+        const barSpacing = 15;
+        const startX = 80;
+        const maxWidth = this.canvas.width - 160;
         
         genres.forEach((genre, index) => {
-            const y = startY + 50 + (barHeight + barSpacing) * index;
+            const y = startY + 60 + (barHeight + barSpacing) * index;
             const width = (genre.count / genres[0].count) * maxWidth;
             
-            // Barra de fondo
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            this.ctx.fillRect(startX, y, maxWidth, barHeight);
+            // Fondo de la barra con gradiente
+            const barGradient = this.ctx.createLinearGradient(startX, y, startX + maxWidth, y);
+            barGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+            barGradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+            this.ctx.fillStyle = barGradient;
+            this.ctx.roundRect(startX, y, maxWidth, barHeight, 8);
+            this.ctx.fill();
             
-            // Barra de progreso
-            this.ctx.fillStyle = '#1db954';
-            this.ctx.fillRect(startX, y, width, barHeight);
+            // Barra de progreso con gradiente
+            const progressGradient = this.ctx.createLinearGradient(startX, y, startX + width, y);
+            progressGradient.addColorStop(0, '#1db954');
+            progressGradient.addColorStop(1, '#00cfff');
+            this.ctx.fillStyle = progressGradient;
+            this.ctx.roundRect(startX, y, width, barHeight, 8);
+            this.ctx.fill();
             
             // Texto del género
             this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '16px Inter, sans-serif';
+            this.ctx.font = 'bold 18px Inter, sans-serif';
             this.ctx.textAlign = 'left';
-            this.ctx.fillText(genre.name, startX + 10, y + 20);
+            this.ctx.fillText(genre.name, startX + 15, y + 25);
             
             // Porcentaje
             this.ctx.textAlign = 'right';
-            this.ctx.fillText(`${Math.round((genre.count / genres[0].count) * 100)}%`, startX + maxWidth - 10, y + 20);
+            this.ctx.fillText(`${Math.round((genre.count / genres[0].count) * 100)}%`, startX + maxWidth - 15, y + 25);
         });
     }
 
-    drawMoodChart(startY) {
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
+    drawEnhancedMoodChart(startY) {
+        // Título con gradiente
+        const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+        gradient.addColorStop(0, '#ff6b35');
+        gradient.addColorStop(1, '#ff8e53');
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.font = 'bold 32px Inter, sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('Estado de Ánimo Musical', this.canvas.width / 2, startY);
+        this.ctx.fillText('💫 Estados de Ánimo', this.canvas.width / 2, startY);
         
-        const moods = this.statsData.moodAnalysis;
-        const barHeight = 25;
-        const barSpacing = 8;
-        const startX = 100;
-        const maxWidth = this.canvas.width - 200;
+        const moods = this.statsData.moods.slice(0, 3);
+        const barHeight = 35;
+        const barSpacing = 12;
+        const startX = 80;
+        const maxWidth = this.canvas.width - 160;
         
-        Object.entries(moods).forEach(([mood, percentage], index) => {
-            const y = startY + 50 + (barHeight + barSpacing) * index;
-            const width = (percentage / 100) * maxWidth;
+        moods.forEach((mood, index) => {
+            const y = startY + 60 + (barHeight + barSpacing) * index;
+            const maxCount = Math.max(...moods.map(m => m.count));
+            const width = (mood.count / maxCount) * maxWidth;
             
-            // Barra de fondo
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            this.ctx.fillRect(startX, y, maxWidth, barHeight);
+            // Fondo de la barra con gradiente
+            const barGradient = this.ctx.createLinearGradient(startX, y, startX + maxWidth, y);
+            barGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+            barGradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+            this.ctx.fillStyle = barGradient;
+            this.ctx.roundRect(startX, y, maxWidth, barHeight, 8);
+            this.ctx.fill();
             
-            // Barra de progreso
-            this.ctx.fillStyle = '#ff6b6b';
-            this.ctx.fillRect(startX, y, width, barHeight);
+            // Barra de progreso con gradiente
+            const progressGradient = this.ctx.createLinearGradient(startX, y, startX + width, y);
+            progressGradient.addColorStop(0, '#ff6b35');
+            progressGradient.addColorStop(1, '#ff8e53');
+            this.ctx.fillStyle = progressGradient;
+            this.ctx.roundRect(startX, y, width, barHeight, 8);
+            this.ctx.fill();
             
             // Texto del mood
             this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '14px Inter, sans-serif';
+            this.ctx.font = 'bold 16px Inter, sans-serif';
             this.ctx.textAlign = 'left';
-            this.ctx.fillText(mood, startX + 10, y + 17);
+            this.ctx.fillText(mood.name, startX + 15, y + 22);
             
             // Porcentaje
             this.ctx.textAlign = 'right';
-            this.ctx.fillText(`${percentage}%`, startX + maxWidth - 10, y + 17);
+            this.ctx.fillText(`${Math.round((mood.count / maxCount) * 100)}%`, startX + maxWidth - 15, y + 22);
         });
     }
 
-    drawFooter() {
-        const footerY = this.canvas.height - 150;
+    drawEnhancedFooter() {
+        const footerY = this.canvas.height - 120;
         
-        // Línea separadora
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        this.ctx.lineWidth = 1;
+        // Fondo del footer con gradiente
+        const footerGradient = this.ctx.createLinearGradient(0, footerY, 0, this.canvas.height);
+        footerGradient.addColorStop(0, 'rgba(0, 0, 0, 0.3)');
+        footerGradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+        this.ctx.fillStyle = footerGradient;
+        this.ctx.fillRect(0, footerY, this.canvas.width, this.canvas.height - footerY);
+        
+        // Línea separadora con gradiente
+        const lineGradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+        lineGradient.addColorStop(0, 'transparent');
+        lineGradient.addColorStop(0.3, '#1db954');
+        lineGradient.addColorStop(0.7, '#00cfff');
+        lineGradient.addColorStop(1, 'transparent');
+        
+        this.ctx.strokeStyle = lineGradient;
+        this.ctx.lineWidth = 3;
         this.ctx.beginPath();
         this.ctx.moveTo(50, footerY);
         this.ctx.lineTo(this.canvas.width - 50, footerY);
         this.ctx.stroke();
         
-        // Texto del footer
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        this.ctx.font = '18px Inter, sans-serif';
+        // Logo con gradiente
+        const logoGradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+        logoGradient.addColorStop(0, '#1db954');
+        logoGradient.addColorStop(0.5, '#00cfff');
+        logoGradient.addColorStop(1, '#1db954');
+        
+        this.ctx.fillStyle = logoGradient;
+        this.ctx.font = 'bold 28px Inter, sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('Generado con Tuneuptify', this.canvas.width / 2, footerY + 40);
+        this.ctx.fillText('🎵 Tuneuptify', this.canvas.width / 2, footerY + 35);
         
-        // Fecha
-        const date = new Date().toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        this.ctx.fillText(date, this.canvas.width / 2, footerY + 70);
+        // URL con mejor diseño
+        this.ctx.font = 'bold 16px Inter, sans-serif';
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.fillText('tuneuptify.com', this.canvas.width / 2, footerY + 60);
         
-        // QR Code placeholder
-        this.drawQRCode(this.canvas.width - 100, footerY - 80);
+        // Texto adicional
+        this.ctx.font = '14px Inter, sans-serif';
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        this.ctx.fillText('Descubre tu música', this.canvas.width / 2, footerY + 85);
+        
+        // QR Code mejorado
+        this.drawEnhancedQRCode(this.canvas.width - 80, footerY + 10);
     }
 
-    drawQRCode(x, y) {
-        // Placeholder para QR code
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        this.ctx.fillRect(x, y, 60, 60);
+    drawEnhancedQRCode(x, y) {
+        const size = 70;
         
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        // Fondo del QR con gradiente
+        const qrGradient = this.ctx.createLinearGradient(x, y, x + size, y + size);
+        qrGradient.addColorStop(0, 'rgba(29, 185, 84, 0.2)');
+        qrGradient.addColorStop(1, 'rgba(0, 207, 255, 0.2)');
+        this.ctx.fillStyle = qrGradient;
+        this.ctx.roundRect(x, y, size, size, 12);
+        this.ctx.fill();
+        
+        // Borde con gradiente
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.5)';
         this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(x, y, 60, 60);
+        this.ctx.stroke();
         
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = '10px Inter, sans-serif';
+        // Logo en el centro
+        this.ctx.fillStyle = '#1db954';
+        this.ctx.font = 'bold 24px Inter, sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('QR', x + 30, y + 35);
+        this.ctx.fillText('🎵', x + size / 2, y + size / 2 + 8);
+        
+        // Texto debajo
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.font = 'bold 10px Inter, sans-serif';
+        this.ctx.fillText('ESCANEA', x + size / 2, y + size + 15);
     }
 
     async shareToSocialMedia(imageDataUrl, platform) {
