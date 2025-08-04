@@ -539,39 +539,10 @@ class ShareStatistics {
     shareToFacebook(imageDataUrl) {
         // Para Facebook, intentamos usar Web Share API para compartir directamente
         if (navigator.share && navigator.canShare) {
-            // Convertir la imagen a Blob para compartir
-            fetch(imageDataUrl)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
-                    
-                    if (navigator.canShare({ files: [file] })) {
-                        navigator.share({
-                            title: 'Mis Estadísticas de Spotify',
-                            text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
-                            files: [file]
-                        }).then(() => {
-                            this.showNotification('Compartiendo en Facebook...', 'success');
-                        }).catch((error) => {
-                            console.error('Error sharing:', error);
-                            // Fallback a descarga
-                            this.downloadImage(imageDataUrl);
-                            this.showFacebookInstructions();
-                        });
-                    } else {
-                        // Fallback si no se puede compartir archivos
-                        this.downloadImage(imageDataUrl);
-                        this.showFacebookInstructions();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error processing image:', error);
-                    this.downloadImage(imageDataUrl);
-                    this.showFacebookInstructions();
-                });
+            this.prepareAndShareImage(imageDataUrl, 'facebook');
         } else {
-            // Fallback para navegadores que no soportan Web Share API
-            this.downloadImage(imageDataUrl);
+            // Fallback: copiar al portapapeles y dar instrucciones
+            this.copyImageToClipboard(imageDataUrl);
             this.showFacebookInstructions();
         }
     }
@@ -579,40 +550,69 @@ class ShareStatistics {
     shareToInstagram(imageDataUrl) {
         // Para Instagram, intentamos usar Web Share API para compartir directamente
         if (navigator.share && navigator.canShare) {
-            // Convertir la imagen a Blob para compartir
-            fetch(imageDataUrl)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
-                    
-                    if (navigator.canShare({ files: [file] })) {
-                        navigator.share({
-                            title: 'Mis Estadísticas de Spotify',
-                            text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
-                            files: [file]
-                        }).then(() => {
-                            this.showNotification('Compartiendo en Instagram...', 'success');
-                        }).catch((error) => {
-                            console.error('Error sharing:', error);
-                            // Fallback a descarga
-                            this.downloadImage(imageDataUrl);
-                            this.showInstagramInstructions();
-                        });
-                    } else {
-                        // Fallback si no se puede compartir archivos
-                        this.downloadImage(imageDataUrl);
-                        this.showInstagramInstructions();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error processing image:', error);
-                    this.downloadImage(imageDataUrl);
-                    this.showInstagramInstructions();
-                });
+            this.prepareAndShareImage(imageDataUrl, 'instagram');
         } else {
-            // Fallback para navegadores que no soportan Web Share API
-            this.downloadImage(imageDataUrl);
+            // Fallback: copiar al portapapeles y dar instrucciones
+            this.copyImageToClipboard(imageDataUrl);
             this.showInstagramInstructions();
+        }
+    }
+
+    async prepareAndShareImage(imageDataUrl, platform) {
+        try {
+            // Convertir la imagen a Blob
+            const response = await fetch(imageDataUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
+            
+            // Verificar si se puede compartir archivos
+            if (navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    title: 'Mis Estadísticas de Spotify',
+                    text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
+                    files: [file]
+                });
+                this.showNotification(`Compartiendo en ${platform === 'facebook' ? 'Facebook' : 'Instagram'}...`, 'success');
+            } else {
+                // Si no se puede compartir archivos, copiar al portapapeles
+                this.copyImageToClipboard(imageDataUrl);
+                if (platform === 'facebook') {
+                    this.showFacebookInstructions();
+                } else {
+                    this.showInstagramInstructions();
+                }
+            }
+        } catch (error) {
+            console.error('Error sharing image:', error);
+            // Fallback: copiar al portapapeles
+            this.copyImageToClipboard(imageDataUrl);
+            if (platform === 'facebook') {
+                this.showFacebookInstructions();
+            } else {
+                this.showInstagramInstructions();
+            }
+        }
+    }
+
+    async copyImageToClipboard(imageDataUrl) {
+        try {
+            // Convertir la imagen a Blob
+            const response = await fetch(imageDataUrl);
+            const blob = await response.blob();
+            
+            // Crear un ClipboardItem
+            const clipboardItem = new ClipboardItem({
+                [blob.type]: blob
+            });
+            
+            // Copiar al portapapeles
+            await navigator.clipboard.write([clipboardItem]);
+            this.showNotification('Imagen copiada al portapapeles', 'success');
+        } catch (error) {
+            console.error('Error copying to clipboard:', error);
+            // Fallback: descargar la imagen
+            this.downloadImage(imageDataUrl);
+            this.showNotification('Imagen descargada como fallback', 'info');
         }
     }
 
@@ -673,12 +673,12 @@ class ShareStatistics {
         content.innerHTML = `
             <h3 style="color: #1877f2; margin-bottom: 1rem;">📘 Compartir en Facebook</h3>
             <p style="margin-bottom: 1rem; color: #333;">
-                La imagen ya se descargó. Para compartir en Facebook:
+                La imagen ya está lista en tu portapapeles. Para compartir en Facebook:
             </p>
             <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
                 <li>Abre la app de Facebook</li>
                 <li>Ve a "Crear historia"</li>
-                <li>Selecciona la imagen descargada</li>
+                <li>Pega la imagen desde tu portapapeles</li>
                 <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
                 <li>Publica tu historia</li>
             </ol>
@@ -725,12 +725,12 @@ class ShareStatistics {
         content.innerHTML = `
             <h3 style="color: #e4405f; margin-bottom: 1rem;">📷 Compartir en Instagram</h3>
             <p style="margin-bottom: 1rem; color: #333;">
-                La imagen ya se descargó. Para compartir en Instagram:
+                La imagen ya está lista en tu portapapeles. Para compartir en Instagram:
             </p>
             <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
                 <li>Abre la app de Instagram</li>
                 <li>Ve a "Crear historia"</li>
-                <li>Selecciona la imagen descargada</li>
+                <li>Pega la imagen desde tu portapapeles</li>
                 <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
                 <li>Publica tu historia</li>
             </ol>
