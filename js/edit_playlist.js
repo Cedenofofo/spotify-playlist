@@ -343,12 +343,11 @@ class EditPlaylistManager {
                 <div class="suggestion-item ${isAlreadyInPlaylist ? 'already-added' : ''}" onclick="editPlaylistManager.addTrack('${track.id}')">
                     <img src="${trackImageUrl}" 
                          alt="Album cover"
-                         onerror="this.onerror=null; this.src='https://via.placeholder.com/30x30/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/40x40/1db954/ffffff?text=🎵'; this.classList.add('placeholder-image');"
                          onload="this.classList.remove('placeholder-image');">
                     <div class="suggestion-info">
                         <div class="suggestion-title">${this.escapeHtml(track.name)}</div>
                         <div class="suggestion-subtitle">${this.escapeHtml(track.artists.map(artist => artist.name).join(', '))}</div>
-                        ${isAlreadyInPlaylist ? '<div class="already-in-playlist">Ya en la playlist</div>' : ''}
                     </div>
                 </div>
             `;
