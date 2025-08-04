@@ -2503,6 +2503,34 @@ body {
     z-index: 1 !important;
 }
 
+/* Bajar el z-index de los títulos y botones para que no se sobrepongan */
+.form-label {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.add-artist-btn {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Asegurar que las sugerencias estén siempre por encima */
+.autocomplete-suggestions {
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+
+/* Bajar z-index de otros elementos del formulario */
+.form-group {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.input-wrapper {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
 /* Elementos de sugerencia sin superposición */
 .suggestion-item {
     display: flex !important;
