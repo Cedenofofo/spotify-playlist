@@ -291,11 +291,11 @@ class ShareStatistics {
     }
 
     drawGenreAndMoodAnalysisModern() {
-        const startY = 1100; // Moved up from 1000 to avoid overlap with songs
+        const startY = 1400; // Moved down to avoid overlap with songs section
         
         // Título de géneros
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 32px Inter, sans-serif'; // Reduced font size
+        this.ctx.font = 'bold 32px Inter, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('🎼 Top 3 Géneros', this.canvas.width / 2, startY);
         
@@ -303,27 +303,28 @@ class ShareStatistics {
         if (this.statsData.genres && this.statsData.genres.length > 0) {
             const genres = this.statsData.genres.slice(0, 3);
             genres.forEach((genre, index) => {
-                const y = startY + 50 + (index * 60); // Reduced spacing
+                const y = startY + 50 + (index * 60);
                 this.drawModernGenreItem(genre, index + 1, y);
             });
         }
         
-        // Título de mood
+        // Título de mood - moved further down
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 32px Inter, sans-serif'; // Reduced font size
-        this.ctx.fillText('💫 Top 3 Estados de Ánimo', this.canvas.width / 2, startY + 280); // Reduced spacing
+        this.ctx.font = 'bold 32px Inter, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('💫 Top 3 Estados de Ánimo', this.canvas.width / 2, startY + 280);
         
         // Top 3 Estados de ánimo con diseño de gráficos circulares
         if (this.statsData.moods && this.statsData.moods.length > 0) {
             const moods = this.statsData.moods.slice(0, 3);
             moods.forEach((mood, index) => {
-                const y = startY + 330 + (index * 60); // Reduced spacing
+                const y = startY + 330 + (index * 60);
                 this.drawModernMoodItem(mood, index + 1, y);
             });
         }
         
         // Agregar cuadros de métricas adicionales
-        this.drawAdditionalMetrics(startY + 580); // Start after moods section
+        this.drawAdditionalMetrics(startY + 580);
     }
     
     drawAdditionalMetrics(startY) {
