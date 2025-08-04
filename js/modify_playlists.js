@@ -466,9 +466,9 @@ class ModifyPlaylistsManager {
     generatePlaylistPlaceholder(playlistName) {
         // Colores consistentes basados en el nombre para que siempre sea el mismo
         const colors = [
-            '#1db954', '#1ed760', '#2ecc71', '#27ae60', '#16a085',
-            '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#e74c3c',
-            '#c0392b', '#f39c12', '#e67e22', '#f1c40f', '#f7dc6f'
+            '1db954', '1ed760', '2ecc71', '27ae60', '16a085',
+            '3498db', '2980b9', '9b59b6', '8e44ad', 'e74c3c',
+            'c0392b', 'f39c12', 'e67e22', 'f1c40f', 'f7dc6f'
         ];
         
         // Usar hash del nombre para color consistente
@@ -487,8 +487,14 @@ class ModifyPlaylistsManager {
             .toUpperCase()
             .substring(0, 2);
         
-        // Usar tamaño más grande para mejor calidad
-        return `https://via.placeholder.com/320x180/${selectedColor.replace('#', '')}/ffffff?text=${encodeURIComponent(initials)}`;
+        // Usar un servicio de placeholder más confiable
+        return `data:image/svg+xml;base64,${btoa(`
+            <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">
+                <rect width="320" height="180" fill="#${selectedColor}"/>
+                <text x="160" y="90" font-family="Arial, sans-serif" font-size="48" font-weight="bold" 
+                      text-anchor="middle" dy=".3em" fill="white">${initials}</text>
+            </svg>
+        `)}`;
     }
 
     setupPlaylistCardListeners() {
