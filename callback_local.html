@@ -55,7 +55,18 @@
         const SPOTIFY_CONFIG = {
             clientId: '87cd9c6748524a58bc0e3151a3173e93',
             clientSecret: '5c0c9086ef2a414d93e7e9385390053b',
-            redirectUri: 'http://127.0.0.1/spotify-playlist-desktop/callback_local.html'
+            redirectUri: 'http://127.0.0.1/spotify-playlist-desktop/callback_local.html',
+            scopes: [
+                'playlist-modify-public',
+                'playlist-modify-private',
+                'playlist-read-private',
+                'playlist-read-collaborative',
+                'user-read-private',
+                'user-read-email',
+                'user-top-read',
+                'user-read-recently-played',
+                'user-read-playback-state'
+            ]
         };
 
         // Función para obtener parámetros de la URL
