@@ -7,6 +7,9 @@ class SearchManager {
         
         // Verificar si hay canciones seleccionadas al inicializar
         this.checkSelectedTracks();
+        
+        // Inicializar mejoras visuales
+        this.initVisualEnhancements();
     }
 
     setupEventListeners() {
@@ -34,9 +37,62 @@ class SearchManager {
                     suggestionsDiv.classList.remove('show');
                 }, 200);
             });
+            
+            // Agregar efecto de focus mejorado
+            searchInput.addEventListener('focus', () => {
+                searchInput.style.transform = 'scale(1.02)';
+                searchInput.style.boxShadow = '0 0 0 3px rgba(29, 185, 84, 0.2)';
+            });
+            
+            searchInput.addEventListener('blur', () => {
+                searchInput.style.transform = 'scale(1)';
+                searchInput.style.boxShadow = 'none';
+            });
         } else {
             console.warn('No se encontraron elementos para búsqueda de canciones');
         }
+    }
+
+    initVisualEnhancements() {
+        // Agregar efectos visuales a las sugerencias de búsqueda
+        const suggestionsDiv = document.getElementById('search-suggestions');
+        if (suggestionsDiv) {
+            // Observar cambios en las sugerencias para aplicar efectos
+            const observer = new MutationObserver(() => {
+                const suggestionElements = suggestionsDiv.querySelectorAll('.autocomplete-suggestion');
+                suggestionElements.forEach((suggestion, index) => {
+                    if (!suggestion.dataset.enhanced) {
+                        this.enhanceSuggestionElement(suggestion, index);
+                        suggestion.dataset.enhanced = 'true';
+                    }
+                });
+            });
+            
+            observer.observe(suggestionsDiv, { childList: true, subtree: true });
+        }
+    }
+
+    enhanceSuggestionElement(suggestionElement, index) {
+        // Agregar animación de entrada escalonada
+        suggestionElement.style.opacity = '0';
+        suggestionElement.style.transform = 'translateY(10px)';
+        suggestionElement.style.transition = 'all 0.3s ease';
+        
+        setTimeout(() => {
+            suggestionElement.style.opacity = '1';
+            suggestionElement.style.transform = 'translateY(0)';
+        }, index * 50);
+        
+        // Agregar efectos de hover mejorados
+        suggestionElement.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px) scale(1.02)';
+            this.style.boxShadow = '0 8px 25px rgba(29, 185, 84, 0.15)';
+        });
+        
+        suggestionElement.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0) scale(1)';
+            this.style.boxShadow = 'none';
+        });
     }
 
     async searchTracks(query, suggestionsDiv, searchInput) {
@@ -49,6 +105,10 @@ class SearchManager {
             }
 
             console.log('Buscando canciones:', query);
+            
+            // Mostrar indicador de carga
+            suggestionsDiv.innerHTML = '<div class="search-loading"><div class="spinner"></div>Buscando canciones...</div>';
+            suggestionsDiv.classList.add('show');
             
             const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
                 headers: {
@@ -84,7 +144,7 @@ class SearchManager {
             suggestionsDiv.appendChild(infoDiv);
         }
 
-        tracks.forEach(track => {
+        tracks.forEach((track, index) => {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'autocomplete-suggestion';
             trackDiv.innerHTML = `
@@ -97,6 +157,9 @@ class SearchManager {
                 suggestionsDiv.innerHTML = '';
                 suggestionsDiv.classList.remove('show');
                 searchInput.value = '';
+                
+                // Efecto de confirmación
+                this.showAddConfirmation(track.name);
             });
             
             suggestionsDiv.appendChild(trackDiv);
@@ -110,6 +173,45 @@ class SearchManager {
         }
     }
 
+    showAddConfirmation(trackName) {
+        // Crear notificación temporal de confirmación
+        const confirmation = document.createElement('div');
+        confirmation.className = 'add-confirmation';
+        confirmation.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>${trackName} agregada</span>
+        `;
+        
+        confirmation.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+            animation: addConfirmation 0.6s ease-out;
+        `;
+        
+        document.body.appendChild(confirmation);
+        
+        setTimeout(() => {
+            confirmation.style.animation = 'addConfirmationOut 0.4s ease-in';
+            setTimeout(() => {
+                if (confirmation.parentNode) {
+                    confirmation.parentNode.removeChild(confirmation);
+                }
+            }, 400);
+        }, 1000);
+    }
+
     addTrack(track) {
         const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
         
@@ -120,7 +222,7 @@ class SearchManager {
         }
 
         // Agregar la canción a la lista
-        selectedTracks.push({
+        const trackData = {
             uri: track.uri,
             name: track.name,
             artist: track.artists.map(artist => artist.name).join(', '),
@@ -128,25 +230,50 @@ class SearchManager {
                 name: track.album.name,
                 image: track.album.images[0]?.url
             }
-        });
+        };
 
+        selectedTracks.push(trackData);
         localStorage.setItem('selectedTracks', JSON.stringify(selectedTracks));
+        
         this.updateSelectedTracksList();
         showNotification('Canción agregada a la lista', 'success');
         
         // Actualizar automáticamente la vista previa si existe
         this.updatePlaylistPreview();
+        
+        // Actualizar el estado del botón de exportar
+        this.updateExportButtonState();
     }
 
     removeTrack(uri) {
         const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
-        const updatedTracks = selectedTracks.filter(track => track.uri !== uri);
-        localStorage.setItem('selectedTracks', JSON.stringify(updatedTracks));
-        this.updateSelectedTracksList();
-        showNotification('Canción removida de la lista', 'info');
+        const trackToRemove = selectedTracks.find(track => track.uri === uri);
         
-        // Actualizar automáticamente la vista previa
-        this.updatePlaylistPreview();
+        if (trackToRemove) {
+            // Efecto visual de eliminación
+            const trackElement = document.querySelector(`[data-uri="${uri}"]`);
+            if (trackElement) {
+                trackElement.style.transform = 'translateX(100px)';
+                trackElement.style.opacity = '0';
+                trackElement.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    const updatedTracks = selectedTracks.filter(track => track.uri !== uri);
+                    localStorage.setItem('selectedTracks', JSON.stringify(updatedTracks));
+                    this.updateSelectedTracksList();
+                    showNotification('Canción removida de la lista', 'info');
+                    this.updatePlaylistPreview();
+                    this.updateExportButtonState();
+                }, 300);
+            } else {
+                const updatedTracks = selectedTracks.filter(track => track.uri !== uri);
+                localStorage.setItem('selectedTracks', JSON.stringify(updatedTracks));
+                this.updateSelectedTracksList();
+                showNotification('Canción removida de la lista', 'info');
+                this.updatePlaylistPreview();
+                this.updateExportButtonState();
+            }
+        }
     }
 
     updateSelectedTracksList() {
@@ -158,20 +285,31 @@ class SearchManager {
         selectedTracksDiv.innerHTML = '';
 
         if (selectedTracks.length === 0) {
-            selectedTracksDiv.innerHTML = '<div class="no-tracks">No hay canciones seleccionadas</div>';
+            selectedTracksDiv.innerHTML = `
+                <div class="no-tracks">
+                    <i class="fas fa-music"></i>
+                    <p>No hay canciones seleccionadas</p>
+                    <small>Busca y agrega canciones específicas a tu playlist</small>
+                </div>
+            `;
             return;
         }
 
-        selectedTracks.forEach(track => {
+        selectedTracks.forEach((track, index) => {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'selected-track';
+            trackDiv.setAttribute('data-uri', track.uri);
+            trackDiv.style.opacity = '0';
+            trackDiv.style.transform = 'translateY(20px)';
+            trackDiv.style.transition = 'all 0.3s ease';
+            
             trackDiv.innerHTML = `
                 <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
                 <div class="track-info">
                     <div class="track-name">${track.name}</div>
                     <div class="track-artist">${track.artist}</div>
                 </div>
-                <button class="remove-track" data-uri="${track.uri}">
+                <button class="remove-track" data-uri="${track.uri}" title="Eliminar canción">
                     <i class="fas fa-times"></i>
                 </button>
             `;
@@ -180,6 +318,12 @@ class SearchManager {
             removeButton.addEventListener('click', () => this.removeTrack(track.uri));
 
             selectedTracksDiv.appendChild(trackDiv);
+            
+            // Animación de entrada escalonada
+            setTimeout(() => {
+                trackDiv.style.opacity = '1';
+                trackDiv.style.transform = 'translateY(0)';
+            }, index * 100);
         });
     }
 
@@ -223,6 +367,12 @@ class SearchManager {
             <div class="preview-header">
                 <h4>Vista previa: ${data.playlistName}</h4>
                 <p>${data.tracks.length} canciones seleccionadas</p>
+                <div class="preview-stats">
+                    <span class="stat-item">
+                        <i class="fas fa-heart"></i>
+                        ${data.tracks.length} seleccionadas
+                    </span>
+                </div>
             </div>
             <div class="preview-tracks">
                 ${data.tracks.map((track, index) => `
@@ -243,6 +393,54 @@ class SearchManager {
         previewDiv.style.display = 'block';
         if (exportButton) {
             exportButton.style.display = 'block';
+            exportButton.classList.add('pulse');
+            exportButton.style.animation = 'exportPulse 2s infinite';
+        }
+    }
+
+    updateExportButtonState() {
+        const exportSection = document.querySelector('.export-section');
+        if (exportSection) {
+            const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+            const hasGeneratedTracks = window.currentPlaylistTracks && window.currentPlaylistTracks.length > 0;
+            
+            if (selectedTracks.length > 0 || hasGeneratedTracks) {
+                // Mostrar la sección de exportar si no está visible
+                if (exportSection.style.display === 'none') {
+                    exportSection.style.display = 'block';
+                    exportSection.style.opacity = '0';
+                    exportSection.style.transform = 'translateY(20px)';
+                    exportSection.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        exportSection.style.opacity = '1';
+                        exportSection.style.transform = 'translateY(0)';
+                    }, 100);
+                }
+                
+                // Activar el efecto de pulso en el botón
+                const exportButton = exportSection.querySelector('.action-btn.primary');
+                if (exportButton) {
+                    exportButton.classList.add('pulse');
+                    exportButton.style.animation = 'exportPulse 2s infinite';
+                }
+            } else {
+                // Ocultar la sección de exportar si no hay canciones
+                exportSection.style.opacity = '0';
+                exportSection.style.transform = 'translateY(20px)';
+                exportSection.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    exportSection.style.display = 'none';
+                }, 500);
+                
+                // Desactivar el efecto de pulso
+                const exportButton = exportSection.querySelector('.action-btn.primary');
+                if (exportButton) {
+                    exportButton.classList.remove('pulse');
+                    exportButton.style.animation = 'none';
+                }
+            }
         }
     }
 
@@ -252,6 +450,7 @@ class SearchManager {
             // Si hay canciones seleccionadas, mostrar la vista previa automáticamente
             setTimeout(() => {
                 this.updatePlaylistPreview();
+                this.updateExportButtonState();
             }, 500); // Pequeño delay para asegurar que el DOM esté listo
         }
     }
@@ -275,4 +474,78 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.searchManager) {
         window.searchManager = new SearchManager();
     }
-}); 
+});
+
+// Agregar estilos CSS para las nuevas animaciones
+const additionalStyles = document.createElement('style');
+additionalStyles.textContent = `
+    @keyframes addConfirmation {
+        0% {
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes addConfirmationOut {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+        }
+    }
+    
+    .no-tracks {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+    }
+    
+    .no-tracks i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .no-tracks p {
+        margin: 0.5rem 0;
+        font-weight: 600;
+    }
+    
+    .no-tracks small {
+        opacity: 0.7;
+        font-size: 0.875rem;
+    }
+    
+    .search-loading {
+        padding: 1rem;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+    
+    .search-loading .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-top: 2px solid #1db954;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 0.5rem;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(additionalStyles); 

@@ -14,32 +14,42 @@ window.removeTrackFromPreview = function(index) {
     // Obtener la canción que se va a eliminar
     const trackToRemove = window.currentPlaylistTracks[index];
     
-    // Eliminar la canción del array
-    window.currentPlaylistTracks.splice(index, 1);
-    
-    console.log('Tracks después de eliminar:', window.currentPlaylistTracks.length);
-    
-    // También eliminar de localStorage si es una canción específica
-    if (trackToRemove && trackToRemove.uri) {
-        const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
-        const updatedSelectedTracks = selectedTracks.filter(track => track.uri !== trackToRemove.uri);
-        localStorage.setItem('selectedTracks', JSON.stringify(updatedSelectedTracks));
+    // Efecto visual de eliminación
+    const trackElement = document.querySelector(`[data-track-index="${index}"]`);
+    if (trackElement) {
+        trackElement.style.transform = 'translateX(100px)';
+        trackElement.style.opacity = '0';
+        trackElement.style.transition = 'all 0.3s ease';
         
-        // Actualizar la lista de canciones seleccionadas
-        if (window.searchManager && typeof window.searchManager.updateSelectedTracksList === 'function') {
-            window.searchManager.updateSelectedTracksList();
-        }
+        setTimeout(() => {
+            // Eliminar la canción del array
+            window.currentPlaylistTracks.splice(index, 1);
+            
+            console.log('Tracks después de eliminar:', window.currentPlaylistTracks.length);
+            
+            // También eliminar de localStorage si es una canción específica
+            if (trackToRemove && trackToRemove.uri) {
+                const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+                const updatedSelectedTracks = selectedTracks.filter(track => track.uri !== trackToRemove.uri);
+                localStorage.setItem('selectedTracks', JSON.stringify(updatedSelectedTracks));
+                
+                // Actualizar la lista de canciones seleccionadas
+                if (window.searchManager && typeof window.searchManager.updateSelectedTracksList === 'function') {
+                    window.searchManager.updateSelectedTracksList();
+                }
+            }
+            
+            // Actualizar la vista previa
+            const data = {
+                success: true,
+                playlistName: document.getElementById('playlist-name').value,
+                tracks: window.currentPlaylistTracks
+            };
+            
+            displayPlaylistPreview(data);
+            showNotification('Canción eliminada de la playlist', 'info');
+        }, 300);
     }
-    
-    // Actualizar la vista previa
-    const data = {
-        success: true,
-        playlistName: document.getElementById('playlist-name').value,
-        tracks: window.currentPlaylistTracks
-    };
-    
-    displayPlaylistPreview(data);
-    showNotification('Canción eliminada de la playlist', 'info');
 };
 
 // ===== INICIALIZACIÓN =====
@@ -51,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFormEvents();
     setupHashListener();
     checkHashAndShowPlaylistForm();
+    initEnhancedExportButton();
+    initSelectedTracksEnhancements();
 });
 
 // ===== CURSOR PERSONALIZADO =====
@@ -106,6 +118,101 @@ function initFormInteractions() {
             }
         });
     });
+}
+
+// ===== MEJORAS EN CANCIONES SELECCIONADAS =====
+function initSelectedTracksEnhancements() {
+    // Agregar efectos de hover y animaciones a las canciones seleccionadas
+    const selectedTracksContainer = document.getElementById('selected-tracks');
+    if (selectedTracksContainer) {
+        // Observar cambios en el contenedor para aplicar efectos
+        const observer = new MutationObserver(() => {
+            const trackElements = selectedTracksContainer.querySelectorAll('.selected-track');
+            trackElements.forEach(track => {
+                if (!track.dataset.enhanced) {
+                    enhanceTrackElement(track);
+                    track.dataset.enhanced = 'true';
+                }
+            });
+        });
+        
+        observer.observe(selectedTracksContainer, { childList: true, subtree: true });
+        
+        // Aplicar efectos a elementos existentes
+        const existingTracks = selectedTracksContainer.querySelectorAll('.selected-track');
+        existingTracks.forEach(track => {
+            enhanceTrackElement(track);
+            track.dataset.enhanced = 'true';
+        });
+    }
+}
+
+function enhanceTrackElement(trackElement) {
+    // Agregar efectos de hover
+    trackElement.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateX(5px) scale(1.02)';
+        this.style.boxShadow = '0 8px 25px rgba(29, 185, 84, 0.15)';
+        this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+    
+    trackElement.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateX(0) scale(1)';
+        this.style.boxShadow = 'none';
+    });
+    
+    // Mejorar el botón de eliminar
+    const removeButton = trackElement.querySelector('.remove-track');
+    if (removeButton) {
+        removeButton.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.2) rotate(90deg)';
+            this.style.backgroundColor = '#ef4444';
+            this.style.color = 'white';
+        });
+        
+        removeButton.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1) rotate(0deg)';
+            this.style.backgroundColor = 'transparent';
+            this.style.color = '#6b7280';
+        });
+    }
+    
+    // Agregar efecto de pulso al agregar
+    trackElement.style.animation = 'trackPulse 0.6s ease-out';
+}
+
+// ===== MEJORAS EN EL BOTÓN DE EXPORTAR =====
+function initEnhancedExportButton() {
+    const exportButton = document.getElementById('export-spotify');
+    if (exportButton) {
+        // Agregar efectos visuales mejorados
+        exportButton.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px) scale(1.05)';
+            this.style.boxShadow = '0 20px 40px rgba(29, 185, 84, 0.3)';
+        });
+        
+        exportButton.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.boxShadow = '0 10px 30px rgba(29, 185, 84, 0.2)';
+        });
+        
+        // Agregar efecto de pulso cuando hay canciones
+        const updateExportButtonState = () => {
+            const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+            const hasTracks = selectedTracks.length > 0 || (window.currentPlaylistTracks && window.currentPlaylistTracks.length > 0);
+            
+            if (hasTracks) {
+                exportButton.classList.add('pulse');
+                exportButton.style.animation = 'exportPulse 2s infinite';
+            } else {
+                exportButton.classList.remove('pulse');
+                exportButton.style.animation = 'none';
+            }
+        };
+        
+        // Observar cambios en localStorage
+        window.addEventListener('storage', updateExportButtonState);
+        updateExportButtonState();
+    }
 }
 
 // ===== CONFIGURACIÓN DE EVENTOS DE AUTENTICACIÓN =====
@@ -186,6 +293,12 @@ function setupFormEvents() {
         exportButton.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Botón exportar clickeado');
+            
+            // Validación mejorada antes de exportar
+            if (!validateExportData()) {
+                return;
+            }
+            
             exportToSpotify();
             
             // Efecto de ripple
@@ -205,6 +318,35 @@ function setupFormEvents() {
 
     // Configurar autocompletado para artistas
     setupArtistAutocomplete();
+}
+
+// ===== VALIDACIÓN MEJORADA PARA EXPORTAR =====
+function validateExportData() {
+    const playlistName = document.getElementById('playlist-name')?.value?.trim();
+    const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+    const hasGeneratedTracks = window.currentPlaylistTracks && window.currentPlaylistTracks.length > 0;
+    
+    if (!playlistName) {
+        showNotification('Por favor, ingresa un nombre para la playlist', 'error');
+        return false;
+    }
+    
+    if (selectedTracks.length === 0 && !hasGeneratedTracks) {
+        showNotification('No hay canciones para exportar. Agrega canciones específicas o genera una playlist', 'error');
+        return false;
+    }
+    
+    if (playlistName.length < 3) {
+        showNotification('El nombre de la playlist debe tener al menos 3 caracteres', 'error');
+        return false;
+    }
+    
+    if (playlistName.length > 100) {
+        showNotification('El nombre de la playlist es demasiado largo', 'error');
+        return false;
+    }
+    
+    return true;
 }
 
 // ===== AUTocompletado DE ARTISTAS =====
@@ -423,7 +565,7 @@ async function previewPlaylist() {
 
 function displayPlaylistPreview(data) {
     const previewDiv = document.getElementById('playlist-preview');
-    const exportButton = document.getElementById('export-spotify');
+    const exportSection = document.querySelector('.export-section');
     
     if (!previewDiv) return;
     
@@ -445,6 +587,16 @@ function displayPlaylistPreview(data) {
         <div class="preview-header">
             <h4>Vista previa: ${data.playlistName}</h4>
             <p>${uniqueTracks.length} canciones encontradas</p>
+            <div class="preview-stats">
+                <span class="stat-item">
+                    <i class="fas fa-music"></i>
+                    ${data.tracks.length} generadas
+                </span>
+                <span class="stat-item">
+                    <i class="fas fa-heart"></i>
+                    ${selectedTracks.length} seleccionadas
+                </span>
+            </div>
         </div>
         <div class="preview-tracks">
             ${uniqueTracks.map((track, index) => `
@@ -463,14 +615,46 @@ function displayPlaylistPreview(data) {
     `;
     
     previewDiv.style.display = 'block';
-    if (exportButton) {
-        exportButton.style.display = 'block';
+    
+    // Mostrar la sección de exportar con animación
+    if (exportSection) {
+        exportSection.style.display = 'block';
+        exportSection.style.opacity = '0';
+        exportSection.style.transform = 'translateY(20px)';
+        exportSection.style.transition = 'all 0.5s ease';
+        
+        setTimeout(() => {
+            exportSection.style.opacity = '1';
+            exportSection.style.transform = 'translateY(0)';
+        }, 100);
+        
+        // Activar el efecto de pulso en el botón
+        const exportButton = exportSection.querySelector('.action-btn.primary');
+        if (exportButton) {
+            exportButton.classList.add('pulse');
+            exportButton.style.animation = 'exportPulse 2s infinite';
+        }
     }
+    
+    // Aplicar efectos a las nuevas canciones
+    setTimeout(() => {
+        const trackElements = previewDiv.querySelectorAll('.preview-track');
+        trackElements.forEach(track => {
+            track.style.opacity = '0';
+            track.style.transform = 'translateY(20px)';
+            track.style.transition = 'all 0.3s ease';
+        });
+        
+        trackElements.forEach((track, index) => {
+            setTimeout(() => {
+                track.style.opacity = '1';
+                track.style.transform = 'translateY(0)';
+            }, index * 50);
+        });
+    }, 100);
 }
 
-
-
-// ===== EXPORTAR A SPOTIFY =====
+// ===== EXPORTAR A SPOTIFY MEJORADO =====
 async function exportToSpotify() {
     const token = localStorage.getItem('spotify_access_token');
     if (!token) {
@@ -489,7 +673,8 @@ async function exportToSpotify() {
         return;
     }
 
-    showLoadingAnimation();
+    // Mostrar loading mejorado
+    showEnhancedLoadingAnimation();
     
     try {
         // 1. Obtener el ID del usuario
@@ -552,26 +737,164 @@ async function exportToSpotify() {
             throw new Error('Error al agregar canciones a la playlist');
         }
 
-        showNotification('¡Playlist exportada exitosamente a Spotify!', 'success');
+        // Mostrar notificación de éxito mejorada
+        showEnhancedSuccessNotification(playlistData.external_urls.spotify);
         
-        // Limpiar formulario
-        document.getElementById('playlist-form').reset();
-        document.getElementById('playlist-preview').style.display = 'none';
-        document.getElementById('export-spotify').style.display = 'none';
-        document.getElementById('artist-inputs').innerHTML = '';
-        window.currentPlaylistTracks = [];
-
-        // Opcional: Abrir la playlist en Spotify
-        setTimeout(() => {
-            window.open(playlistData.external_urls.spotify, '_blank');
-        }, 1000);
+        // Limpiar formulario con animación
+        clearFormWithAnimation();
 
     } catch (error) {
         console.error('Error al exportar playlist:', error);
         showNotification('Error al exportar la playlist: ' + error.message, 'error');
     } finally {
-        hideLoadingAnimation();
+        hideEnhancedLoadingAnimation();
     }
+}
+
+// ===== FUNCIONES AUXILIARES MEJORADAS =====
+function showEnhancedLoadingAnimation() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'flex';
+        loading.style.opacity = '0';
+        loading.style.transform = 'scale(0.9)';
+        
+        // Agregar texto dinámico
+        const loadingText = loading.querySelector('.loading-text');
+        if (loadingText) {
+            const messages = [
+                'Creando tu playlist...',
+                'Conectando con Spotify...',
+                'Agregando canciones...',
+                'Finalizando...'
+            ];
+            let messageIndex = 0;
+            
+            const messageInterval = setInterval(() => {
+                loadingText.innerHTML = `
+                    <i class="fas fa-cog fa-spin"></i>
+                    ${messages[messageIndex]}
+                `;
+                messageIndex = (messageIndex + 1) % messages.length;
+            }, 1500);
+            
+            // Guardar el intervalo para limpiarlo después
+            loading.dataset.messageInterval = messageInterval;
+        }
+        
+        setTimeout(() => {
+            loading.style.opacity = '1';
+            loading.style.transform = 'scale(1)';
+        }, 50);
+    }
+}
+
+function hideEnhancedLoadingAnimation() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        // Limpiar el intervalo de mensajes
+        if (loading.dataset.messageInterval) {
+            clearInterval(parseInt(loading.dataset.messageInterval));
+        }
+        
+        loading.style.opacity = '0';
+        loading.style.transform = 'scale(0.9)';
+        
+        setTimeout(() => {
+            loading.style.display = 'none';
+        }, 300);
+    }
+}
+
+function showEnhancedSuccessNotification(spotifyUrl) {
+    const notification = document.createElement('div');
+    notification.className = 'enhanced-success-notification';
+    notification.innerHTML = `
+        <div class="notification-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="notification-text">
+                <h4>¡Playlist exportada exitosamente!</h4>
+                <p>Tu playlist ya está disponible en Spotify</p>
+            </div>
+            <button class="open-spotify-btn" onclick="window.open('${spotifyUrl}', '_blank')">
+                <i class="fab fa-spotify"></i>
+                Abrir en Spotify
+            </button>
+        </div>
+    `;
+    
+    // Estilos elegantes
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1.5rem;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        font-weight: 600;
+        z-index: 1000;
+        animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 400px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 60px rgba(16, 185, 129, 0.3);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover después de 8 segundos
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 500);
+    }, 8000);
+}
+
+function clearFormWithAnimation() {
+    const form = document.getElementById('playlist-form');
+    const preview = document.getElementById('playlist-preview');
+    const exportSection = document.querySelector('.export-section');
+    const artistInputs = document.getElementById('artist-inputs');
+    
+    // Animación de salida
+    if (preview) {
+        preview.style.opacity = '0';
+        preview.style.transform = 'translateY(-20px)';
+        preview.style.transition = 'all 0.5s ease';
+    }
+    
+    if (exportSection) {
+        exportSection.style.opacity = '0';
+        exportSection.style.transform = 'translateY(20px)';
+        exportSection.style.transition = 'all 0.5s ease';
+    }
+    
+    setTimeout(() => {
+        // Limpiar formulario
+        if (form) form.reset();
+        if (preview) preview.style.display = 'none';
+        if (exportSection) exportSection.style.display = 'none';
+        if (artistInputs) artistInputs.innerHTML = '';
+        
+        // Limpiar variables globales
+        window.currentPlaylistTracks = [];
+        localStorage.removeItem('selectedTracks');
+        
+        // Actualizar lista de canciones seleccionadas
+        if (window.searchManager && typeof window.searchManager.updateSelectedTracksList === 'function') {
+            window.searchManager.updateSelectedTracksList();
+        }
+        
+        // Mostrar mensaje de confirmación
+        showNotification('Formulario limpiado. ¡Listo para crear otra playlist!', 'success');
+    }, 500);
 }
 
 // ===== VERIFICAR HASH Y MOSTRAR FORMULARIO =====
