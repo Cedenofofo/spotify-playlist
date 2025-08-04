@@ -810,50 +810,110 @@
   transform: scale(1.2) rotate(90deg);
 }
 
-/* ===== NOTIFICACIÓN DE ÉXITO MEJORADA ===== */
+/* ===== NOTIFICACIONES MEJORADAS Y MÁS SUTILES ===== */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  max-width: 300px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notification i {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.notification span {
+  line-height: 1.3;
+}
+
+/* Colores más sutiles para las notificaciones */
+.notification.notification-success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.notification.notification-error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.notification.notification-warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(217, 119, 6, 0.9));
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.notification.notification-info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+/* ===== NOTIFICACIÓN DE ÉXITO MEJORADA Y MÁS SUTIL ===== */
 .enhanced-success-notification {
   position: fixed;
   top: 20px;
   right: 20px;
-  padding: 1.5rem;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
   color: white;
-  font-weight: 600;
+  font-weight: 500;
   z-index: 1000;
-  animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  max-width: 400px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 25px 60px rgba(16, 185, 129, 0.3);
+  animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  max-width: 350px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 35px rgba(16, 185, 129, 0.2);
+  opacity: 0.95;
 }
 
 .enhanced-success-notification .notification-content {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
 }
 
 .enhanced-success-notification .success-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: white;
+  opacity: 0.9;
 }
 
 .enhanced-success-notification .notification-text h4 {
   margin: 0 0 var(--space-xs) 0;
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
+  font-weight: 600;
 }
 
 .enhanced-success-notification .notification-text p {
   margin: 0;
   opacity: 0.9;
   font-size: var(--text-sm);
+  line-height: 1.3;
 }
 
 .enhanced-success-notification .open-spotify-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: white;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
@@ -864,11 +924,85 @@
   align-items: center;
   gap: var(--space-xs);
   margin-top: var(--space-sm);
+  font-weight: 500;
 }
 
 .enhanced-success-notification .open-spotify-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
+}
+
+/* ===== CONFIRMACIÓN DE AGREGADO MÁS SUTIL ===== */
+.add-confirmation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 500;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+  animation: addConfirmation 0.5s ease-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* ===== ANIMACIONES MÁS SUAVES ===== */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 0.9;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes addConfirmation {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+}
+
+@keyframes addConfirmationOut {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
 }
 
 /* ===== SCROLLBAR PERSONALIZADO ===== */

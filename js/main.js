@@ -1056,44 +1056,9 @@ function showNotification(message, type = 'success') {
         </div>
     `;
     
-    // Estilos elegantes
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 16px;
-        color: white;
-        font-weight: 600;
-        z-index: 1000;
-        animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        max-width: 350px;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    `;
-    
-    // Colores según tipo
-    const colors = {
-        success: 'linear-gradient(135deg, #10b981, #059669)',
-        error: 'linear-gradient(135deg, #ef4444, #dc2626)',
-        warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
-        info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
-    };
-    
-    notification.style.background = colors[type] || colors.info;
-    
-    // Contenido de la notificación
-    notification.querySelector('.notification-content').style.cssText = `
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    `;
-    
     document.body.appendChild(notification);
     
-    // Remover después de 4 segundos
+    // Remover después de 3 segundos (reducido de 4 segundos)
     setTimeout(() => {
         notification.style.animation = 'slideOutRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
         setTimeout(() => {
@@ -1101,7 +1066,7 @@ function showNotification(message, type = 'success') {
                 notification.parentNode.removeChild(notification);
             }
         }, 400);
-    }, 4000);
+    }, 3000);
 }
 
 // ===== FUNCIONES GLOBALES =====

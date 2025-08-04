@@ -182,24 +182,6 @@ class SearchManager {
             <span>${trackName} agregada</span>
         `;
         
-        confirmation.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
-            animation: addConfirmation 0.6s ease-out;
-        `;
-        
         document.body.appendChild(confirmation);
         
         setTimeout(() => {
@@ -209,7 +191,7 @@ class SearchManager {
                     confirmation.parentNode.removeChild(confirmation);
                 }
             }, 400);
-        }, 1000);
+        }, 800); // Reducido de 1000ms a 800ms
     }
 
     addTrack(track) {
