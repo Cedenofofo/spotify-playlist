@@ -38,23 +38,40 @@
                     </div>
                     <div class="btn-ripple"></div>
                 </button>
-                <div class="time-range-selector">
-                    <label for="time-range-select">Período:</label>
-                    <select id="time-range-select">
-                        <option value="short_term">Últimas 4 semanas</option>
-                        <option value="medium_term">Últimos 6 meses</option>
-                        <option value="long_term">Todo el tiempo</option>
-                        <option value="custom_year">Último año</option>
-                        <option value="custom_range">Rango personalizado</option>
-                    </select>
-                </div>
-                <button id="share-stats-button" class="share-button">
-                    <i class="fas fa-share-alt"></i>
-                    <span>Compartir</span>
-                </button>
             </nav>
         </div>
     </header>
+
+    <!-- Title Section -->
+    <section class="title-section">
+        <div class="title-content">
+            <h2 class="page-title">
+                <i class="fas fa-chart-line"></i>
+                Tu Música en Números
+            </h2>
+            <p class="page-subtitle">Descubre insights únicos sobre tus hábitos de escucha</p>
+        </div>
+    </section>
+
+    <!-- Controls Section -->
+    <section class="controls-section">
+        <div class="controls-container">
+            <div class="time-range-selector">
+                <label for="time-range-select">Período:</label>
+                <select id="time-range-select">
+                    <option value="short_term">Últimas 4 semanas</option>
+                    <option value="medium_term">Últimos 6 meses</option>
+                    <option value="long_term">Todo el tiempo</option>
+                    <option value="custom_year">Último año</option>
+                    <option value="custom_range">Rango personalizado</option>
+                </select>
+            </div>
+            <button id="share-stats-button" class="share-button">
+                <i class="fas fa-share-alt"></i>
+                <span>Compartir</span>
+            </button>
+        </div>
+    </section>
 
     <!-- Custom Date Range Container -->
     <div class="custom-date-range" id="custom-date-range" style="display: none;">
