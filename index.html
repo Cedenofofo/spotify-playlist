@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tuneuptify - Gestor de Playlists de Spotify</title>
     <meta name="description" content="Crea y gestiona playlists personalizadas de Spotify con Tuneuptify">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://accounts.spotify.com https://api.spotify.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://accounts.spotify.com https://api.spotify.com https://api.spotify.com/v1; frame-src https://accounts.spotify.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://accounts.spotify.com https://api.spotify.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://accounts.spotify.com https://api.spotify.com https://api.spotify.com/v1 https://www.google.com https://www.gstatic.com; frame-src https://accounts.spotify.com https://www.google.com;">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -342,67 +342,49 @@
     <script src="js/search.js"></script>
     <script src="js/main.js"></script>
     
-    <!-- Filtro de consola para BLOQUEAR errores externos -->
+    <!-- Filtro de consola para bloquear errores externos -->
     <script>
-        // BLOQUEAR TODOS LOS ERRORES EXTERNOS
+        // BLOQUEAR ERRORES EXTERNOS NO RELEVANTES
         const originalConsoleLog = console.log;
         const originalConsoleError = console.error;
         const originalConsoleWarn = console.warn;
         
-        // Solo mostrar logs de esta aplicación
         console.log = function(...args) {
-            const message = args.join(' ');
-            if (message.includes('cedenofofo.github.io') || 
-                message.includes('Tuneuptify') || 
-                message.includes('Auth constructor') ||
-                message.includes('Botón de login') ||
-                message.includes('Función login') ||
-                message.includes('Configuración') ||
-                message.includes('Redirigiendo')) {
-                originalConsoleLog.apply(console, args);
+            const message = args[0]?.toString() || '';
+            if (message.includes('google.com/recaptcha') || 
+                message.includes('Content Security Policy') ||
+                message.includes('Failed to load resource') ||
+                message.includes('net::ERR_')) {
+                return; // Silenciar logs externos
             }
+            originalConsoleLog.apply(console, args);
         };
         
-        // BLOQUEAR TODOS LOS ERRORES EXTERNOS
         console.error = function(...args) {
-            const message = args.join(' ');
-            // Solo mostrar errores de esta aplicación
-            if (message.includes('cedenofofo.github.io') || 
-                message.includes('Tuneuptify') ||
-                message.includes('Auth') ||
-                message.includes('login')) {
-                originalConsoleError.apply(console, args);
+            const message = args[0]?.toString() || '';
+            if (message.includes('google.com/recaptcha') || 
+                message.includes('Content Security Policy') ||
+                message.includes('Failed to load resource') ||
+                message.includes('net::ERR_')) {
+                return; // Silenciar errores externos
             }
-            // BLOQUEAR TODOS LOS DEMÁS ERRORES
+            originalConsoleError.apply(console, args);
         };
         
-        // BLOQUEAR ADVERTENCIAS EXTERNAS
         console.warn = function(...args) {
-            const message = args.join(' ');
-            if (message.includes('cedenofofo.github.io') || 
-                message.includes('Tuneuptify')) {
-                originalConsoleWarn.apply(console, args);
+            const message = args[0]?.toString() || '';
+            if (message.includes('google.com/recaptcha') || 
+                message.includes('Content Security Policy') ||
+                message.includes('Failed to load resource') ||
+                message.includes('net::ERR_')) {
+                return; // Silenciar warnings externos
             }
-        };
-        
-        // BLOQUEAR ERRORES DE RED EXTERNOS
-        const originalFetch = window.fetch;
-        window.fetch = function(...args) {
-            const url = args[0];
-            if (typeof url === 'string' && 
-                (url.includes('cedenofofo.github.io') || 
-                 url.includes('api.spotify.com') ||
-                 url.includes('accounts.spotify.com'))) {
-                return originalFetch.apply(this, args);
-            }
-            // BLOQUEAR TODAS LAS OTRAS PETICIONES
-            return Promise.resolve(new Response('', { status: 200 }));
+            originalConsoleWarn.apply(console, args);
         };
         
         // Mensaje de confirmación
         originalConsoleLog('🎵 Tuneuptify cargado correctamente');
         originalConsoleLog('🔒 Errores externos BLOQUEADOS');
-        originalConsoleLog('✅ Solo verás errores de esta aplicación');
     </script>
 </body>
 </html> 
