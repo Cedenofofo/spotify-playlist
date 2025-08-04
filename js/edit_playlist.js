@@ -947,6 +947,12 @@ class EditPlaylistManager {
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.search-input-container')) {
                 suggestionsContainer.style.display = 'none';
+                if (suggestionsContainer.classList.contains('artist-suggestions')) {
+                    suggestionsContainer.style.position = 'absolute';
+                    suggestionsContainer.style.top = '';
+                    suggestionsContainer.style.left = '';
+                    suggestionsContainer.style.width = '';
+                }
             }
         });
 
@@ -1048,6 +1054,13 @@ class EditPlaylistManager {
         suggestionsContainer.innerHTML = suggestionsHTML;
         suggestionsContainer.style.display = 'block';
 
+        // Posicionar las sugerencias correctamente
+        const inputRect = artistInput.getBoundingClientRect();
+        suggestionsContainer.style.position = 'fixed';
+        suggestionsContainer.style.top = (inputRect.bottom + 5) + 'px';
+        suggestionsContainer.style.left = inputRect.left + 'px';
+        suggestionsContainer.style.width = inputRect.width + 'px';
+
         // Agregar event listeners
         suggestionsContainer.querySelectorAll('.artist-suggestion-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -1063,6 +1076,10 @@ class EditPlaylistManager {
         
         const suggestionsContainer = artistInput.parentNode.querySelector('.artist-suggestions');
         suggestionsContainer.style.display = 'none';
+        suggestionsContainer.style.position = 'absolute';
+        suggestionsContainer.style.top = '';
+        suggestionsContainer.style.left = '';
+        suggestionsContainer.style.width = '';
     }
 
     addArtistInput() {
