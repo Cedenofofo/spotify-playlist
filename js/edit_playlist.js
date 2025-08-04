@@ -1058,16 +1058,11 @@ class EditPlaylistManager {
         suggestionsContainer.innerHTML = suggestionsHTML;
         suggestionsContainer.style.display = 'block';
 
-        // SOLUCIÓN SIMPLE Y EFECTIVA - Mover al body con z-index máximo
-        document.body.appendChild(suggestionsContainer);
-
-        // Posicionar las sugerencias correctamente
-        const inputRect = artistInput.getBoundingClientRect();
-        suggestionsContainer.style.position = 'fixed';
-        suggestionsContainer.style.top = (inputRect.bottom + 5) + 'px';
-        suggestionsContainer.style.left = inputRect.left + 'px';
-        suggestionsContainer.style.width = inputRect.width + 'px';
-        suggestionsContainer.style.zIndex = '2147483647';
+        // SOLUCIÓN DEFINITIVA - Solo mostrar las sugerencias donde están
+        console.log('Sugerencias de artistas mostradas:', artists.length);
+        console.log('Contenedor:', suggestionsContainer);
+        console.log('Display:', suggestionsContainer.style.display);
+        console.log('HTML:', suggestionsContainer.innerHTML);
 
         // Agregar event listeners
         suggestionsContainer.querySelectorAll('.artist-suggestion-item').forEach(item => {
