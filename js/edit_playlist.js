@@ -948,10 +948,16 @@ class EditPlaylistManager {
             if (!e.target.closest('.search-input-container')) {
                 suggestionsContainer.style.display = 'none';
                 if (suggestionsContainer.classList.contains('artist-suggestions')) {
+                    // Devolver las sugerencias a su contenedor original
+                    const originalContainer = artistInput.parentNode;
+                    if (suggestionsContainer.parentNode === document.body) {
+                        originalContainer.appendChild(suggestionsContainer);
+                    }
                     suggestionsContainer.style.position = 'absolute';
                     suggestionsContainer.style.top = '';
                     suggestionsContainer.style.left = '';
                     suggestionsContainer.style.width = '';
+                    suggestionsContainer.style.zIndex = '';
                 }
             }
         });
@@ -1054,12 +1060,16 @@ class EditPlaylistManager {
         suggestionsContainer.innerHTML = suggestionsHTML;
         suggestionsContainer.style.display = 'block';
 
+        // Mover las sugerencias al body para que estén en el nivel más alto
+        document.body.appendChild(suggestionsContainer);
+
         // Posicionar las sugerencias correctamente
         const inputRect = artistInput.getBoundingClientRect();
         suggestionsContainer.style.position = 'fixed';
         suggestionsContainer.style.top = (inputRect.bottom + 5) + 'px';
         suggestionsContainer.style.left = inputRect.left + 'px';
         suggestionsContainer.style.width = inputRect.width + 'px';
+        suggestionsContainer.style.zIndex = '999999';
 
         // Agregar event listeners
         suggestionsContainer.querySelectorAll('.artist-suggestion-item').forEach(item => {
@@ -1076,10 +1086,18 @@ class EditPlaylistManager {
         
         const suggestionsContainer = artistInput.parentNode.querySelector('.artist-suggestions');
         suggestionsContainer.style.display = 'none';
+        
+        // Devolver las sugerencias a su contenedor original
+        const originalContainer = artistInput.parentNode;
+        if (suggestionsContainer.parentNode === document.body) {
+            originalContainer.appendChild(suggestionsContainer);
+        }
+        
         suggestionsContainer.style.position = 'absolute';
         suggestionsContainer.style.top = '';
         suggestionsContainer.style.left = '';
         suggestionsContainer.style.width = '';
+        suggestionsContainer.style.zIndex = '';
     }
 
     addArtistInput() {

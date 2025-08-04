@@ -211,13 +211,14 @@
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     max-height: 200px !important;
     overflow-y: auto !important;
-    z-index: 99999 !important;
+    z-index: 999999 !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     margin-top: 0 !important;
     padding: 0.5rem 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    pointer-events: auto !important;
 }
 
 .artist-suggestion-item {
