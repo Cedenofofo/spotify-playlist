@@ -457,69 +457,29 @@ class ModifyPlaylistsManager {
     }
 
     getPlaylistImageUrl(playlist) {
-        // Si no hay imágenes, usar placeholder elegante
-        if (!playlist.images || playlist.images.length === 0) {
-            return 'https://via.placeholder.com/80x80/1db954/ffffff?text=🎵';
-        }
-
-        // Buscar la mejor imagen disponible
-        let bestImage = null;
-        
-        // Estrategia 1: Buscar imágenes que NO sean collages (evitar URLs con múltiples imágenes)
-        for (const image of playlist.images) {
-            if (image && image.url) {
-                // Evitar URLs que parezcan collages o múltiples imágenes
-                const url = image.url.toLowerCase();
-                if (!url.includes('mosaic') && 
-                    !url.includes('collage') && 
-                    !url.includes('multiple') &&
-                    !url.includes('grid') &&
-                    url.includes('spotify')) {
-                    bestImage = image.url;
-                    break;
-                }
-            }
-        }
-
-        // Estrategia 2: Si no encontramos una imagen única, usar la primera disponible
-        if (!bestImage) {
-            for (const image of playlist.images) {
-                if (image && image.url) {
-                    bestImage = image.url;
-                    break;
-                }
-            }
-        }
-
-        // Estrategia 3: Si la imagen parece ser un collage, usar placeholder personalizado
-        if (bestImage) {
-            const url = bestImage.toLowerCase();
-            if (url.includes('mosaic') || 
-                url.includes('collage') || 
-                url.includes('multiple') ||
-                url.includes('grid')) {
-                // Usar placeholder personalizado en lugar de collage
-                return this.generatePlaylistPlaceholder(playlist.name);
-            }
-        }
-
-        // Fallback final
-        if (!bestImage) {
-            return this.generatePlaylistPlaceholder(playlist.name);
-        }
-
-        return bestImage;
+        // Estandarizar: usar placeholder personalizado para todas las playlists
+        // Esto asegura que todas las tarjetas se vean consistentes
+        return this.generatePlaylistPlaceholder(playlist.name);
     }
 
     // Generar placeholder personalizado basado en el nombre de la playlist
     generatePlaylistPlaceholder(playlistName) {
+        // Colores consistentes basados en el nombre para que siempre sea el mismo
         const colors = [
             '#1db954', '#1ed760', '#2ecc71', '#27ae60', '#16a085',
             '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#e74c3c',
             '#c0392b', '#f39c12', '#e67e22', '#f1c40f', '#f7dc6f'
         ];
         
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        // Usar hash del nombre para color consistente
+        let hash = 0;
+        for (let i = 0; i < playlistName.length; i++) {
+            hash = playlistName.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const colorIndex = Math.abs(hash) % colors.length;
+        const selectedColor = colors[colorIndex];
+        
+        // Generar iniciales consistentes
         const initials = playlistName
             .split(' ')
             .map(word => word.charAt(0))
@@ -527,7 +487,8 @@ class ModifyPlaylistsManager {
             .toUpperCase()
             .substring(0, 2);
         
-        return `https://via.placeholder.com/80x80/${randomColor.replace('#', '')}/ffffff?text=${encodeURIComponent(initials)}`;
+        // Usar tamaño más grande para mejor calidad
+        return `https://via.placeholder.com/320x180/${selectedColor.replace('#', '')}/ffffff?text=${encodeURIComponent(initials)}`;
     }
 
     setupPlaylistCardListeners() {
