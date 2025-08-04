@@ -401,20 +401,18 @@ class ModifyPlaylistsManager {
         
         return `
             <div class="playlist-card ${isSelected ? 'selected' : ''}" data-playlist-id="${playlist.id}">
-                <!-- Header con imagen -->
-                <div class="playlist-card-header">
-                    <img src="${imageUrl}" 
-                         alt="${this.escapeHtml(playlist.name)}" 
-                         class="playlist-card-image"
-                         onerror="this.onerror=null; this.src='${this.generatePlaylistPlaceholder(playlist.name)}'; this.classList.add('placeholder');"
-                         onload="this.classList.remove('placeholder');">
-                    
-                    <!-- Checkbox en la esquina superior izquierda -->
-                    <div class="playlist-card-checkbox">
-                        <input type="checkbox" id="playlist-${playlist.id}" ${isSelected ? 'checked' : ''} 
-                               onchange="modifyPlaylistsManager.togglePlaylistSelection('${playlist.id}')">
-                        <label for="playlist-${playlist.id}"></label>
-                    </div>
+                <!-- Imagen de la playlist -->
+                <img src="${imageUrl}" 
+                     alt="${this.escapeHtml(playlist.name)}" 
+                     class="playlist-card-image"
+                     onerror="this.onerror=null; this.src='${this.generatePlaylistPlaceholder(playlist.name)}'; this.classList.add('placeholder');"
+                     onload="this.classList.remove('placeholder');">
+                
+                <!-- Checkbox moderno -->
+                <div class="playlist-card-checkbox">
+                    <input type="checkbox" id="playlist-${playlist.id}" ${isSelected ? 'checked' : ''} 
+                           onchange="modifyPlaylistsManager.togglePlaylistSelection('${playlist.id}')">
+                    <label for="playlist-${playlist.id}"></label>
                 </div>
                 
                 <!-- Contenido de la card -->
@@ -429,7 +427,7 @@ class ModifyPlaylistsManager {
                         </p>
                     </div>
                     
-                    <!-- Estadísticas -->
+                    <!-- Estadísticas modernas -->
                     <div class="playlist-card-stats">
                         <div class="playlist-card-stat">
                             <i class="fas fa-music"></i>
@@ -441,7 +439,7 @@ class ModifyPlaylistsManager {
                         </div>
                     </div>
                     
-                    <!-- Acciones -->
+                    <!-- Acciones modernas -->
                     <div class="playlist-card-actions">
                         <button class="playlist-card-action play" onclick="modifyPlaylistsManager.viewPlaylist('${playlist.id}')" title="Ver playlist">
                             <i class="fas fa-play"></i>
