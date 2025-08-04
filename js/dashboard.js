@@ -85,7 +85,7 @@ function initParticleEffects() {
     });
 }
 
-// Navegar a crear playlist (formulario en index.html)
+// Navegar a crear playlist (página dedicada)
 function navigateToCreatePlaylist() {
     console.log('Navegando a crear playlist');
     
@@ -95,10 +95,10 @@ function navigateToCreatePlaylist() {
         card.classList.add('loading');
     }
     
-    // Redirigir al formulario de crear playlist en index.html
+    // Redirigir a la página dedicada de crear playlist
     setTimeout(() => {
-        console.log('Redirigiendo a index.html#playlist-section');
-        window.location.href = 'index.html#playlist-section';
+        console.log('Redirigiendo a create-playlist.html');
+        window.location.href = 'create-playlist.html';
     }, 500);
 }
 
