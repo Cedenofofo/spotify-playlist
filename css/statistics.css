@@ -99,18 +99,21 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: var(--text-primary);
 }
 
 .stats-header i {
-    color: #1db954;
+    color: var(--accent-green);
+    font-size: 1.2rem;
 }
 
 .time-range {
-    background: rgba(29, 185, 84, 0.2);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    border: 1px solid rgba(29, 185, 84, 0.3);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    background: rgba(29, 185, 84, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    border: 1px solid rgba(29, 185, 84, 0.2);
 }
 
 /* Contenedor principal */
@@ -120,14 +123,55 @@
     padding: 2rem;
 }
 
-/* Grid de estadísticas */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+/* ===== HORIZONTAL LAYOUT ===== */
+.horizontal-stats-layout {
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
     margin-bottom: 2rem;
 }
 
+/* Filas de estadísticas */
+.stats-row {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+}
+
+/* Fila principal - Stats principales */
+.main-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.main-stats-row .stats-card {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Fila de contenido - Artistas y Canciones */
+.content-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* Fila de análisis - Géneros y Mood */
+.analysis-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* Secciones de estadísticas */
+.stats-section {
+    width: 100%;
+}
+
+/* Cards de estadísticas */
 .stats-card {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -138,6 +182,7 @@
     transition: var(--transition-smooth);
     position: relative;
     overflow: hidden;
+    height: 100%;
 }
 
 .stats-card::before {
@@ -163,10 +208,51 @@
     border-color: rgba(29, 185, 84, 0.3);
 }
 
+/* Cards específicos */
+.profile-card {
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(0, 207, 255, 0.1) 100%);
+    border-color: rgba(29, 185, 84, 0.3);
+}
+
+.time-card {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.uniqueness-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.artists-section .stats-card {
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(30, 215, 96, 0.1) 100%);
+    border-color: rgba(29, 185, 84, 0.3);
+}
+
+.tracks-section .stats-card {
+    background: linear-gradient(135deg, rgba(0, 207, 255, 0.1) 0%, rgba(29, 185, 84, 0.1) 100%);
+    border-color: rgba(0, 207, 255, 0.3);
+}
+
+.genre-section .stats-card {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 182, 193, 0.1) 100%);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.mood-section .stats-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.insights-card {
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(0, 207, 255, 0.1) 100%);
+    border-color: rgba(29, 185, 84, 0.3);
+}
+
 /* Artistas más escuchados */
 .artists-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
     margin-top: 1rem;
 }
@@ -218,13 +304,13 @@
 .artist-name {
     font-size: 1rem;
     font-weight: 600;
-    margin: 0 0 0.5rem 0;
-    color: #ffffff;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
 .artist-genres {
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
 }
 
@@ -234,9 +320,9 @@
 
 .popularity-bar {
     width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
     overflow: hidden;
     margin-bottom: 0.25rem;
 }
@@ -244,20 +330,21 @@
 .popularity-fill {
     height: 100%;
     background: linear-gradient(90deg, #1db954, #1ed760);
-    border-radius: 2px;
+    border-radius: 3px;
     transition: width 0.3s ease;
 }
 
 .popularity-text {
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: center;
 }
 
 /* Canciones más reproducidas */
 .tracks-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
     margin-top: 1rem;
 }
 
@@ -267,10 +354,9 @@
     gap: 1rem;
     padding: 1rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    cursor: pointer;
+    border-radius: 12px;
     transition: all 0.3s ease;
-    position: relative;
+    cursor: pointer;
 }
 
 .track-item:hover {
@@ -281,23 +367,29 @@
 .track-rank {
     background: #1db954;
     color: white;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.track-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
     flex-shrink: 0;
 }
 
 .track-image img {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    flex-shrink: 0;
 }
 
 .track-info {
@@ -308,26 +400,25 @@
 .track-name {
     font-size: 1rem;
     font-weight: 600;
-    margin: 0 0 0.25rem 0;
-    color: #ffffff;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .track-artist {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0 0 0.25rem 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .track-album {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -337,7 +428,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.5rem;
+    gap: 0.25rem;
     flex-shrink: 0;
 }
 
@@ -349,27 +440,27 @@
 
 .track-popularity .popularity-bar {
     width: 60px;
-    height: 3px;
+    height: 4px;
 }
 
 .track-popularity span {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
-    min-width: 30px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    min-width: 20px;
     text-align: right;
 }
 
 .track-duration {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
 }
 
 /* Perfil de usuario */
 .profile-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 2rem;
-    margin-top: 1rem;
+    text-align: center;
 }
 
 .profile-image img {
@@ -378,110 +469,117 @@
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid rgba(29, 185, 84, 0.3);
+    margin-bottom: 1rem;
 }
 
 .profile-info {
-    flex: 1;
+    text-align: center;
 }
 
 .profile-name {
     font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0 0 0.5rem 0;
-    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
 .profile-email {
     font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0 0 1rem 0;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
 }
 
 .profile-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    width: 100%;
 }
 
 .stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
 }
 
 .stat-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
 }
 
 .stat-value {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #1db954;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-green);
 }
 
 /* Tiempo de escucha */
 .listening-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
 }
 
 .time-card {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1.5rem;
-    border-radius: 15px;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
 }
 
 .time-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #1db954, #1ed760);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: white;
+    margin-bottom: 1rem;
 }
 
 .time-info h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
 }
 
 .time-value {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-orange);
+    margin-bottom: 0.5rem;
 }
 
 .hours, .minutes {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1db954;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .time-unit {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    color: var(--text-secondary);
 }
 
 .recent-activity h4 {
-    margin: 0 0 1rem 0;
     font-size: 1.1rem;
-    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
 }
 
 .activity-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .activity-item {
@@ -490,12 +588,12 @@
     gap: 0.75rem;
     padding: 0.75rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .activity-item img {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     border-radius: 6px;
     object-fit: cover;
 }
@@ -506,275 +604,301 @@
 }
 
 .activity-track {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .activity-artist {
-    display: block;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .activity-time {
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
     flex-shrink: 0;
 }
 
-/* Análisis de géneros */
+/* Géneros musicales favoritos */
 .genre-analysis {
-    margin-top: 1rem;
+    height: 100%;
 }
 
 .genre-chart {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
+    margin-top: 1rem;
+    height: calc(100% - 80px);
+    overflow-y: auto;
 }
 
 .genre-item {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.75rem;
+    padding: 1rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.genre-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
 }
 
 .genre-info {
     flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    min-width: 0;
 }
 
 .genre-name {
-    font-weight: 500;
-    color: #ffffff;
-    text-transform: capitalize;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
 }
 
 .genre-count {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
 }
 
 .genre-bar {
-    width: 150px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
     overflow: hidden;
+    margin-top: 0.5rem;
 }
 
 .genre-fill {
     height: 100%;
-    background: linear-gradient(90deg, #1db954, #1ed760);
-    border-radius: 3px;
+    background: linear-gradient(90deg, #ff6b35, #f7931e);
+    border-radius: 4px;
     transition: width 0.3s ease;
 }
 
 .genre-insights {
-    background: rgba(29, 185, 84, 0.1);
+    margin-top: 1.5rem;
     padding: 1rem;
-    border-radius: 10px;
-    border: 1px solid rgba(29, 185, 84, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
 }
 
 .genre-insights h4 {
-    margin: 0 0 0.5rem 0;
-    color: #1db954;
     font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
 .genre-insights p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
 }
 
-/* Análisis de mood */
+/* Estado de ánimo musical */
 .mood-analysis {
-    margin-top: 1rem;
+    height: 100%;
 }
 
 .mood-chart {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
+    margin-top: 1rem;
+    height: calc(100% - 80px);
+    overflow-y: auto;
 }
 
 .mood-item {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.75rem;
+    padding: 1rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.mood-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
 }
 
 .mood-info {
     flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    min-width: 0;
 }
 
 .mood-name {
-    font-weight: 500;
-    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
 }
 
 .mood-percentage {
-    font-size: 0.9rem;
-    color: #1db954;
-    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
 }
 
 .mood-bar {
-    width: 150px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
     overflow: hidden;
+    margin-top: 0.5rem;
 }
 
 .mood-fill {
     height: 100%;
-    background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
-    border-radius: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 4px;
     transition: width 0.3s ease;
 }
 
 .mood-insights {
-    background: rgba(255, 107, 107, 0.1);
+    margin-top: 1.5rem;
     padding: 1rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 107, 107, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
 }
 
 .mood-insights h4 {
-    margin: 0 0 0.5rem 0;
-    color: #ff6b6b;
     font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
 .mood-insights p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
 }
 
-/* Análisis de exclusividad */
+/* Exclusividad de gustos */
 .uniqueness-analysis {
-    margin-top: 1rem;
+    height: 100%;
 }
 
 .uniqueness-score {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
 }
 
 .score-circle {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, #1db954 0deg, #1db954 calc(var(--score) * 3.6deg), rgba(255, 255, 255, 0.1) calc(var(--score) * 3.6deg));
+    background: conic-gradient(from 0deg, #667eea 0deg, #667eea 0deg, #e0e0e0 0deg);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    border: 4px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
 }
 
 .score-circle::before {
     content: '';
     position: absolute;
-    width: 80px;
-    height: 80px;
-    background: rgba(0, 0, 0, 0.3);
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    background: var(--glass-bg);
     border-radius: 50%;
+    backdrop-filter: blur(10px);
 }
 
 .score-value {
     font-size: 2rem;
-    font-weight: 700;
-    color: #ffffff;
+    font-weight: 800;
+    color: var(--accent-purple);
+    position: relative;
     z-index: 1;
 }
 
 .score-label {
-    position: absolute;
-    bottom: -2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
-    white-space: nowrap;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 1;
+}
+
+.score-description {
+    text-align: center;
+    margin-top: 1rem;
 }
 
 .score-description h4 {
-    margin: 0 0 0.5rem 0;
-    color: #1db954;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
 .score-description p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.4;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
 }
 
 .uniqueness-details {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    margin-top: 1.5rem;
 }
 
 .detail-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
+    text-align: center;
+    padding: 1rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: 12px;
 }
 
 .detail-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
 }
 
 .detail-value {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #1db954;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-purple);
 }
 
-/* Controles de la página */
+/* Controles */
 .stats-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
 }
 
 .time-range-selector {
@@ -784,26 +908,27 @@
 }
 
 .time-range-selector label {
-    font-weight: 500;
-    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .time-range-selector select {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--glass-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 0.875rem;
     cursor: pointer;
+    transition: var(--transition-smooth);
 }
 
 .time-range-selector select:focus {
     outline: none;
-    border-color: #1db954;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
 }
-
-
 
 .share-button {
     position: relative;
@@ -857,17 +982,18 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
+    backdrop-filter: blur(10px);
 }
 
 .loading-spinner {
-    width: 60px;
-    height: 60px;
-    border: 4px solid rgba(29, 185, 84, 0.3);
-    border-top: 4px solid #1db954;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid #1db954;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -880,18 +1006,16 @@
 /* Notificaciones */
 .notification {
     position: fixed;
-    top: 2rem;
-    right: 2rem;
-    background: rgba(29, 185, 84, 0.9);
-    color: white;
+    top: 20px;
+    right: 20px;
     padding: 1rem 1.5rem;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
     z-index: 10000;
     transform: translateX(100%);
     transition: transform 0.3s ease;
+    max-width: 300px;
 }
 
 .notification.show {
@@ -899,35 +1023,49 @@
 }
 
 .notification.notification-error {
-    background: rgba(231, 76, 60, 0.9);
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
 }
 
 /* Error container */
 .error-container {
-    display: none;
-    margin: 1rem 0;
-    padding: 1rem;
-    background: rgba(231, 76, 60, 0.1);
-    border: 1px solid rgba(231, 76, 60, 0.3);
-    border-radius: 10px;
+    margin-bottom: 2rem;
 }
 
 .error-message {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #e74c3c;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(238, 90, 82, 0.1));
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 12px;
+    color: #ff6b6b;
+    font-weight: 600;
 }
 
-/* Responsive design */
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-stats-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .content-row,
+    .analysis-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .stats-container {
         padding: 1rem;
     }
     
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+    .horizontal-stats-layout {
+        gap: 1.5rem;
+    }
+    
+    .stats-row {
+        flex-direction: column;
+        gap: 1.5rem;
     }
     
     .stats-card {
@@ -939,20 +1077,15 @@
     }
     
     .profile-card {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
+        padding: 1.5rem;
     }
     
     .listening-stats {
-        grid-template-columns: 1fr;
         gap: 1rem;
     }
     
     .uniqueness-score {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
+        padding: 1rem;
     }
     
     .uniqueness-details {
@@ -962,14 +1095,16 @@
     .stats-controls {
         flex-direction: column;
         gap: 1rem;
-        align-items: stretch;
+        text-align: center;
     }
     
     .time-range-selector {
-        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
     }
     
     .share-button {
+        width: 100%;
         justify-content: center;
     }
 }
@@ -977,7 +1112,7 @@
 @media (max-width: 480px) {
     .stats-header {
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.5rem;
         text-align: center;
     }
     
@@ -987,7 +1122,6 @@
     
     .track-item {
         padding: 0.75rem;
-        gap: 0.75rem;
     }
     
     .track-stats {

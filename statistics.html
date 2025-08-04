@@ -73,91 +73,108 @@
             </button>
         </div>
 
-        <!-- Statistics Grid -->
-        <div class="stats-grid">
-            <!-- 1. Artistas más escuchados -->
-            <div class="stats-card" id="top-artists-container">
-                <div class="stats-header">
-                    <h3><i class="fas fa-microphone"></i> Artistas Más Escuchados</h3>
-                    <span class="time-range">Últimas 4 semanas</span>
+        <!-- Horizontal Statistics Layout -->
+        <div class="horizontal-stats-layout">
+            <!-- Top Row - Main Stats -->
+            <div class="stats-row main-stats-row">
+                <!-- User Profile Card -->
+                <div class="stats-card profile-card" id="user-profile-container">
+                    <div class="stats-header">
+                        <h3><i class="fas fa-user"></i> Tu Perfil Musical</h3>
+                    </div>
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando perfil...</p>
+                    </div>
                 </div>
-                <div class="loading-placeholder">
-                    <div class="loading-spinner"></div>
-                    <p>Cargando artistas...</p>
+
+                <!-- Listening Time Card -->
+                <div class="stats-card time-card" id="listening-time-container">
+                    <div class="stats-header">
+                        <h3><i class="fas fa-clock"></i> Tiempo de Escucha</h3>
+                    </div>
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Calculando tiempo...</p>
+                    </div>
+                </div>
+
+                <!-- Uniqueness Card -->
+                <div class="stats-card uniqueness-card" id="uniqueness-container">
+                    <div class="stats-header">
+                        <h3><i class="fas fa-star"></i> Exclusividad de Gustos</h3>
+                    </div>
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Calculando exclusividad...</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- 2. Canciones más reproducidas -->
-            <div class="stats-card" id="top-tracks-container">
-                <div class="stats-header">
-                    <h3><i class="fas fa-music"></i> Canciones Más Reproducidas</h3>
-                    <span class="time-range">Últimas 4 semanas</span>
+            <!-- Second Row - Artists and Tracks -->
+            <div class="stats-row content-row">
+                <!-- Artists Section -->
+                <div class="stats-section artists-section">
+                    <div class="stats-card" id="top-artists-container">
+                        <div class="stats-header">
+                            <h3><i class="fas fa-microphone"></i> Artistas Más Escuchados</h3>
+                            <span class="time-range">Últimas 4 semanas</span>
+                        </div>
+                        <div class="loading-placeholder">
+                            <div class="loading-spinner"></div>
+                            <p>Cargando artistas...</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="loading-placeholder">
-                    <div class="loading-spinner"></div>
-                    <p>Cargando canciones...</p>
+
+                <!-- Tracks Section -->
+                <div class="stats-section tracks-section">
+                    <div class="stats-card" id="top-tracks-container">
+                        <div class="stats-header">
+                            <h3><i class="fas fa-music"></i> Canciones Más Reproducidas</h3>
+                            <span class="time-range">Últimas 4 semanas</span>
+                        </div>
+                        <div class="loading-placeholder">
+                            <div class="loading-spinner"></div>
+                            <p>Cargando canciones...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 3. Perfil de usuario -->
-            <div class="stats-card" id="user-profile-container">
-                <div class="stats-header">
-                    <h3><i class="fas fa-user"></i> Tu Perfil Musical</h3>
+            <!-- Third Row - Analysis -->
+            <div class="stats-row analysis-row">
+                <!-- Genre Analysis -->
+                <div class="stats-section genre-section">
+                    <div class="stats-card" id="genre-analysis-container">
+                        <div class="stats-header">
+                            <h3><i class="fas fa-tags"></i> Géneros Musicales Favoritos</h3>
+                        </div>
+                        <div class="loading-placeholder">
+                            <div class="loading-spinner"></div>
+                            <p>Analizando géneros...</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="loading-placeholder">
-                    <div class="loading-spinner"></div>
-                    <p>Cargando perfil...</p>
-                </div>
-            </div>
 
-            <!-- 4. Tiempo de escucha -->
-            <div class="stats-card" id="listening-time-container">
-                <div class="stats-header">
-                    <h3><i class="fas fa-clock"></i> Tiempo de Escucha</h3>
-                </div>
-                <div class="loading-placeholder">
-                    <div class="loading-spinner"></div>
-                    <p>Calculando tiempo...</p>
-                </div>
-            </div>
-
-            <!-- 5. Géneros musicales favoritos -->
-            <div class="stats-card" id="genre-analysis-container">
-                <div class="stats-header">
-                    <h3><i class="fas fa-tags"></i> Géneros Musicales Favoritos</h3>
-                </div>
-                <div class="loading-placeholder">
-                    <div class="loading-spinner"></div>
-                    <p>Analizando géneros...</p>
-                </div>
-            </div>
-
-            <!-- 6. Estado de ánimo musical -->
-            <div class="stats-card" id="mood-analysis-container">
-                <div class="stats-header">
-                    <h3><i class="fas fa-heart"></i> Estado de Ánimo Musical</h3>
-                </div>
-                <div class="loading-placeholder">
-                    <div class="loading-spinner"></div>
-                    <p>Analizando mood...</p>
-                </div>
-            </div>
-
-            <!-- 7. Exclusividad de gustos -->
-            <div class="stats-card" id="uniqueness-container">
-                <div class="stats-header">
-                    <h3><i class="fas fa-star"></i> Exclusividad de Gustos</h3>
-                </div>
-                <div class="loading-placeholder">
-                    <div class="loading-spinner"></div>
-                    <p>Calculando exclusividad...</p>
+                <!-- Mood Analysis -->
+                <div class="stats-section mood-section">
+                    <div class="stats-card" id="mood-analysis-container">
+                        <div class="stats-header">
+                            <h3><i class="fas fa-heart"></i> Estado de Ánimo Musical</h3>
+                        </div>
+                        <div class="loading-placeholder">
+                            <div class="loading-spinner"></div>
+                            <p>Analizando mood...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Additional Insights Section -->
+        <!-- Insights Section -->
         <div class="insights-section">
-            <div class="stats-card">
+            <div class="stats-card insights-card">
                 <div class="stats-header">
                     <h3><i class="fas fa-lightbulb"></i> Insights Personalizados</h3>
                 </div>
