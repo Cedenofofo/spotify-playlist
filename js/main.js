@@ -229,6 +229,7 @@ function setupAutocompleteForArtist(artistId) {
         const query = this.value.trim();
         if (query.length < 2) {
             suggestionsDiv.innerHTML = '';
+            suggestionsDiv.classList.remove('show');
             return;
         }
         
@@ -241,6 +242,7 @@ function setupAutocompleteForArtist(artistId) {
     artistInput.addEventListener('blur', () => {
         setTimeout(() => {
             suggestionsDiv.innerHTML = '';
+            suggestionsDiv.classList.remove('show');
         }, 200);
     });
 }
@@ -298,10 +300,18 @@ function displayArtistResults(artists, suggestionsDiv, artistInput) {
         artistDiv.addEventListener('click', () => {
             artistInput.value = artist.name;
             suggestionsDiv.innerHTML = '';
+            suggestionsDiv.classList.remove('show');
         });
         
         suggestionsDiv.appendChild(artistDiv);
     });
+
+    // Mostrar las sugerencias
+    if (artists.length > 0) {
+        suggestionsDiv.classList.add('show');
+    } else {
+        suggestionsDiv.classList.remove('show');
+    }
 }
 
 // ===== VISTA PREVIA DE PLAYLIST =====

@@ -21,6 +21,7 @@ class SearchManager {
                 const query = searchInput.value.trim();
                 if (query.length < 1) {
                     suggestionsDiv.innerHTML = '';
+                    suggestionsDiv.classList.remove('show');
                     return;
                 }
                 clearTimeout(debounceTimeout);
@@ -30,6 +31,7 @@ class SearchManager {
             searchInput.addEventListener('blur', () => {
                 setTimeout(() => {
                     suggestionsDiv.innerHTML = '';
+                    suggestionsDiv.classList.remove('show');
                 }, 200);
             });
         } else {
@@ -93,11 +95,19 @@ class SearchManager {
             trackDiv.addEventListener('click', () => {
                 this.addTrack(track);
                 suggestionsDiv.innerHTML = '';
+                suggestionsDiv.classList.remove('show');
                 searchInput.value = '';
             });
             
             suggestionsDiv.appendChild(trackDiv);
         });
+
+        // Mostrar las sugerencias
+        if (tracks.length > 0) {
+            suggestionsDiv.classList.add('show');
+        } else {
+            suggestionsDiv.classList.remove('show');
+        }
     }
 
     addTrack(track) {
