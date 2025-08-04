@@ -124,11 +124,19 @@ class ShareStatistics {
     drawMainStatisticsCards() {
         const startY = 400;
         const cardHeight = 140;
-        const cardWidth = 480;
-        const margin = 40;
+        const cardWidth = 300; // Reduced width to fit 3 cards
+        const margin = 30;
+        const totalWidth = (cardWidth * 3) + (margin * 2);
+        const startX = (this.canvas.width - totalWidth) / 2;
         
-        // Tiempo de escucha con diseño de tarjeta moderna
-        this.drawModernStatCard('⏱️ Tiempo de Escucha', this.statsData.listeningTime || '0h 0min', startY, 50, cardWidth, '#1db954');
+        // Tiempo de escucha
+        this.drawModernStatCard('⏱️ Tiempo', this.statsData.listeningTime || '0h 0min', startY, startX, cardWidth, '#1db954');
+        
+        // Canciones únicas
+        this.drawModernStatCard('🎵 Canciones', this.statsData.uniqueTracks || '0', startY, startX + cardWidth + margin, cardWidth, '#00cfff');
+        
+        // Géneros únicos
+        this.drawModernStatCard('🎼 Géneros', this.statsData.uniqueGenres || '0', startY, startX + (cardWidth + margin) * 2, cardWidth, '#ff6b35');
     }
 
     drawModernStatCard(title, value, y, x, width, color) {

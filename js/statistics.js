@@ -537,15 +537,7 @@ class StatisticsManager {
 
     displayUniquenessScore(artists, tracks) {
         const container = document.getElementById('uniqueness-container');
-        if (!container || !artists?.items || !tracks?.items) {
-            console.log('displayUniquenessScore: Missing data', { container: !!container, artists: !!artists?.items, tracks: !!tracks?.items });
-            return;
-        }
-
-        console.log('displayUniquenessScore: Processing data', { 
-            artistsCount: artists.items.length, 
-            tracksCount: tracks.items.length 
-        });
+        if (!container || !artists?.items || !tracks?.items) return;
 
         // Calculate uniqueness score based on average popularity
         const avgArtistPopularity = artists.items.reduce((sum, artist) => sum + artist.popularity, 0) / artists.items.length;
@@ -567,12 +559,8 @@ class StatisticsManager {
         });
         const uniqueGenres = new Set(allGenres).size;
         
-        console.log('displayUniquenessScore: Calculated metrics', { 
-            uniqueTracks, 
-            uniqueArtists, 
-            uniqueGenres,
-            allGenres: allGenres.length
-        });
+        // Calculate average genres per artist
+        const avgGenresPerArtist = allGenres.length / artists.items.length;
 
         container.innerHTML = `
             <div class="uniqueness-analysis">
@@ -610,8 +598,6 @@ class StatisticsManager {
                 </div>
             </div>
         `;
-        
-        console.log('displayUniquenessScore: HTML updated');
     }
 
     getUniquenessLevel(score) {
@@ -771,7 +757,10 @@ class StatisticsManager {
             genres: [],
             moods: [],
             listeningTime: '',
-            uniquenessScore: 0
+            uniquenessScore: 0,
+            uniqueGenres: 0,
+            uniqueArtists: 0,
+            uniqueTracks: 0
         };
 
         try {
@@ -791,6 +780,22 @@ class StatisticsManager {
                 const totalHours = Math.floor(totalDuration / (1000 * 60 * 60));
                 const totalMinutes = Math.floor((totalDuration % (1000 * 60 * 60)) / (1000 * 60));
                 statsData.listeningTime = `${totalHours}h ${totalMinutes}min`;
+            }
+
+            // Calculate uniqueness metrics
+            if (topArtists && topTracks) {
+                // Unique artists and tracks
+                statsData.uniqueArtists = new Set(topArtists.items.map(artist => artist.name)).size;
+                statsData.uniqueTracks = new Set(topTracks.items.map(track => track.name)).size;
+                
+                // Unique genres
+                const allGenres = [];
+                topArtists.items.forEach(artist => {
+                    if (artist.genres && artist.genres.length > 0) {
+                        allGenres.push(...artist.genres);
+                    }
+                });
+                statsData.uniqueGenres = new Set(allGenres).size;
             }
 
             // Process genres
