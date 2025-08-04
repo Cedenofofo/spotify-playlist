@@ -493,70 +493,17 @@ class ShareStatistics {
     }
 
     shareToTwitter(imageDataUrl) {
-        // Para Twitter/X, descargar imagen y dar instrucciones
-        this.downloadImage(imageDataUrl);
-        this.showTwitterInstructions();
-    }
-
-    showTwitterInstructions() {
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        `;
-
-        const content = document.createElement('div');
-        content.style.cssText = `
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        `;
-
-        content.innerHTML = `
-            <h3 style="color: #1da1f2; margin-bottom: 1rem;">🐦 Compartir en X (Twitter)</h3>
-            <p style="margin-bottom: 1rem; color: #333;">
-                La imagen ya se descargó. Para compartir en X:
-            </p>
-            <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
-                <li>Abre X (Twitter) en tu navegador o app</li>
-                <li>Haz clic en "Post" o "Tweet"</li>
-                <li>Adjunta la imagen descargada</li>
-                <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
-                <li>Publica tu tweet</li>
-            </ol>
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                background: #1da1f2;
-                color: white;
-                border: none;
-                padding: 0.8rem 1.5rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
-            ">Entendido</button>
-        `;
-
-        modal.appendChild(content);
-        document.body.appendChild(modal);
+        // Para Twitter/X, usar Web Share API con imagen
+        this.shareToSocialApp(imageDataUrl, 'twitter');
     }
 
     shareToFacebook(imageDataUrl) {
-        // Para Facebook, usar Web Share API nativo como Spotify
+        // Para Facebook, usar Web Share API con imagen
         this.shareToSocialApp(imageDataUrl, 'facebook');
     }
 
     shareToInstagram(imageDataUrl) {
-        // Para Instagram, usar Web Share API nativo como Spotify
+        // Para Instagram, usar Web Share API con imagen
         this.shareToSocialApp(imageDataUrl, 'instagram');
     }
 
@@ -567,47 +514,57 @@ class ShareStatistics {
             const blob = await response.blob();
             const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
             
-            // Verificar si el navegador soporta compartir archivos
+            // Verificar si se puede compartir archivos
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                // Compartir directamente usando Web Share API
-                await navigator.share({
+                const shareData = {
                     title: 'Mis Estadísticas de Spotify',
                     text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
                     files: [file]
-                });
+                };
                 
-                this.showNotification(`Compartiendo en ${platform === 'facebook' ? 'Facebook' : 'Instagram'}...`, 'success');
+                await navigator.share(shareData);
+                this.showNotification(`Compartiendo en ${platform}...`, 'success');
             } else {
-                // Fallback: intentar abrir la app específica
-                this.openSocialApp(platform, imageDataUrl);
+                // Fallback: descargar imagen y abrir app nativa
+                this.downloadImage(imageDataUrl);
+                this.openNativeApp(platform);
             }
         } catch (error) {
-            console.error('Error sharing:', error);
-            // Fallback: abrir la app específica
-            this.openSocialApp(platform, imageDataUrl);
+            console.error(`Error sharing to ${platform}:`, error);
+            // Fallback: descargar imagen y abrir app nativa
+            this.downloadImage(imageDataUrl);
+            this.openNativeApp(platform);
         }
     }
 
-    openSocialApp(platform, imageDataUrl) {
-        let appUrl, webUrl;
+    openNativeApp(platform) {
+        const appUrls = {
+            twitter: {
+                app: 'twitter://post',
+                web: 'https://twitter.com/intent/tweet?text=Descubrí%20tus%20estadísticas%20de%20Spotify%20y%20gestiona%20tus%20playlist%20con%20Tuneuptify'
+            },
+            facebook: {
+                app: 'fb://stories',
+                web: 'https://www.facebook.com/stories/create'
+            },
+            instagram: {
+                app: 'instagram://stories',
+                web: 'https://www.instagram.com/stories/create'
+            }
+        };
+
+        const urls = appUrls[platform];
+        if (!urls) return;
+
+        // Intentar abrir app nativa
+        window.location.href = urls.app;
         
-        if (platform === 'facebook') {
-            appUrl = 'fb://stories';
-            webUrl = 'https://www.facebook.com/stories/create';
-        } else if (platform === 'instagram') {
-            appUrl = 'instagram://stories';
-            webUrl = 'https://www.instagram.com/stories/create';
-        }
-        
-        // Intentar abrir la app nativa
-        window.location.href = appUrl;
-        
-        // Fallback después de un tiempo
+        // Fallback a web después de 1 segundo
         setTimeout(() => {
-            window.open(webUrl, '_blank');
+            window.open(urls.web, '_blank');
         }, 1000);
-        
-        this.showNotification(`Abriendo ${platform === 'facebook' ? 'Facebook' : 'Instagram'}...`, 'success');
+
+        this.showNotification(`Abriendo ${platform}...`, 'success');
     }
 
     async prepareAndShareImage(imageDataUrl, platform) {
@@ -691,31 +648,26 @@ class ShareStatistics {
         }
     }
 
-    showNotification(message, type = 'success') {
+    showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#1db954' : '#ff4444'};
+            background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-weight: bold;
-            z-index: 10001;
-            animation: slideIn 0.3s ease;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 500;
         `;
         notification.textContent = message;
         
         document.body.appendChild(notification);
         
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
+            notification.remove();
         }, 3000);
     }
 
