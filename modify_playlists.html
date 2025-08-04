@@ -48,34 +48,38 @@
             border-color: rgba(29, 185, 84, 0.4) !important;
         }
 
-        /* Imagen de la playlist */
-        .playlist-card-image {
+        /* Header con gradiente */
+        .playlist-card-header {
             width: 100% !important;
-            height: 180px !important;
-            object-fit: cover !important;
-            transition: all 0.4s ease !important;
+            height: 120px !important;
             position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 20px 20px 0 0 !important;
+            overflow: hidden !important;
         }
 
-        .playlist-card:hover .playlist-card-image {
-            transform: scale(1.1) !important;
+        .playlist-card-icon {
+            width: 60px !important;
+            height: 60px !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            backdrop-filter: blur(10px) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
         }
 
-        /* Overlay elegante para la imagen */
-        .playlist-card-image::after {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            background: linear-gradient(
-                135deg,
-                transparent 0%,
-                rgba(0, 0, 0, 0.2) 50%,
-                rgba(0, 0, 0, 0.6) 100%
-            ) !important;
-            pointer-events: none !important;
+        .playlist-card-icon i {
+            font-size: 2rem !important;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .playlist-card:hover .playlist-card-header {
+            transform: scale(1.05) !important;
         }
 
         /* Checkbox moderno */
@@ -214,11 +218,11 @@
             }
             
             .playlist-card {
-                min-height: 300px !important;
+                min-height: 280px !important;
             }
             
-            .playlist-card-image {
-                height: 160px !important;
+            .playlist-card-header {
+                height: 100px !important;
             }
         }
 
@@ -229,11 +233,11 @@
             }
             
             .playlist-card {
-                min-height: 280px !important;
+                min-height: 260px !important;
             }
             
-            .playlist-card-image {
-                height: 140px !important;
+            .playlist-card-header {
+                height: 80px !important;
             }
             
             .playlist-card-content {

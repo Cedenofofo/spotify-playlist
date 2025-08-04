@@ -395,18 +395,36 @@ class ModifyPlaylistsManager {
     }
 
     createPlaylistCard(playlist, isSelected = false) {
-        const imageUrl = this.getPlaylistImageUrl(playlist);
         const trackCount = playlist.tracks?.total || 0;
         const isPublic = playlist.public ? 'Pública' : 'Privada';
         
+        // Generar color único basado en el nombre
+        const colors = [
+            'linear-gradient(135deg, #1db954, #1ed760)',
+            'linear-gradient(135deg, #3498db, #2980b9)',
+            'linear-gradient(135deg, #9b59b6, #8e44ad)',
+            'linear-gradient(135deg, #e74c3c, #c0392b)',
+            'linear-gradient(135deg, #f39c12, #e67e22)',
+            'linear-gradient(135deg, #16a085, #27ae60)',
+            'linear-gradient(135deg, #f1c40f, #f7dc6f)',
+            'linear-gradient(135deg, #2ecc71, #27ae60)'
+        ];
+        
+        let hash = 0;
+        for (let i = 0; i < playlist.name.length; i++) {
+            hash = playlist.name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const colorIndex = Math.abs(hash) % colors.length;
+        const selectedGradient = colors[colorIndex];
+        
         return `
             <div class="playlist-card ${isSelected ? 'selected' : ''}" data-playlist-id="${playlist.id}">
-                <!-- Imagen de la playlist -->
-                <img src="${imageUrl}" 
-                     alt="${this.escapeHtml(playlist.name)}" 
-                     class="playlist-card-image"
-                     onerror="this.onerror=null; this.src='${this.generatePlaylistPlaceholder(playlist.name)}'; this.classList.add('placeholder');"
-                     onload="this.classList.remove('placeholder');">
+                <!-- Header con gradiente y icono -->
+                <div class="playlist-card-header" style="background: ${selectedGradient};">
+                    <div class="playlist-card-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                </div>
                 
                 <!-- Checkbox moderno -->
                 <div class="playlist-card-checkbox">
@@ -457,44 +475,8 @@ class ModifyPlaylistsManager {
     }
 
     getPlaylistImageUrl(playlist) {
-        // Estandarizar: usar placeholder personalizado para todas las playlists
-        // Esto asegura que todas las tarjetas se vean consistentes
-        return this.generatePlaylistPlaceholder(playlist.name);
-    }
-
-    // Generar placeholder personalizado basado en el nombre de la playlist
-    generatePlaylistPlaceholder(playlistName) {
-        // Colores consistentes basados en el nombre para que siempre sea el mismo
-        const colors = [
-            '1db954', '1ed760', '2ecc71', '27ae60', '16a085',
-            '3498db', '2980b9', '9b59b6', '8e44ad', 'e74c3c',
-            'c0392b', 'f39c12', 'e67e22', 'f1c40f', 'f7dc6f'
-        ];
-        
-        // Usar hash del nombre para color consistente
-        let hash = 0;
-        for (let i = 0; i < playlistName.length; i++) {
-            hash = playlistName.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const colorIndex = Math.abs(hash) % colors.length;
-        const selectedColor = colors[colorIndex];
-        
-        // Generar iniciales consistentes
-        const initials = playlistName
-            .split(' ')
-            .map(word => word.charAt(0))
-            .join('')
-            .toUpperCase()
-            .substring(0, 2);
-        
-        // Usar un servicio de placeholder más confiable
-        return `data:image/svg+xml;base64,${btoa(`
-            <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">
-                <rect width="320" height="180" fill="#${selectedColor}"/>
-                <text x="160" y="90" font-family="Arial, sans-serif" font-size="48" font-weight="bold" 
-                      text-anchor="middle" dy=".3em" fill="white">${initials}</text>
-            </svg>
-        `)}`;
+        // Nueva propuesta: sin imágenes, usar iconos y gradientes
+        return null; // No usar imágenes
     }
 
     setupPlaylistCardListeners() {
