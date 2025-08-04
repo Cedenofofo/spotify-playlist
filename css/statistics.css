@@ -1217,3 +1217,282 @@
         align-items: center;
     }
 } 
+
+/* ===== UNIQUENESS CARD NEW DESIGN ===== */
+.uniqueness-analysis {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.uniqueness-visual {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+.uniqueness-radar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.radar-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--primary-color) 0deg, var(--primary-color) 0deg, transparent 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--glass-border);
+}
+
+.radar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--primary-color) 0deg, var(--primary-color) 360deg, transparent 360deg);
+    transition: transform 1s ease;
+}
+
+.radar-center {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    background: var(--background-dark);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.radar-score {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.radar-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.uniqueness-metrics {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    background: var(--glass-bg);
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--glass-border);
+}
+
+.metric-icon {
+    font-size: 1.2rem;
+    width: 30px;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    min-width: 40px;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.uniqueness-description {
+    text-align: center;
+    max-width: 300px;
+}
+
+.uniqueness-description h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.uniqueness-description p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* ===== CUSTOM DATE RANGE STYLES ===== */
+.custom-date-range {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--glass-bg);
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--glass-border);
+    margin-top: 1rem;
+}
+
+.date-inputs {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.date-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.date-input label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.date-input input {
+    padding: 0.5rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-small);
+    background: var(--background-dark);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.date-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+}
+
+/* ===== IMPROVED HERO SECTION ===== */
+.hero-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.time-range-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--glass-bg);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+}
+
+.time-range-selector label {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.time-range-selector select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-small);
+    background: var(--background-dark);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    min-width: 200px;
+}
+
+.time-range-selector select:hover {
+    border-color: var(--primary-color);
+}
+
+.time-range-selector select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+}
+
+.time-range-selector select option {
+    background: var(--background-dark);
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+.share-button {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    border-radius: var(--border-radius);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+}
+
+.share-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4);
+}
+
+.share-button i {
+    font-size: 1.1rem;
+}
+
+/* ===== RESPONSIVE DESIGN FOR NEW ELEMENTS ===== */
+@media (max-width: 768px) {
+    .uniqueness-visual {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .uniqueness-metrics {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    
+    .date-inputs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .time-range-selector {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .time-range-selector select {
+        min-width: 180px;
+    }
+} 

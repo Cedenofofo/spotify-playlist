@@ -19,20 +19,20 @@ class ShareStatistics {
         // Limpiar canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Crear fondo mejorado
-        this.createModernBackground();
+        // Crear fondo futurista
+        this.createFuturisticBackground();
         
-        // Agregar header con branding
+        // Agregar header con diseño moderno
         this.drawModernHeader();
         
-        // Agregar estadísticas principales
-        this.drawMainStatistics();
+        // Agregar estadísticas principales con diseño de tarjetas
+        this.drawMainStatisticsCards();
         
-        // Agregar top artistas y canciones
-        this.drawTopArtistsAndTracks();
+        // Agregar top artistas y canciones con diseño de lista moderna
+        this.drawTopArtistsAndTracksModern();
         
-        // Agregar análisis de géneros y mood
-        this.drawGenreAndMoodAnalysis();
+        // Agregar análisis de géneros y mood con diseño de gráficos
+        this.drawGenreAndMoodAnalysisModern();
         
         // Agregar footer con información de la app
         this.drawModernFooter();
@@ -40,334 +40,386 @@ class ShareStatistics {
         return this.canvas.toDataURL('image/png');
     }
 
-    createModernBackground() {
-        // Gradiente de fondo moderno
+    createFuturisticBackground() {
+        // Gradiente de fondo futurista
         const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
         gradient.addColorStop(0, '#0a0a0a');
         gradient.addColorStop(0.2, '#1a1a2e');
-        gradient.addColorStop(0.5, '#16213e');
-        gradient.addColorStop(0.8, '#0f3460');
+        gradient.addColorStop(0.4, '#16213e');
+        gradient.addColorStop(0.6, '#0f3460');
+        gradient.addColorStop(0.8, '#533483');
         gradient.addColorStop(1, '#0a0a0a');
         
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Patrón de puntos decorativos
-        this.ctx.fillStyle = 'rgba(29, 185, 84, 0.1)';
-        for (let i = 0; i < 50; i++) {
-            const x = Math.random() * this.canvas.width;
-            const y = Math.random() * this.canvas.height;
-            const radius = Math.random() * 3 + 1;
-            
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
-            this.ctx.fill();
-        }
+        // Patrón de líneas futuristas
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.1)';
+        this.ctx.lineWidth = 2;
         
-        // Líneas de conexión sutiles
-        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.05)';
-        this.ctx.lineWidth = 1;
+        // Líneas horizontales
         for (let i = 0; i < 8; i++) {
-            const y = 300 + i * 200;
+            const y = 200 + i * 200;
             this.ctx.beginPath();
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(this.canvas.width, y);
             this.ctx.stroke();
         }
+        
+        // Líneas diagonales
+        this.ctx.strokeStyle = 'rgba(0, 207, 255, 0.08)';
+        for (let i = 0; i < 5; i++) {
+            const x = i * 300;
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, 0);
+            this.ctx.lineTo(x + 200, this.canvas.height);
+            this.ctx.stroke();
+        }
+        
+        // Puntos decorativos brillantes
+        this.ctx.fillStyle = 'rgba(29, 185, 84, 0.3)';
+        for (let i = 0; i < 30; i++) {
+            const x = Math.random() * this.canvas.width;
+            const y = Math.random() * this.canvas.height;
+            const radius = Math.random() * 4 + 2;
+            
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            this.ctx.fill();
+        }
     }
 
     drawModernHeader() {
-        // Logo y título principal
+        // Logo y título principal con efecto de neón
         this.ctx.fillStyle = '#1db954';
-        this.ctx.font = 'bold 72px Inter, sans-serif';
+        this.ctx.font = 'bold 80px Inter, sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('🎵', this.canvas.width / 2, 120);
+        this.ctx.fillText('🎵', this.canvas.width / 2, 140);
         
-        // Título principal con gradiente
+        // Título principal con gradiente y sombra
         const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, 0);
         gradient.addColorStop(0, '#1db954');
-        gradient.addColorStop(0.5, '#00cfff');
+        gradient.addColorStop(0.3, '#00cfff');
+        gradient.addColorStop(0.7, '#ff6b35');
         gradient.addColorStop(1, '#1db954');
         
         this.ctx.fillStyle = gradient;
-        this.ctx.font = 'bold 64px Inter, sans-serif';
-        this.ctx.fillText('Mis Estadísticas', this.canvas.width / 2, 200);
+        this.ctx.font = 'bold 72px Inter, sans-serif';
+        this.ctx.fillText('Mis Estadísticas', this.canvas.width / 2, 220);
         
-        // Subtítulo
+        // Subtítulo con efecto de neón
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 32px Inter, sans-serif';
-        this.ctx.fillText('Tuneuptify', this.canvas.width / 2, 240);
+        this.ctx.font = 'bold 36px Inter, sans-serif';
+        this.ctx.fillText('Tuneuptify', this.canvas.width / 2, 260);
         
-        // Línea separadora
-        this.ctx.strokeStyle = '#1db954';
+        // Línea separadora con efecto de neón
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.6)';
         this.ctx.lineWidth = 3;
         this.ctx.beginPath();
-        this.ctx.moveTo(this.canvas.width / 2 - 150, 280);
-        this.ctx.lineTo(this.canvas.width / 2 + 150, 280);
+        this.ctx.moveTo(100, 300);
+        this.ctx.lineTo(this.canvas.width - 100, 300);
         this.ctx.stroke();
     }
 
-    drawMainStatistics() {
-        const startY = 350;
-        const cardHeight = 120;
+    drawMainStatisticsCards() {
+        const startY = 400;
+        const cardHeight = 140;
         const cardWidth = 480;
-        const margin = 30;
+        const margin = 40;
         
-        // Tiempo de escucha
-        this.drawStatCard('⏱️ Tiempo de Escucha', this.statsData.listeningTime || '0h 0min', startY, 50, cardWidth, '#1db954');
+        // Tiempo de escucha con diseño de tarjeta moderna
+        this.drawModernStatCard('⏱️ Tiempo de Escucha', this.statsData.listeningTime || '0h 0min', startY, 50, cardWidth, '#1db954');
     }
 
-    drawStatCard(title, value, y, x, width, color) {
-        // Fondo de la tarjeta
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    drawModernStatCard(title, value, y, x, width, color) {
+        // Fondo de la tarjeta con efecto de cristal
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
         this.ctx.strokeStyle = color;
-        this.ctx.lineWidth = 2;
-        this.roundRect(x, y, width, 100, 15);
+        this.ctx.lineWidth = 3;
+        this.roundRect(x, y, width, 120, 20);
         this.ctx.fill();
         this.ctx.stroke();
         
+        // Efecto de brillo en la parte superior
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + 120);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        this.ctx.fillStyle = gradient;
+        this.roundRect(x, y, width, 60, 20);
+        this.ctx.fill();
+        
         // Título
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
+        this.ctx.font = 'bold 28px Inter, sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(title, x + 20, y + 35);
+        this.ctx.fillText(title, x + 25, y + 45);
         
-        // Valor
+        // Valor con efecto de neón
         this.ctx.fillStyle = color;
-        this.ctx.font = 'bold 36px Inter, sans-serif';
-        this.ctx.fillText(value, x + 20, y + 75);
+        this.ctx.font = 'bold 48px Inter, sans-serif';
+        this.ctx.fillText(value, x + 25, y + 95);
     }
 
-    drawTopArtistsAndTracks() {
+    drawTopArtistsAndTracksModern() {
         const startY = 650;
         
-        // Título de sección
+        // Título de sección con diseño moderno
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 40px Inter, sans-serif';
+        this.ctx.font = 'bold 44px Inter, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('🎤 Top 5 Artistas', this.canvas.width / 2, startY);
         
-        // Top 5 Artistas
+        // Top 5 Artistas con diseño de tarjetas modernas
         if (this.statsData.topArtists?.items) {
             const artists = this.statsData.topArtists.items.slice(0, 5);
             artists.forEach((artist, index) => {
-                const y = startY + 50 + (index * 80);
-                this.drawArtistItem(artist, index + 1, y);
+                const y = startY + 60 + (index * 90);
+                this.drawModernArtistItem(artist, index + 1, y);
             });
         }
         
         // Título de canciones
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 40px Inter, sans-serif';
-        this.ctx.fillText('🎵 Top 5 Canciones', this.canvas.width / 2, startY + 500);
+        this.ctx.font = 'bold 44px Inter, sans-serif';
+        this.ctx.fillText('🎵 Top 5 Canciones', this.canvas.width / 2, startY + 600);
         
-        // Top 5 Canciones
+        // Top 5 Canciones con diseño de tarjetas modernas
         if (this.statsData.topTracks?.items) {
             const tracks = this.statsData.topTracks.items.slice(0, 5);
             tracks.forEach((track, index) => {
-                const y = startY + 550 + (index * 80);
-                this.drawTrackItem(track, index + 1, y);
+                const y = startY + 660 + (index * 90);
+                this.drawModernTrackItem(track, index + 1, y);
             });
         }
     }
 
-    drawArtistItem(artist, rank, y) {
+    drawModernArtistItem(artist, rank, y) {
         const x = 50;
         const width = this.canvas.width - 100;
         
-        // Fondo del item
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        this.roundRect(x, y, width, 60, 10);
+        // Fondo del item con efecto de cristal
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.roundRect(x, y, width, 70, 15);
         this.ctx.fill();
+        this.ctx.stroke();
         
-        // Ranking
+        // Ranking con diseño de badge
         this.ctx.fillStyle = '#1db954';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
+        this.ctx.font = 'bold 28px Inter, sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(`#${rank}`, x + 20, y + 40);
+        this.ctx.fillText(`#${rank}`, x + 25, y + 45);
         
         // Nombre del artista (truncado si es muy largo)
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 28px Inter, sans-serif';
+        this.ctx.font = 'bold 32px Inter, sans-serif';
         this.ctx.textAlign = 'left';
         
         let artistName = artist.name;
-        const maxWidth = width - 200; // Dejar espacio para ranking y popularidad
+        const maxWidth = width - 250;
         
-        // Truncar nombre si es muy largo
         while (this.ctx.measureText(artistName).width > maxWidth && artistName.length > 0) {
             artistName = artistName.slice(0, -1);
         }
         
-        this.ctx.fillText(artistName, x + 80, y + 40);
+        this.ctx.fillText(artistName, x + 100, y + 45);
         
-        // Popularidad
+        // Popularidad con barra de progreso moderna
         this.ctx.fillStyle = '#1db954';
-        this.ctx.font = 'bold 20px Inter, sans-serif';
+        this.ctx.font = 'bold 24px Inter, sans-serif';
         this.ctx.textAlign = 'right';
-        this.ctx.fillText(`${artist.popularity}%`, x + width - 20, y + 40);
+        this.ctx.fillText(`${artist.popularity}%`, x + width - 25, y + 45);
+        
+        // Barra de progreso
+        const barWidth = 120;
+        const barHeight = 8;
+        const barX = x + width - 150;
+        const barY = y + 55;
+        
+        // Fondo de la barra
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        this.roundRect(barX, barY, barWidth, barHeight, 4);
+        this.ctx.fill();
+        
+        // Fill de la barra
+        this.ctx.fillStyle = '#1db954';
+        this.roundRect(barX, barY, (artist.popularity / 100) * barWidth, barHeight, 4);
+        this.ctx.fill();
     }
 
-    drawTrackItem(track, rank, y) {
+    drawModernTrackItem(track, rank, y) {
         const x = 50;
         const width = this.canvas.width - 100;
         
-        // Fondo del item
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        this.roundRect(x, y, width, 60, 10);
+        // Fondo del item con efecto de cristal
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        this.ctx.strokeStyle = 'rgba(0, 207, 255, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.roundRect(x, y, width, 70, 15);
         this.ctx.fill();
+        this.ctx.stroke();
         
-        // Ranking
+        // Ranking con diseño de badge
         this.ctx.fillStyle = '#00cfff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
+        this.ctx.font = 'bold 28px Inter, sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(`#${rank}`, x + 20, y + 35);
+        this.ctx.fillText(`#${rank}`, x + 25, y + 40);
         
         // Nombre de la canción (truncado si es muy largo)
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
+        this.ctx.font = 'bold 28px Inter, sans-serif';
         this.ctx.textAlign = 'left';
         
         let trackName = track.name;
-        const maxWidth = width - 250; // Dejar espacio para ranking y artista
+        const maxWidth = width - 300;
         
-        // Truncar nombre si es muy largo
         while (this.ctx.measureText(trackName).width > maxWidth && trackName.length > 0) {
             trackName = trackName.slice(0, -1);
         }
         
-        this.ctx.fillText(trackName, x + 80, y + 35);
+        this.ctx.fillText(trackName, x + 100, y + 40);
         
         // Artista (moved to right side, truncated if too long)
         const artistName = track.artists.map(a => a.name).join(', ');
         this.ctx.fillStyle = '#cccccc';
-        this.ctx.font = 'bold 20px Inter, sans-serif';
+        this.ctx.font = 'bold 24px Inter, sans-serif';
         this.ctx.textAlign = 'right';
         
         let displayArtistName = artistName;
-        const artistMaxWidth = width - 200; // Dejar espacio para ranking y track name
+        const artistMaxWidth = width - 200;
         
-        // Truncar nombre del artista si es muy largo
         while (this.ctx.measureText(displayArtistName).width > artistMaxWidth && displayArtistName.length > 0) {
             displayArtistName = displayArtistName.slice(0, -1);
         }
         
-        this.ctx.fillText(displayArtistName, x + width - 20, y + 40);
+        this.ctx.fillText(displayArtistName, x + width - 25, y + 45);
     }
 
-    drawGenreAndMoodAnalysis() {
+    drawGenreAndMoodAnalysisModern() {
         const startY = 1400;
         
-        // Título de géneros
+        // Título de géneros con diseño moderno
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 36px Inter, sans-serif';
+        this.ctx.font = 'bold 40px Inter, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('🎼 Top 3 Géneros', this.canvas.width / 2, startY);
         
-        // Top 3 Géneros
+        // Top 3 Géneros con diseño de gráficos circulares
         if (this.statsData.genres && this.statsData.genres.length > 0) {
             const genres = this.statsData.genres.slice(0, 3);
             genres.forEach((genre, index) => {
-                const y = startY + 50 + (index * 60);
-                this.drawGenreItem(genre, index + 1, y);
+                const y = startY + 60 + (index * 80);
+                this.drawModernGenreItem(genre, index + 1, y);
             });
         }
         
         // Título de mood
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 36px Inter, sans-serif';
-        this.ctx.fillText('💫 Top 3 Estados de Ánimo', this.canvas.width / 2, startY + 250);
+        this.ctx.font = 'bold 40px Inter, sans-serif';
+        this.ctx.fillText('💫 Top 3 Estados de Ánimo', this.canvas.width / 2, startY + 320);
         
-        // Top 3 Moods
+        // Top 3 Estados de ánimo con diseño de gráficos circulares
         if (this.statsData.moods && this.statsData.moods.length > 0) {
             const moods = this.statsData.moods.slice(0, 3);
             moods.forEach((mood, index) => {
-                const y = startY + 300 + (index * 60);
-                this.drawMoodItem(mood, index + 1, y);
+                const y = startY + 380 + (index * 80);
+                this.drawModernMoodItem(mood, index + 1, y);
             });
         }
     }
 
-    drawGenreItem(genre, rank, y) {
+    drawModernGenreItem(genre, rank, y) {
         const x = 50;
         const width = this.canvas.width - 100;
         
-        // Fondo del item
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        this.roundRect(x, y, width, 40, 8);
+        // Fondo del item con efecto de cristal
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        this.ctx.strokeStyle = 'rgba(255, 107, 53, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.roundRect(x, y, width, 60, 12);
         this.ctx.fill();
+        this.ctx.stroke();
         
         // Ranking
         this.ctx.fillStyle = '#ff6b35';
-        this.ctx.font = 'bold 20px Inter, sans-serif';
+        this.ctx.font = 'bold 24px Inter, sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(`#${rank}`, x + 20, y + 28);
+        this.ctx.fillText(`#${rank}`, x + 25, y + 40);
         
         // Nombre del género
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
-        this.ctx.fillText(genre.name, x + 80, y + 28);
+        this.ctx.font = 'bold 28px Inter, sans-serif';
+        this.ctx.fillText(genre.name, x + 80, y + 40);
         
-        // Porcentaje
+        // Contador de artistas
         this.ctx.fillStyle = '#ff6b35';
         this.ctx.font = 'bold 20px Inter, sans-serif';
         this.ctx.textAlign = 'right';
-        this.ctx.fillText(`${genre.count} artistas`, x + width - 20, y + 28);
+        this.ctx.fillText(`${genre.count} artistas`, x + width - 25, y + 40);
     }
 
-    drawMoodItem(mood, rank, y) {
+    drawModernMoodItem(mood, rank, y) {
         const x = 50;
         const width = this.canvas.width - 100;
         
-        // Fondo del item
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        this.roundRect(x, y, width, 40, 8);
+        // Fondo del item con efecto de cristal
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        this.ctx.strokeStyle = 'rgba(255, 107, 53, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.roundRect(x, y, width, 60, 12);
         this.ctx.fill();
+        this.ctx.stroke();
         
         // Ranking
-        this.ctx.fillStyle = '#9c27b0';
-        this.ctx.font = 'bold 20px Inter, sans-serif';
+        this.ctx.fillStyle = '#ff6b35';
+        this.ctx.font = 'bold 24px Inter, sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(`#${rank}`, x + 20, y + 28);
+        this.ctx.fillText(`#${rank}`, x + 25, y + 40);
         
         // Nombre del mood
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
-        this.ctx.fillText(mood.name, x + 80, y + 28);
+        this.ctx.font = 'bold 28px Inter, sans-serif';
+        this.ctx.fillText(mood.name, x + 80, y + 40);
         
-        // Porcentaje
-        this.ctx.fillStyle = '#9c27b0';
+        // Contador de canciones
+        this.ctx.fillStyle = '#ff6b35';
         this.ctx.font = 'bold 20px Inter, sans-serif';
         this.ctx.textAlign = 'right';
-        this.ctx.fillText(`${mood.count} canciones`, x + width - 20, y + 28);
+        this.ctx.fillText(`${mood.count} canciones`, x + width - 25, y + 40);
     }
 
     drawModernFooter() {
-        const startY = 1750;
+        const startY = 1800;
         
-        // Línea separadora
-        this.ctx.strokeStyle = '#1db954';
-        this.ctx.lineWidth = 2;
+        // Línea separadora con efecto de neón
+        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.6)';
+        this.ctx.lineWidth = 3;
         this.ctx.beginPath();
-        this.ctx.moveTo(50, startY);
-        this.ctx.lineTo(this.canvas.width - 50, startY);
+        this.ctx.moveTo(100, startY);
+        this.ctx.lineTo(this.canvas.width - 100, startY);
         this.ctx.stroke();
         
-        // Logo y nombre de la app
+        // Logo y branding
         this.ctx.fillStyle = '#1db954';
         this.ctx.font = 'bold 48px Inter, sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('🎵 Tuneuptify', this.canvas.width / 2, startY + 60);
+        this.ctx.fillText('🎵', this.canvas.width / 2, startY + 60);
         
-        // URL de la app
+        // Título de la app
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 24px Inter, sans-serif';
-        this.ctx.fillText('cedenofofo.github.io/spotify-playlist', this.canvas.width / 2, startY + 100);
+        this.ctx.font = 'bold 32px Inter, sans-serif';
+        this.ctx.fillText('Tuneuptify', this.canvas.width / 2, startY + 100);
         
-        // Texto adicional
-        this.ctx.fillStyle = '#cccccc';
-        this.ctx.font = '20px Inter, sans-serif';
+        // URL y descripción
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        this.ctx.font = 'bold 20px Inter, sans-serif';
         this.ctx.fillText('Descubre tus estadísticas musicales', this.canvas.width / 2, startY + 130);
+        
+        // URL
+        this.ctx.fillStyle = '#1db954';
+        this.ctx.font = 'bold 18px Inter, sans-serif';
+        this.ctx.fillText('cedenofofo.github.io/spotify-playlist', this.canvas.width / 2, startY + 160);
     }
 
     // Función auxiliar para crear rectángulos redondeados

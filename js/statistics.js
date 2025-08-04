@@ -14,8 +14,17 @@ class StatisticsManager {
         if (timeRangeSelect) {
             timeRangeSelect.addEventListener('change', (e) => {
                 this.currentTimeRange = e.target.value;
-                this.loadStatistics();
+                this.handleTimeRangeChange();
             });
+        }
+
+        // Custom date range inputs
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        
+        if (startDateInput && endDateInput) {
+            startDateInput.addEventListener('change', () => this.handleCustomDateChange());
+            endDateInput.addEventListener('change', () => this.handleCustomDateChange());
         }
 
         // Botones de navegación
@@ -40,6 +49,28 @@ class StatisticsManager {
                 this.hideShareModal();
             }
         });
+    }
+
+    handleTimeRangeChange() {
+        const customDateRange = document.getElementById('custom-date-range');
+        const timeRangeSelect = document.getElementById('time-range-select');
+        
+        if (this.currentTimeRange === 'custom_range') {
+            customDateRange.style.display = 'flex';
+        } else {
+            customDateRange.style.display = 'none';
+        }
+        
+        this.loadStatistics();
+    }
+
+    handleCustomDateChange() {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        
+        if (startDate && endDate) {
+            this.loadStatistics();
+        }
     }
 
     async loadStatistics() {
@@ -291,7 +322,6 @@ class StatisticsManager {
         switch (this.currentTimeRange) {
             case 'short_term':
                 // For 4 weeks, use actual data but estimate based on daily listening
-                // Assume user listens to ~15 tracks per day on average
                 const daysInShortTerm = 28; // 4 weeks
                 const avgTracksPerDayShort = 15;
                 const totalEstimatedTracks = daysInShortTerm * avgTracksPerDayShort;
@@ -313,6 +343,28 @@ class StatisticsManager {
                 const totalEstimatedTracksLong = daysInLongTerm * avgTracksPerDayLong;
                 const avgTrackDurationLong = totalDuration / recentlyPlayed.items.length;
                 estimatedDuration = totalEstimatedTracksLong * avgTrackDurationLong;
+                break;
+            case 'custom_year':
+                // For custom year (last 365 days)
+                const daysInCustomYear = 365;
+                const avgTracksPerDayCustomYear = 22;
+                const totalEstimatedTracksCustomYear = daysInCustomYear * avgTracksPerDayCustomYear;
+                const avgTrackDurationCustomYear = totalDuration / recentlyPlayed.items.length;
+                estimatedDuration = totalEstimatedTracksCustomYear * avgTrackDurationCustomYear;
+                break;
+            case 'custom_range':
+                // For custom date range, calculate based on selected dates
+                const startDate = document.getElementById('start-date')?.value;
+                const endDate = document.getElementById('end-date')?.value;
+                if (startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    const daysInCustomRange = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                    const avgTracksPerDayCustomRange = 18;
+                    const totalEstimatedTracksCustomRange = daysInCustomRange * avgTracksPerDayCustomRange;
+                    const avgTrackDurationCustomRange = totalDuration / recentlyPlayed.items.length;
+                    estimatedDuration = totalEstimatedTracksCustomRange * avgTrackDurationCustomRange;
+                }
                 break;
         }
 
@@ -422,16 +474,38 @@ class StatisticsManager {
         const uniquenessScore = Math.round(100 - ((avgArtistPopularity + avgTrackPopularity) / 2));
         const uniquenessLevel = this.getUniquenessLevel(uniquenessScore);
 
+        // Get unique artists and tracks count
+        const uniqueArtists = new Set(artists.items.map(artist => artist.name)).size;
+        const uniqueTracks = new Set(tracks.items.map(track => track.name)).size;
+
         container.innerHTML = `
             <div class="uniqueness-analysis">
-                <div class="uniqueness-score">
-                    <div class="score-circle">
-                        <div class="score-value">${uniquenessScore}</div>
-                        <div class="score-label">Exclusividad</div>
+                <div class="uniqueness-visual">
+                    <div class="uniqueness-radar">
+                        <div class="radar-circle">
+                            <div class="radar-fill" style="transform: rotate(${uniquenessScore * 3.6}deg)"></div>
+                            <div class="radar-center">
+                                <span class="radar-score">${uniquenessScore}</span>
+                                <span class="radar-label">%</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="score-description">
-                        <p>${uniquenessLevel.description}</p>
+                    <div class="uniqueness-metrics">
+                        <div class="metric-item">
+                            <div class="metric-icon">🎵</div>
+                            <div class="metric-value">${uniqueTracks}</div>
+                            <div class="metric-label">Canciones Únicas</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">🎤</div>
+                            <div class="metric-value">${uniqueArtists}</div>
+                            <div class="metric-label">Artistas Únicos</div>
+                        </div>
                     </div>
+                </div>
+                <div class="uniqueness-description">
+                    <h4>${uniquenessLevel.title}</h4>
+                    <p>${uniquenessLevel.description}</p>
                 </div>
             </div>
         `;
@@ -465,8 +539,21 @@ class StatisticsManager {
         const labels = {
             'short_term': 'Últimas 4 semanas',
             'medium_term': 'Últimos 6 meses',
-            'long_term': 'Todo el tiempo'
+            'long_term': 'Todo el tiempo',
+            'custom_year': 'Último año',
+            'custom_range': 'Rango personalizado'
         };
+        
+        if (this.currentTimeRange === 'custom_range') {
+            const startDate = document.getElementById('start-date')?.value;
+            const endDate = document.getElementById('end-date')?.value;
+            if (startDate && endDate) {
+                const start = new Date(startDate).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+                const end = new Date(endDate).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+                return `${start} - ${end}`;
+            }
+        }
+        
         return labels[this.currentTimeRange] || 'Período desconocido';
     }
 
