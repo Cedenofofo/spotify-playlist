@@ -93,8 +93,8 @@ class StatisticsManager {
 
     async loadRecentlyPlayed() {
         const api = new SpotifyAPI(this.auth);
-        // Get more tracks to ensure we have enough data for filtering
-        const recentlyPlayed = await api.getRecentlyPlayed(100);
+        // Get maximum tracks available (Spotify API limit is 50)
+        const recentlyPlayed = await api.getRecentlyPlayed(50);
         
         // Filter tracks based on current time range
         if (recentlyPlayed && recentlyPlayed.items) {
@@ -120,7 +120,7 @@ class StatisticsManager {
                 return (now - playedAt) <= timeRangeMs;
             });
             
-            console.log(`Filtered ${filteredItems.length} tracks from ${recentlyPlayed.items.length} total for time range: ${this.currentTimeRange}`);
+            console.log(`Filtered ${filteredItems.length} tracks from ${recentlyPlayed.items.length} total (max 50 from Spotify API) for time range: ${this.currentTimeRange}`);
             
             return { ...recentlyPlayed, items: filteredItems };
         }
