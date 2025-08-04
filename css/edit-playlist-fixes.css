@@ -190,14 +190,14 @@
     width: 100% !important;
     box-sizing: border-box !important;
     position: relative !important;
-    z-index: 9999 !important;
+    z-index: 9999999 !important;
 }
 
 .artist-input-group .search-input-container {
     flex: 1 !important;
     margin-bottom: 0 !important;
     position: relative !important;
-    z-index: 9999 !important;
+    z-index: 9999999 !important;
 }
 
 .artist-suggestions {
@@ -211,13 +211,14 @@
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     max-height: 200px !important;
     overflow-y: auto !important;
-    z-index: 999999 !important;
+    z-index: 9999999 !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     margin-top: 0.5rem !important;
     padding: 0.5rem 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    pointer-events: auto !important;
 }
 
 .artist-suggestion-item {
@@ -229,6 +230,7 @@
     transition: all 0.2s ease !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     position: relative !important;
+    z-index: 9999999 !important;
 }
 
 .artist-suggestion-item:last-child {
@@ -311,6 +313,20 @@
     margin-top: 0.5rem !important;
     position: relative !important;
     z-index: 1 !important;
+}
+
+/* Asegurar que las sugerencias de artistas estén por encima de TODO */
+.artist-suggestions,
+.artist-suggestions *,
+.artist-input-group,
+.artist-input-group * {
+    z-index: 9999999 !important;
+    position: relative !important;
+}
+
+.artist-suggestions {
+    position: absolute !important;
+    z-index: 99999999 !important;
 }
 
 /* ===== RESULTADOS DE BÚSQUEDA ===== */
