@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Playlist - Tuneuptify</title>
+    <meta name="description" content="Crea playlists personalizadas de Spotify con Tuneuptify">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://accounts.spotify.com https://api.spotify.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://accounts.spotify.com https://api.spotify.com https://api.spotify.com/v1; frame-src https://accounts.spotify.com;">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/responsive-fixes.css">
+</head>
+<body>
+    <!-- Cursor personalizado -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-follower"></div>
+
+    <!-- Header elegante con glassmorphism -->
+    <header class="elegant-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="brand-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="brand-title">Tuneuptify</h1>
+            </div>
+            
+            <nav class="header-nav">
+                <div class="nav-stats">
+                    <div class="stat-pill">
+                        <i class="fas fa-users"></i>
+                        <span>1.2k Usuarios</span>
+                    </div>
+                    <div class="stat-pill">
+                        <i class="fas fa-music"></i>
+                        <span>50k+ Playlists</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Botón de regreso -->
+    <button class="elegant-back-btn" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Volver</span>
+    </button>
+
+    <!-- Contenido principal -->
+    <main class="elegant-main">
+        <!-- Sección de creación de playlist -->
+        <section class="playlist-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h3 class="section-title">Crear tu Playlist</h3>
+                    <div class="section-line"></div>
+                    <p class="section-description">Diseña la playlist perfecta con tus artistas favoritos</p>
+                </div>
+                
+                <div class="playlist-form-container">
+                    <form id="playlist-form" class="elegant-form" aria-label="Formulario para crear playlist">
+                        <!-- Nombre de la playlist -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="playlist-name" class="form-label">
+                                    <i class="fas fa-heading"></i>
+                                    <span>Nombre de la playlist</span>
+                                </label>
+                                <input type="text" id="playlist-name" class="form-input" required 
+                                       placeholder="Mi Playlist personalizada" aria-required="true">
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+
+                        <!-- Artista principal -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="artist-main" class="form-label">
+                                    <i class="fas fa-star"></i>
+                                    <span>Artista principal</span>
+                                </label>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="artist-main" name="artist-main" 
+                                           class="form-input artist-autocomplete" 
+                                           placeholder="Busca tu artista favorito..." 
+                                           autocomplete="off" aria-autocomplete="list" 
+                                           aria-label="Buscar artista principal">
+                                    <div id="artist-main-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                                    <div class="input-glow"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Artistas adicionales -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label class="form-label">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Artistas adicionales</span>
+                                </label>
+                                <div id="artist-inputs" class="artist-inputs"></div>
+                                <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional">
+                                    <div class="btn-content">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Agregar artista</span>
+                                    </div>
+                                    <div class="btn-ripple"></div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Canciones por artista -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="songs-per-artist" class="form-label">
+                                    <i class="fas fa-list-ol"></i>
+                                    <span>Canciones por artista</span>
+                                </label>
+                                <input type="number" id="songs-per-artist" class="form-input" 
+                                       min="1" max="50" value="5" step="1" required aria-required="true">
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+
+                        <!-- Búsqueda de canciones específicas -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="track-search" class="form-label">
+                                    <i class="fas fa-search"></i>
+                                    <span>Agregar canciones específicas</span>
+                                </label>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="track-search" class="form-input" 
+                                           placeholder="Busca canciones específicas..." 
+                                           autocomplete="off" aria-autocomplete="list" 
+                                           aria-label="Buscar canciones específicas">
+                                    <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                                    <div class="input-glow"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Canciones seleccionadas -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label class="form-label">
+                                    <i class="fas fa-music"></i>
+                                    <span>Canciones seleccionadas</span>
+                                </label>
+                                <div id="selected-tracks" class="selected-tracks-container"></div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="form-actions">
+                            <button type="button" id="preview-playlist" class="action-btn secondary" aria-label="Vista previa de la playlist">
+                                <div class="btn-content">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Vista previa</span>
+                                </div>
+                                <div class="btn-ripple"></div>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Vista previa de playlist -->
+                    <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
+
+                    <!-- Botón de exportar -->
+                    <div class="export-section">
+                        <button id="export-spotify" class="action-btn primary" style="display:none;">
+                            <div class="btn-content">
+                                <i class="fab fa-spotify"></i>
+                                <span>Exportar a Spotify</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </div>
+
+                    <!-- Loading elegante -->
+                    <div id="loading" class="loading-container" style="display: none;">
+                        <div class="loading-spinner">
+                            <div class="spinner-ring"></div>
+                            <div class="spinner-ring"></div>
+                            <div class="spinner-ring"></div>
+                        </div>
+                        <p class="loading-text">
+                            <i class="fas fa-cog fa-spin"></i>
+                            Creando tu playlist...
+                        </p>
+                    </div>
+
+                    <!-- Mensajes elegantes -->
+                    <div id="success-message" class="message-container" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer elegante -->
+    <footer class="elegant-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="footer-logo">
+                    <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en X (Twitter)">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://github.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Visita mi GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Filtro de consola para BLOQUEAR errores externos -->
+    <script>
+        // BLOQUEAR TODOS LOS ERRORES EXTERNOS
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        
+        console.log = function(...args) {
+            if (args[0] && typeof args[0] === 'string' && 
+                (args[0].includes('Failed to load resource') || 
+                 args[0].includes('net::ERR_'))) {
+                return;
+            }
+            originalConsoleLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            if (args[0] && typeof args[0] === 'string' && 
+                (args[0].includes('Failed to load resource') || 
+                 args[0].includes('net::ERR_'))) {
+                return;
+            }
+            originalConsoleError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            if (args[0] && typeof args[0] === 'string' && 
+                (args[0].includes('Failed to load resource') || 
+                 args[0].includes('net::ERR_'))) {
+                return;
+            }
+            originalConsoleWarn.apply(console, args);
+        };
+    </script>
+
+    <script>
+        // Función para volver atrás
+        function goBack() {
+            if (document.referrer) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Hacer la función global
+        window.goBack = goBack;
+    </script>
+</body>
+</html> 

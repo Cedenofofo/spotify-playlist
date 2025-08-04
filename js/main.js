@@ -787,5 +787,22 @@ function navigateToPrivacyPolicy() {
     }, 500);
 }
 
-// Hacer la función global
-window.navigateToPrivacyPolicy = navigateToPrivacyPolicy; 
+// ===== NAVEGACIÓN A CREAR PLAYLIST =====
+function navigateToCreatePlaylist() {
+    console.log('Navegando a crear playlist');
+    
+    // Agregar efecto de loading al botón
+    const button = event.currentTarget;
+    if (button) {
+        button.classList.add('loading');
+    }
+    
+    // Redirigir a la página de crear playlist
+    setTimeout(() => {
+        window.location.href = 'create-playlist.html';
+    }, 500);
+}
+
+// Hacer las funciones globales
+window.navigateToPrivacyPolicy = navigateToPrivacyPolicy;
+window.navigateToCreatePlaylist = navigateToCreatePlaylist; 
