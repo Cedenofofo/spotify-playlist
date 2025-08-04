@@ -949,7 +949,7 @@ class EditPlaylistManager {
                 suggestionsContainer.style.display = 'none';
                 // Devolver las sugerencias a su contenedor original
                 const originalContainer = artistInput.parentNode;
-                if (suggestionsContainer.parentNode === document.body) {
+                if (suggestionsContainer.parentNode && suggestionsContainer.parentNode.classList.contains('artist-suggestions-portal')) {
                     originalContainer.appendChild(suggestionsContainer);
                 }
                 suggestionsContainer.style.position = 'absolute';
@@ -1058,16 +1058,24 @@ class EditPlaylistManager {
         suggestionsContainer.innerHTML = suggestionsHTML;
         suggestionsContainer.style.display = 'block';
 
-        // Mover las sugerencias al body para que estén en el nivel más alto del DOM
-        document.body.appendChild(suggestionsContainer);
+        // SOLUCIÓN DEFINITIVA - Crear un portal que cubra toda la pantalla
+        let portal = document.querySelector('.artist-suggestions-portal');
+        if (!portal) {
+            portal = document.createElement('div');
+            portal.className = 'artist-suggestions-portal';
+            document.body.appendChild(portal);
+        }
+
+        // Mover las sugerencias al portal
+        portal.appendChild(suggestionsContainer);
 
         // Posicionar las sugerencias correctamente
         const inputRect = artistInput.getBoundingClientRect();
-        suggestionsContainer.style.position = 'fixed';
+        suggestionsContainer.style.position = 'absolute';
         suggestionsContainer.style.top = (inputRect.bottom + 5) + 'px';
         suggestionsContainer.style.left = inputRect.left + 'px';
         suggestionsContainer.style.width = inputRect.width + 'px';
-        suggestionsContainer.style.zIndex = '99999999';
+        suggestionsContainer.style.zIndex = '2147483647';
 
         // Agregar event listeners
         suggestionsContainer.querySelectorAll('.artist-suggestion-item').forEach(item => {
@@ -1087,7 +1095,7 @@ class EditPlaylistManager {
         
         // Devolver las sugerencias a su contenedor original
         const originalContainer = artistInput.parentNode;
-        if (suggestionsContainer.parentNode === document.body) {
+        if (suggestionsContainer.parentNode && suggestionsContainer.parentNode.classList.contains('artist-suggestions-portal')) {
             originalContainer.appendChild(suggestionsContainer);
         }
         suggestionsContainer.style.position = 'absolute';
