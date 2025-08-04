@@ -2,6 +2,7 @@ class StatisticsManager {
     constructor() {
         this.auth = new Auth();
         this.currentTimeRange = 'short_term'; // short_term, medium_term, long_term
+        this.shareStats = new ShareStatistics();
         this.setupEventListeners();
         this.loadStatistics();
     }
@@ -24,11 +25,13 @@ class StatisticsManager {
             });
         }
 
-        // Botones de exportar
-        const exportButton = document.getElementById('export-stats-button');
-        if (exportButton) {
-            exportButton.addEventListener('click', () => {
-                this.exportStatistics();
+
+
+        // Botones de compartir
+        const shareButton = document.getElementById('share-stats-button');
+        if (shareButton) {
+            shareButton.addEventListener('click', () => {
+                this.showShareOptions();
             });
         }
     }
@@ -493,29 +496,209 @@ class StatisticsManager {
         console.log('Reproducir preview de track:', trackId);
     }
 
-    async exportStatistics() {
+
+
+    async showShareOptions() {
         try {
-            const data = {
-                timestamp: new Date().toISOString(),
-                timeRange: this.currentTimeRange,
-                // Aquí se podrían incluir los datos de las estadísticas
+            this.showLoading();
+            
+            // Recopilar datos de estadísticas
+            const statsData = await this.collectStatsData();
+            
+            // Generar imagen
+            const imageDataUrl = await this.shareStats.generateStoryImage(statsData);
+            
+            this.hideLoading();
+            
+            // Mostrar modal de opciones de compartir
+            this.showShareModal(imageDataUrl);
+            
+        } catch (error) {
+            console.error('Error generating share image:', error);
+            this.showError('Error al generar imagen para compartir');
+            this.hideLoading();
+        }
+    }
+
+    async collectStatsData() {
+        // Recopilar todos los datos de estadísticas
+        const statsData = {
+            topArtists: null,
+            topTracks: null,
+            genres: [],
+            moodAnalysis: {},
+            uniquenessScore: 0
+        };
+
+        try {
+            // Obtener datos de artistas y tracks
+            const [topArtists, topTracks] = await Promise.all([
+                this.loadTopArtists(),
+                this.loadTopTracks()
+            ]);
+
+            statsData.topArtists = topArtists;
+            statsData.topTracks = topTracks;
+
+            // Procesar géneros
+            if (topArtists && topArtists.items) {
+                const genreCount = {};
+                topArtists.items.forEach(artist => {
+                    artist.genres.forEach(genre => {
+                        genreCount[genre] = (genreCount[genre] || 0) + 1;
+                    });
+                });
+
+                statsData.genres = Object.entries(genreCount)
+                    .map(([name, count]) => ({ name: this.capitalizeFirst(name), count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+            }
+
+            // Calcular score de exclusividad
+            if (topArtists && topTracks) {
+                const avgArtistPopularity = topArtists.items.reduce((sum, artist) => sum + artist.popularity, 0) / topArtists.items.length;
+                const avgTrackPopularity = topTracks.items.reduce((sum, track) => sum + track.popularity, 0) / topTracks.items.length;
+                statsData.uniquenessScore = Math.round(100 - ((avgArtistPopularity + avgTrackPopularity) / 2));
+            }
+
+            // Análisis de mood (simulado)
+            statsData.moodAnalysis = {
+                'Energético': 35,
+                'Relajado': 25,
+                'Melancólico': 20,
+                'Bailable': 15,
+                'Romántico': 5
             };
 
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `spotify-statistics-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            this.showNotification('Estadísticas exportadas correctamente');
         } catch (error) {
-            console.error('Error exporting statistics:', error);
-            this.showError('Error al exportar las estadísticas');
+            console.error('Error collecting stats data:', error);
         }
+
+        return statsData;
+    }
+
+    showShareModal(imageDataUrl) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+
+        const content = document.createElement('div');
+        content.style.cssText = `
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
+        `;
+
+        content.innerHTML = `
+            <h3 style="color: #1db954; margin-bottom: 1rem;">📤 Compartir Estadísticas</h3>
+            
+            <div style="margin: 1rem 0;">
+                <img src="${imageDataUrl}" alt="Estadísticas" style="max-width: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                <button onclick="window.shareStatistics('twitter', '${imageDataUrl}')" style="
+                    background: #1da1f2;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                ">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </button>
+                
+                <button onclick="window.shareStatistics('facebook', '${imageDataUrl}')" style="
+                    background: #1877f2;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                ">
+                    <i class="fab fa-facebook"></i>
+                    Facebook
+                </button>
+                
+                <button onclick="window.shareStatistics('instagram', '${imageDataUrl}')" style="
+                    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                ">
+                    <i class="fab fa-instagram"></i>
+                    Instagram
+                </button>
+                
+                <button onclick="window.shareStatistics('download', '${imageDataUrl}')" style="
+                    background: #1db954;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                ">
+                    <i class="fas fa-download"></i>
+                    Descargar
+                </button>
+            </div>
+            
+            <button onclick="this.parentElement.parentElement.remove()" style="
+                background: #666;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 25px;
+                cursor: pointer;
+                margin-top: 1rem;
+            ">Cerrar</button>
+        `;
+
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+
+        // Hacer la función de compartir global
+        window.shareStatistics = (platform, imageDataUrl) => {
+            this.shareStats.shareToSocialMedia(imageDataUrl, platform);
+        };
     }
 
     showNotification(message, type = 'success') {

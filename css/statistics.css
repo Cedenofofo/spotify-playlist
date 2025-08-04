@@ -1,8 +1,85 @@
+/* ===== ELEGANT STATISTICS DESIGN ===== */
+
+/* Variables elegantes */
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --spotify-gradient: linear-gradient(135deg, #1db954 0%, #00cfff 100%);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --accent-green: #1db954;
+  --accent-orange: #ff6b35;
+  --accent-purple: #667eea;
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ===== ELEGANT BACK BUTTON ===== */
+.elegant-back-btn {
+  position: relative;
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.elegant-back-btn:hover {
+  background: rgba(29, 185, 84, 0.1);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2);
+}
+
+.elegant-back-btn:active {
+  transform: translateY(0);
+}
+
+.elegant-back-btn .btn-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.elegant-back-btn .btn-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  background: rgba(29, 185, 84, 0.3);
+  border-radius: 50%;
+  transition: all 0.6s ease;
+}
+
+.elegant-back-btn:active .btn-ripple {
+  width: 300px;
+  height: 300px;
+}
+
 /* Estilos para la página de estadísticas */
 .statistics-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Header de estadísticas */
@@ -52,17 +129,38 @@
 }
 
 .stats-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
+    border: 1px solid var(--glass-border);
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.05) 0%, rgba(0, 207, 255, 0.05) 100%);
+    opacity: 0;
+    transition: var(--transition-smooth);
+    z-index: -1;
+}
+
+.stats-card:hover::before {
+    opacity: 1;
 }
 
 .stats-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-strong);
+    border-color: rgba(29, 185, 84, 0.3);
 }
 
 /* Artistas más escuchados */
@@ -705,23 +803,50 @@
     border-color: #1db954;
 }
 
-.export-button {
-    background: linear-gradient(135deg, #1db954, #1ed760);
+
+
+.share-button {
+    position: relative;
+    background: var(--spotify-gradient);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: 25px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    overflow: hidden;
+    transition: var(--transition-smooth);
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 0.875rem;
 }
 
-.export-button:hover {
+.share-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(29, 185, 84, 0.3);
+    box-shadow: 0 10px 30px rgba(29, 185, 84, 0.3);
+}
+
+.share-button:active {
+    transform: translateY(0);
+}
+
+.share-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition: all 0.6s ease;
+}
+
+.share-button:active::before {
+    width: 300px;
+    height: 300px;
 }
 
 /* Loading overlay */
@@ -844,7 +969,7 @@
         justify-content: center;
     }
     
-    .export-button {
+    .share-button {
         justify-content: center;
     }
 }
