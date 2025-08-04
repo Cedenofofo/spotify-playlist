@@ -173,16 +173,16 @@ class ShareStatistics {
             });
         }
         
-        // Título de canciones - moved closer
+        // Título de canciones - moved further down to avoid overlap
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 36px Inter, sans-serif'; // Reduced font size
-        this.ctx.fillText('🎵 Top 3 Canciones', this.canvas.width / 2, startY + 320); // Reduced spacing
+        this.ctx.fillText('🎵 Top 3 Canciones', this.canvas.width / 2, startY + 400); // Increased spacing
         
         // Top 3 Canciones con diseño de tarjetas modernas
         if (this.statsData.topTracks?.items) {
             const tracks = this.statsData.topTracks.items.slice(0, 3); // Changed from 5 to 3
             tracks.forEach((track, index) => {
-                const y = startY + 380 + (index * 70); // Reduced spacing between items
+                const y = startY + 460 + (index * 70); // Increased spacing between items
                 this.drawModernTrackItem(track, index + 1, y);
             });
         }
@@ -291,7 +291,7 @@ class ShareStatistics {
     }
 
     drawGenreAndMoodAnalysisModern() {
-        const startY = 1000; // Moved up from 1200
+        const startY = 1100; // Moved up from 1000 to avoid overlap with songs
         
         // Título de géneros
         this.ctx.fillStyle = '#ffffff';
