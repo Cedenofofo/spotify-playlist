@@ -26,10 +26,8 @@ class EditPlaylistManager {
             window.location.href = 'modify_playlists.html';
         });
 
-        // Búsqueda simple de canciones
-        document.getElementById('search-track-btn').addEventListener('click', () => {
-            this.searchTracks();
-        });
+        // Búsqueda inteligente
+        this.setupSmartSearch();
 
         // Búsqueda por artistas
         document.getElementById('search-artist-btn').addEventListener('click', () => {
@@ -613,6 +611,302 @@ class EditPlaylistManager {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // ===== BÚSQUEDA INTELIGENTE =====
+
+    setupSmartSearch() {
+        const searchInput = document.getElementById('smart-track-search');
+        const suggestionsContainer = document.getElementById('smart-suggestions');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                this.performSmartSearch(query);
+            }, 300);
+        });
+
+        // Cerrar sugerencias al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-input-container')) {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+
+        // Navegación con teclado
+        searchInput.addEventListener('keydown', (e) => {
+            const suggestions = suggestionsContainer.querySelectorAll('.smart-suggestion-item');
+            const currentIndex = Array.from(suggestions).findIndex(item => item.classList.contains('selected'));
+
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    this.navigateSuggestions(suggestions, currentIndex, 1);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    this.navigateSuggestions(suggestions, currentIndex, -1);
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    const selectedItem = suggestionsContainer.querySelector('.smart-suggestion-item.selected');
+                    if (selectedItem) {
+                        this.handleSmartSuggestionClick(selectedItem);
+                    }
+                    break;
+                case 'Escape':
+                    suggestionsContainer.style.display = 'none';
+                    break;
+            }
+        });
+    }
+
+    navigateSuggestions(suggestions, currentIndex, direction) {
+        suggestions.forEach(item => item.classList.remove('selected'));
+        
+        let newIndex = currentIndex + direction;
+        if (newIndex < 0) newIndex = suggestions.length - 1;
+        if (newIndex >= suggestions.length) newIndex = 0;
+        
+        if (suggestions[newIndex]) {
+            suggestions[newIndex].classList.add('selected');
+            suggestions[newIndex].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    async performSmartSearch(query) {
+        try {
+            const token = localStorage.getItem('spotify_access_token');
+            if (!token) {
+                this.auth.logout();
+                return;
+            }
+
+            // Buscar canciones, artistas y álbumes
+            const [tracksResponse, artistsResponse, albumsResponse] = await Promise.all([
+                fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=3`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=2`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=album&limit=2`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+            ]);
+
+            const [tracksData, artistsData, albumsData] = await Promise.all([
+                tracksResponse.json(),
+                artistsResponse.json(),
+                albumsResponse.json()
+            ]);
+
+            this.displaySmartSuggestions(tracksData.tracks?.items || [], 
+                                      artistsData.artists?.items || [], 
+                                      albumsData.albums?.items || []);
+
+        } catch (error) {
+            console.error('Error en búsqueda inteligente:', error);
+        }
+    }
+
+    displaySmartSuggestions(tracks, artists, albums) {
+        const suggestionsContainer = document.getElementById('smart-suggestions');
+        
+        if (tracks.length === 0 && artists.length === 0 && albums.length === 0) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+
+        let suggestionsHTML = '';
+
+        // Agregar canciones
+        if (tracks.length > 0) {
+            suggestionsHTML += '<div class="suggestion-section"><div class="suggestion-section-title">🎵 Canciones</div>';
+            tracks.forEach(track => {
+                suggestionsHTML += this.createSmartSuggestionItem(track, 'track');
+            });
+            suggestionsHTML += '</div>';
+        }
+
+        // Agregar artistas
+        if (artists.length > 0) {
+            suggestionsHTML += '<div class="suggestion-section"><div class="suggestion-section-title">🎤 Artistas</div>';
+            artists.forEach(artist => {
+                suggestionsHTML += this.createSmartSuggestionItem(artist, 'artist');
+            });
+            suggestionsHTML += '</div>';
+        }
+
+        // Agregar álbumes
+        if (albums.length > 0) {
+            suggestionsHTML += '<div class="suggestion-section"><div class="suggestion-section-title">💿 Álbumes</div>';
+            albums.forEach(album => {
+                suggestionsHTML += this.createSmartSuggestionItem(album, 'album');
+            });
+            suggestionsHTML += '</div>';
+        }
+
+        suggestionsContainer.innerHTML = suggestionsHTML;
+        suggestionsContainer.style.display = 'block';
+
+        // Agregar event listeners
+        suggestionsContainer.querySelectorAll('.smart-suggestion-item').forEach(item => {
+            item.addEventListener('click', () => {
+                this.handleSmartSuggestionClick(item);
+            });
+        });
+    }
+
+    createSmartSuggestionItem(item, type) {
+        const imageUrl = this.getSmartSuggestionImageUrl(item, type);
+        const title = this.getSmartSuggestionTitle(item, type);
+        const subtitle = this.getSmartSuggestionSubtitle(item, type);
+        const typeLabel = this.getSmartSuggestionTypeLabel(type);
+
+        return `
+            <div class="smart-suggestion-item" data-type="${type}" data-id="${item.id}">
+                <img src="${imageUrl}" 
+                     alt="${title}"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/40x40/1db954/ffffff?text=${type === 'track' ? '🎵' : type === 'artist' ? '🎤' : '💿'}'; this.classList.add('placeholder-image');"
+                     onload="this.classList.remove('placeholder-image');">
+                <div class="smart-suggestion-info">
+                    <div class="smart-suggestion-title">${this.escapeHtml(title)}</div>
+                    <div class="smart-suggestion-subtitle">${this.escapeHtml(subtitle)}</div>
+                </div>
+                <div class="smart-suggestion-type">${typeLabel}</div>
+            </div>
+        `;
+    }
+
+    getSmartSuggestionImageUrl(item, type) {
+        if (type === 'track') {
+            return item.album?.images?.[0]?.url || 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎵';
+        } else if (type === 'artist') {
+            return item.images?.[0]?.url || 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎤';
+        } else if (type === 'album') {
+            return item.images?.[0]?.url || 'https://via.placeholder.com/40x40/1db954/ffffff?text=💿';
+        }
+        return 'https://via.placeholder.com/40x40/1db954/ffffff?text=🎵';
+    }
+
+    getSmartSuggestionTitle(item, type) {
+        if (type === 'track') {
+            return item.name;
+        } else if (type === 'artist') {
+            return item.name;
+        } else if (type === 'album') {
+            return item.name;
+        }
+        return '';
+    }
+
+    getSmartSuggestionSubtitle(item, type) {
+        if (type === 'track') {
+            return item.artists?.map(artist => artist.name).join(', ') || '';
+        } else if (type === 'artist') {
+            return `${item.followers?.total?.toLocaleString() || 0} seguidores`;
+        } else if (type === 'album') {
+            return item.artists?.map(artist => artist.name).join(', ') || '';
+        }
+        return '';
+    }
+
+    getSmartSuggestionTypeLabel(type) {
+        if (type === 'track') return 'Canción';
+        if (type === 'artist') return 'Artista';
+        if (type === 'album') return 'Álbum';
+        return '';
+    }
+
+    async handleSmartSuggestionClick(item) {
+        const type = item.dataset.type;
+        const id = item.dataset.id;
+
+        if (type === 'track') {
+            await this.addTrack(id);
+        } else if (type === 'artist') {
+            await this.searchByArtistId(id);
+        } else if (type === 'album') {
+            await this.searchByAlbumId(id);
+        }
+
+        // Limpiar búsqueda
+        document.getElementById('smart-track-search').value = '';
+        document.getElementById('smart-suggestions').style.display = 'none';
+    }
+
+    async searchByArtistId(artistId) {
+        try {
+            const token = localStorage.getItem('spotify_access_token');
+            if (!token) {
+                this.auth.logout();
+                return;
+            }
+
+            this.showNotification('Buscando canciones del artista...', 'info');
+
+            const tracksResponse = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=ES`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!tracksResponse.ok) {
+                throw new Error(`Error al buscar canciones: ${tracksResponse.status}`);
+            }
+
+            const tracksData = await tracksResponse.json();
+            const artistTracks = tracksData.tracks.slice(0, 5);
+
+            this.displaySearchResults(artistTracks, 'search-results');
+            this.showNotification(`Se encontraron ${artistTracks.length} canciones del artista`, 'success');
+
+        } catch (error) {
+            console.error('Error al buscar por artista:', error);
+            this.showError('Error al buscar canciones del artista');
+        }
+    }
+
+    async searchByAlbumId(albumId) {
+        try {
+            const token = localStorage.getItem('spotify_access_token');
+            if (!token) {
+                this.auth.logout();
+                return;
+            }
+
+            this.showNotification('Buscando canciones del álbum...', 'info');
+
+            const tracksResponse = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks?limit=20`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!tracksResponse.ok) {
+                throw new Error(`Error al buscar canciones: ${tracksResponse.status}`);
+            }
+
+            const tracksData = await tracksResponse.json();
+            const albumTracks = tracksData.items;
+
+            this.displaySearchResults(albumTracks, 'search-results');
+            this.showNotification(`Se encontraron ${albumTracks.length} canciones del álbum`, 'success');
+
+        } catch (error) {
+            console.error('Error al buscar por álbum:', error);
+            this.showError('Error al buscar canciones del álbum');
+        }
     }
 }
 

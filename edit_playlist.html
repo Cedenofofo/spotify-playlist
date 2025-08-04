@@ -161,16 +161,15 @@
                                 Agregar Canciones
                             </h4>
                             
-                            <!-- Opción 1: Búsqueda simple -->
+                            <!-- Opción 1: Búsqueda inteligente -->
                             <div class="search-option">
-                                <h5>Buscar canción específica</h5>
-                                <div class="simple-search">
-                                    <input type="text" id="simple-track-search" class="form-input" 
-                                           placeholder="Nombre de la canción o artista...">
-                                    <button type="button" id="search-track-btn" class="action-btn primary">
-                                        <i class="fas fa-search"></i>
-                                        Buscar
-                                    </button>
+                                <h5>Búsqueda inteligente de canciones</h5>
+                                <div class="smart-search">
+                                    <div class="search-input-container">
+                                        <input type="text" id="smart-track-search" class="form-input" 
+                                               placeholder="Busca canciones, artistas o álbumes..." autocomplete="off">
+                                        <div id="smart-suggestions" class="smart-suggestions" style="display: none;"></div>
+                                    </div>
                                 </div>
                                 <div id="search-results" class="search-results" style="display: none;"></div>
                             </div>
