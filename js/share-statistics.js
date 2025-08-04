@@ -493,22 +493,57 @@ class ShareStatistics {
     }
 
     shareToTwitter(imageDataUrl) {
-        const text = encodeURIComponent('🎵 ¡Mira mis estadísticas de Spotify con Tuneuptify! #Spotify #Música #Estadísticas');
+        // Para Twitter/X, intentamos usar la Web Share API con imagen
+        if (navigator.share && navigator.canShare) {
+            // Convertir la imagen a Blob para compartir
+            fetch(imageDataUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: 'Mis Estadísticas de Spotify',
+                            text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
+                            files: [file]
+                        }).then(() => {
+                            this.showNotification('Compartido en X correctamente', 'success');
+                        }).catch((error) => {
+                            console.error('Error sharing:', error);
+                            // Fallback a URL de Twitter
+                            this.shareToTwitterFallback();
+                        });
+                    } else {
+                        // Fallback si no se puede compartir archivos
+                        this.shareToTwitterFallback();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing image:', error);
+                    this.shareToTwitterFallback();
+                });
+        } else {
+            // Fallback para navegadores que no soportan Web Share API
+            this.shareToTwitterFallback();
+        }
+    }
+
+    shareToTwitterFallback() {
+        const text = encodeURIComponent('Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify');
         const url = encodeURIComponent('https://cedenofofo.github.io/spotify-playlist');
         const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
         window.open(twitterUrl, '_blank');
-        this.showNotification('Redirigiendo a Twitter...', 'success');
+        this.showNotification('Redirigiendo a X...', 'success');
     }
 
     shareToFacebook(imageDataUrl) {
-        const url = encodeURIComponent('https://cedenofofo.github.io/spotify-playlist');
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-        window.open(facebookUrl, '_blank');
-        this.showNotification('Redirigiendo a Facebook...', 'success');
+        // Para Facebook, descargamos la imagen y damos instrucciones para subir como historia
+        this.downloadImage(imageDataUrl);
+        this.showFacebookInstructions();
     }
 
     shareToInstagram(imageDataUrl) {
-        // Para Instagram, descargamos la imagen y damos instrucciones
+        // Para Instagram, descargamos la imagen y damos instrucciones para subir como historia
         this.downloadImage(imageDataUrl);
         this.showInstagramInstructions();
     }
@@ -542,6 +577,58 @@ class ShareStatistics {
         }
     }
 
+    showFacebookInstructions() {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+
+        const content = document.createElement('div');
+        content.style.cssText = `
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        `;
+
+        content.innerHTML = `
+            <h3 style="color: #1877f2; margin-bottom: 1rem;">📘 Compartir en Facebook</h3>
+            <p style="margin-bottom: 1rem; color: #333;">
+                La imagen ya se descargó. Para compartir en Facebook:
+            </p>
+            <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
+                <li>Abre la app de Facebook</li>
+                <li>Ve a "Crear historia"</li>
+                <li>Selecciona la imagen descargada</li>
+                <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
+                <li>Publica tu historia</li>
+            </ol>
+            <button onclick="this.parentElement.parentElement.remove()" style="
+                background: #1877f2;
+                color: white;
+                border: none;
+                padding: 0.8rem 1.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+            ">Entendido</button>
+        `;
+
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+    }
+
     showInstagramInstructions() {
         const modal = document.createElement('div');
         modal.style.cssText = `
@@ -561,29 +648,32 @@ class ShareStatistics {
         content.style.cssText = `
             background: white;
             padding: 2rem;
-            border-radius: 20px;
-            max-width: 500px;
+            border-radius: 15px;
+            max-width: 400px;
             text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         `;
 
         content.innerHTML = `
-            <h3 style="color: #1db954; margin-bottom: 1rem;">📱 Para Instagram</h3>
-            <p style="margin-bottom: 1rem;">La imagen se ha descargado automáticamente. Para compartir en Instagram:</p>
-            <ol style="text-align: left; margin-bottom: 1rem;">
-                <li>Abre Instagram</li>
-                <li>Ve a tu perfil</li>
-                <li>Toca el botón "+"</li>
-                <li>Selecciona "Historia"</li>
-                <li>Sube la imagen descargada</li>
-                <li>¡Comparte tu música!</li>
+            <h3 style="color: #e4405f; margin-bottom: 1rem;">📷 Compartir en Instagram</h3>
+            <p style="margin-bottom: 1rem; color: #333;">
+                La imagen ya se descargó. Para compartir en Instagram:
+            </p>
+            <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
+                <li>Abre la app de Instagram</li>
+                <li>Ve a "Crear historia"</li>
+                <li>Selecciona la imagen descargada</li>
+                <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
+                <li>Publica tu historia</li>
             </ol>
             <button onclick="this.parentElement.parentElement.remove()" style="
-                background: #1db954;
+                background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
                 color: white;
                 border: none;
-                padding: 10px 20px;
-                border-radius: 25px;
+                padding: 0.8rem 1.5rem;
+                border-radius: 8px;
                 cursor: pointer;
+                font-weight: bold;
             ">Entendido</button>
         `;
 
