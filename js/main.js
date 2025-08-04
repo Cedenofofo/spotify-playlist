@@ -42,64 +42,19 @@ window.removeTrackFromPreview = function(index) {
     showNotification('Canción eliminada de la playlist', 'info');
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Tuneuptify elegante cargado');
-    
-    // Inicializar todas las funcionalidades elegantes
-    initCustomCursor();
+// ===== INICIALIZACIÓN =====
+document.addEventListener('DOMContentLoaded', () => {
     initEntranceAnimations();
     initParticleEffects();
     initFormInteractions();
-    
-    // Configurar eventos de autenticación
     setupAuthEvents();
-    
-    // Configurar eventos de formulario
     setupFormEvents();
-    
-    // Configurar listener de hash
     setupHashListener();
-    
-    // Verificar si viene del dashboard para mostrar el formulario de crear playlist
     checkHashAndShowPlaylistForm();
-    
-    // Inicializar SearchManager para búsqueda de canciones
-    if (typeof SearchManager !== 'undefined') {
-        window.searchManager = new SearchManager();
-    }
 });
 
 // ===== CURSOR PERSONALIZADO =====
-function initCustomCursor() {
-    const cursor = document.querySelector('.custom-cursor');
-    const follower = document.querySelector('.custom-cursor-follower');
-    
-    if (!cursor || !follower) return;
-    
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        
-        setTimeout(() => {
-            follower.style.left = e.clientX + 'px';
-            follower.style.top = e.clientY + 'px';
-        }, 50);
-    });
-    
-    // Efectos de hover
-    const interactiveElements = document.querySelectorAll('button, .action-card, .stat-card, .social-link, .hero-btn');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.style.transform = 'scale(1.5)';
-            follower.style.transform = 'scale(1.5)';
-        });
-        
-        el.addEventListener('mouseleave', () => {
-            cursor.style.transform = 'scale(1)';
-            follower.style.transform = 'scale(1)';
-        });
-    });
-}
+// Removed custom cursor functionality
 
 // ===== ANIMACIONES DE ENTRADA =====
 function initEntranceAnimations() {

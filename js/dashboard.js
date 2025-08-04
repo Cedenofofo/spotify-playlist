@@ -2,7 +2,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard elegante cargado');
     checkAuthStatus();
-    initCustomCursor();
     initHoverEffects();
     initEntranceAnimations();
     initParticleEffects();
@@ -27,37 +26,7 @@ function checkAuthStatus() {
     window.location.href = 'index.html';
 }
 
-// Cursor personalizado
-function initCustomCursor() {
-    const cursor = document.querySelector('.custom-cursor');
-    const follower = document.querySelector('.custom-cursor-follower');
-    
-    if (!cursor || !follower) return;
-    
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        
-        setTimeout(() => {
-            follower.style.left = e.clientX + 'px';
-            follower.style.top = e.clientY + 'px';
-        }, 50);
-    });
-    
-    // Efectos de hover
-    const interactiveElements = document.querySelectorAll('button, .action-card, .stat-card, .social-link');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.style.transform = 'scale(1.5)';
-            follower.style.transform = 'scale(1.5)';
-        });
-        
-        el.addEventListener('mouseleave', () => {
-            cursor.style.transform = 'scale(1)';
-            follower.style.transform = 'scale(1)';
-        });
-    });
-}
+// Cursor personalizado - Removed
 
 // Efectos de hover en tarjetas de acción
 function initHoverEffects() {

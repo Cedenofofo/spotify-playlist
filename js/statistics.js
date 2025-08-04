@@ -162,6 +162,21 @@ class StatisticsManager {
                 case 'long_term':
                     timeRangeMs = 365 * 24 * 60 * 60 * 1000; // 1 year
                     break;
+                case 'custom_year':
+                    timeRangeMs = 365 * 24 * 60 * 60 * 1000; // Last 365 days
+                    break;
+                case 'custom_range':
+                    // For custom range, use the selected dates
+                    const startDate = document.getElementById('start-date')?.value;
+                    const endDate = document.getElementById('end-date')?.value;
+                    if (startDate && endDate) {
+                        const start = new Date(startDate);
+                        const end = new Date(endDate);
+                        timeRangeMs = end - start;
+                    } else {
+                        timeRangeMs = 4 * 7 * 24 * 60 * 60 * 1000; // Default to 4 weeks
+                    }
+                    break;
                 default:
                     timeRangeMs = 4 * 7 * 24 * 60 * 60 * 1000; // Default to 4 weeks
             }
@@ -279,11 +294,14 @@ class StatisticsManager {
         const container = document.getElementById('activity-summary-container');
         if (!container) return;
 
-        // Calculate activity statistics
+        // Calculate activity statistics based on filtered data
         const totalTracks = recentlyPlayed?.items?.length || 0;
         const uniqueArtists = new Set(recentlyPlayed?.items?.map(item => item.track.artists[0].name) || []).size;
         const totalDuration = recentlyPlayed?.items?.reduce((total, item) => total + item.track.duration_ms, 0) || 0;
         const avgDuration = totalTracks > 0 ? totalDuration / totalTracks : 0;
+
+        // Get time range label for context
+        const timeRangeLabel = this.getTimeRangeLabel();
 
         container.innerHTML = `
             <div class="activity-summary">
@@ -302,7 +320,7 @@ class StatisticsManager {
                     </div>
                 </div>
                 <div class="activity-description">
-                    <p>Tu actividad musical muestra un patrón diverso de escucha con ${uniqueArtists} artistas diferentes en ${totalTracks} canciones.</p>
+                    <p>Tu actividad musical en <strong>${timeRangeLabel}</strong> muestra un patrón diverso de escucha con ${uniqueArtists} artistas diferentes en ${totalTracks} canciones.</p>
                 </div>
             </div>
         `;
