@@ -537,7 +537,15 @@ class StatisticsManager {
 
     displayUniquenessScore(artists, tracks) {
         const container = document.getElementById('uniqueness-container');
-        if (!container || !artists?.items || !tracks?.items) return;
+        if (!container || !artists?.items || !tracks?.items) {
+            console.log('displayUniquenessScore: Missing data', { container: !!container, artists: !!artists?.items, tracks: !!tracks?.items });
+            return;
+        }
+
+        console.log('displayUniquenessScore: Processing data', { 
+            artistsCount: artists.items.length, 
+            tracksCount: tracks.items.length 
+        });
 
         // Calculate uniqueness score based on average popularity
         const avgArtistPopularity = artists.items.reduce((sum, artist) => sum + artist.popularity, 0) / artists.items.length;
@@ -559,8 +567,12 @@ class StatisticsManager {
         });
         const uniqueGenres = new Set(allGenres).size;
         
-        // Calculate average genres per artist
-        const avgGenresPerArtist = allGenres.length / artists.items.length;
+        console.log('displayUniquenessScore: Calculated metrics', { 
+            uniqueTracks, 
+            uniqueArtists, 
+            uniqueGenres,
+            allGenres: allGenres.length
+        });
 
         container.innerHTML = `
             <div class="uniqueness-analysis">
@@ -598,6 +610,8 @@ class StatisticsManager {
                 </div>
             </div>
         `;
+        
+        console.log('displayUniquenessScore: HTML updated');
     }
 
     getUniquenessLevel(score) {
