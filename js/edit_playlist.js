@@ -943,20 +943,10 @@ class EditPlaylistManager {
             }, 300);
         });
 
-        // Cerrar sugerencias al hacer clic fuera
+        // Cerrar sugerencias al hacer clic fuera - SOLO si no es el input
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-input-container')) {
+            if (!e.target.closest('.search-input-container') && !e.target.closest('.artist-suggestions')) {
                 suggestionsContainer.style.display = 'none';
-                // Devolver las sugerencias a su contenedor original
-                const originalContainer = artistInput.parentNode;
-                if (suggestionsContainer.parentNode === document.body) {
-                    originalContainer.appendChild(suggestionsContainer);
-                }
-                suggestionsContainer.style.position = 'absolute';
-                suggestionsContainer.style.top = '';
-                suggestionsContainer.style.left = '';
-                suggestionsContainer.style.width = '';
-                suggestionsContainer.style.zIndex = '';
             }
         });
 
@@ -1079,17 +1069,6 @@ class EditPlaylistManager {
         
         const suggestionsContainer = artistInput.parentNode.querySelector('.artist-suggestions');
         suggestionsContainer.style.display = 'none';
-        
-        // Devolver las sugerencias a su contenedor original
-        const originalContainer = artistInput.parentNode;
-        if (suggestionsContainer.parentNode === document.body) {
-            originalContainer.appendChild(suggestionsContainer);
-        }
-        suggestionsContainer.style.position = 'absolute';
-        suggestionsContainer.style.top = '';
-        suggestionsContainer.style.left = '';
-        suggestionsContainer.style.width = '';
-        suggestionsContainer.style.zIndex = '';
     }
 
     addArtistInput() {
