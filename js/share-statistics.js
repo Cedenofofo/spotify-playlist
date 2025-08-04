@@ -162,11 +162,11 @@ class ShareStatistics {
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 36px Inter, sans-serif'; // Reduced font size
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('🎤 Top 5 Artistas', this.canvas.width / 2, startY);
+        this.ctx.fillText('🎤 Top 3 Artistas', this.canvas.width / 2, startY);
         
-        // Top 5 Artistas con diseño de tarjetas modernas
+        // Top 3 Artistas con diseño de tarjetas modernas
         if (this.statsData.topArtists?.items) {
-            const artists = this.statsData.topArtists.items.slice(0, 5);
+            const artists = this.statsData.topArtists.items.slice(0, 3); // Changed from 5 to 3
             artists.forEach((artist, index) => {
                 const y = startY + 60 + (index * 70); // Reduced spacing between items
                 this.drawModernArtistItem(artist, index + 1, y);
@@ -176,13 +176,13 @@ class ShareStatistics {
         // Título de canciones - moved closer
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 36px Inter, sans-serif'; // Reduced font size
-        this.ctx.fillText('🎵 Top 5 Canciones', this.canvas.width / 2, startY + 450); // Reduced spacing
+        this.ctx.fillText('🎵 Top 3 Canciones', this.canvas.width / 2, startY + 320); // Reduced spacing
         
-        // Top 5 Canciones con diseño de tarjetas modernas
+        // Top 3 Canciones con diseño de tarjetas modernas
         if (this.statsData.topTracks?.items) {
-            const tracks = this.statsData.topTracks.items.slice(0, 5);
+            const tracks = this.statsData.topTracks.items.slice(0, 3); // Changed from 5 to 3
             tracks.forEach((track, index) => {
-                const y = startY + 510 + (index * 70); // Reduced spacing between items
+                const y = startY + 380 + (index * 70); // Reduced spacing between items
                 this.drawModernTrackItem(track, index + 1, y);
             });
         }
@@ -291,7 +291,7 @@ class ShareStatistics {
     }
 
     drawGenreAndMoodAnalysisModern() {
-        const startY = 1200; // Moved up from 1400
+        const startY = 1000; // Moved up from 1200
         
         // Título de géneros
         this.ctx.fillStyle = '#ffffff';
@@ -384,7 +384,7 @@ class ShareStatistics {
     }
 
     drawModernFooter() {
-        const startY = 1600; // Moved up from 1800 to fit better
+        const startY = 1400; // Moved up from 1600 to fit better
         
         // Línea separadora con efecto de neón
         this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.6)';
