@@ -116,7 +116,6 @@ class Auth {
     }
 
     showPlaylistSection() {
-        const loginSection = document.getElementById('login-section');
         const playlistSection = document.getElementById('playlist-section');
         const heroSection = document.querySelector('.hero-parallax');
         const featuresSection = document.querySelector('.features-section');
@@ -124,7 +123,6 @@ class Auth {
         // Ocultar secciones principales
         if (heroSection) heroSection.style.display = 'none';
         if (featuresSection) featuresSection.style.display = 'none';
-        if (loginSection) loginSection.style.display = 'none';
         
         // Mostrar sección de playlist
         if (playlistSection) {
@@ -151,10 +149,15 @@ class Auth {
     }
 
     showLoginSection() {
-        const loginSection = document.getElementById('login-section');
         const playlistSection = document.getElementById('playlist-section');
+        const heroSection = document.querySelector('.hero-parallax');
+        const featuresSection = document.querySelector('.features-section');
         
-        if (loginSection) loginSection.style.display = 'block';
+        // Mostrar secciones principales (hero y features)
+        if (heroSection) heroSection.style.display = 'block';
+        if (featuresSection) featuresSection.style.display = 'block';
+        
+        // Ocultar sección de playlist si existe
         if (playlistSection) playlistSection.style.display = 'none';
     }
 
