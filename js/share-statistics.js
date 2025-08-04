@@ -90,20 +90,20 @@ class ShareStatistics {
             await this.drawStatCard('⏰ Tiempo de Escucha', this.statsData.listeningTime, startY);
         }
         
-        // Top 5 Artistas
+        // Top 10 Artistas
         if (this.statsData.topArtists && this.statsData.topArtists.items.length > 0) {
-            const topArtists = this.statsData.topArtists.items.slice(0, 5).map((artist, index) => 
+            const topArtists = this.statsData.topArtists.items.slice(0, 10).map((artist, index) => 
                 `${index + 1}. ${artist.name}`
             ).join('\n');
-            await this.drawStatCard('🎤 Top 5 Artistas', topArtists, startY + cardHeight + cardSpacing);
+            await this.drawStatCard('🎤 Top 10 Artistas', topArtists, startY + cardHeight + cardSpacing);
         }
         
-        // Top 5 Canciones
+        // Top 10 Canciones
         if (this.statsData.topTracks && this.statsData.topTracks.items.length > 0) {
-            const topTracks = this.statsData.topTracks.items.slice(0, 5).map((track, index) => 
+            const topTracks = this.statsData.topTracks.items.slice(0, 10).map((track, index) => 
                 `${index + 1}. ${track.name} - ${track.artists[0].name}`
             ).join('\n');
-            await this.drawStatCard('🎵 Top 5 Canciones', topTracks, startY + (cardHeight + cardSpacing) * 2);
+            await this.drawStatCard('🎵 Top 10 Canciones', topTracks, startY + (cardHeight + cardSpacing) * 2);
         }
         
         // Top 3 Géneros
