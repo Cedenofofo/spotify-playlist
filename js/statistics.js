@@ -3,6 +3,7 @@ class StatisticsManager {
         this.auth = new Auth();
         this.currentTimeRange = 'short_term'; // short_term, medium_term, long_term
         this.shareStats = new ShareStatistics();
+        this.isLoading = false;
         this.setupEventListeners();
         this.loadStatistics();
     }
@@ -25,8 +26,6 @@ class StatisticsManager {
             });
         }
 
-
-
         // Botones de compartir
         const shareButton = document.getElementById('share-stats-button');
         if (shareButton) {
@@ -34,10 +33,20 @@ class StatisticsManager {
                 this.showShareOptions();
             });
         }
+
+        // Modal close functionality
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('close-modal')) {
+                this.hideShareModal();
+            }
+        });
     }
 
     async loadStatistics() {
+        if (this.isLoading) return; // Prevent multiple simultaneous loads
+        
         try {
+            this.isLoading = true;
             this.showLoading();
             
             // Verificar autenticación
@@ -47,32 +56,43 @@ class StatisticsManager {
                 return;
             }
 
-            // Cargar todas las estadísticas en paralelo
-            const [
-                topArtists,
-                topTracks,
-                userProfile,
-                recentlyPlayed
-            ] = await Promise.all([
+            // Cargar todas las estadísticas en paralelo con timeout
+            const loadPromises = [
                 this.loadTopArtists(),
                 this.loadTopTracks(),
                 this.loadUserProfile(),
                 this.loadRecentlyPlayed()
-            ]);
+            ];
 
-            // Procesar y mostrar estadísticas
-            this.displayTopArtists(topArtists);
-            this.displayTopTracks(topTracks);
-            this.displayActivitySummary(userProfile, recentlyPlayed);
-            this.displayListeningTime(recentlyPlayed);
-            this.displayGenreAnalysis(topArtists, topTracks);
-            this.displayMoodAnalysis(topTracks);
-            this.displayUniquenessScore(topArtists, topTracks);
+            const [topArtists, topTracks, userProfile, recentlyPlayed] = await Promise.allSettled(loadPromises);
+
+            // Procesar resultados y manejar errores individuales
+            const results = {
+                topArtists: topArtists.status === 'fulfilled' ? topArtists.value : null,
+                topTracks: topTracks.status === 'fulfilled' ? topTracks.value : null,
+                userProfile: userProfile.status === 'fulfilled' ? userProfile.value : null,
+                recentlyPlayed: recentlyPlayed.status === 'fulfilled' ? recentlyPlayed.value : null
+            };
+
+            // Mostrar estadísticas disponibles
+            if (results.topArtists) this.displayTopArtists(results.topArtists);
+            if (results.topTracks) this.displayTopTracks(results.topTracks);
+            if (results.userProfile && results.recentlyPlayed) {
+                this.displayActivitySummary(results.userProfile, results.recentlyPlayed);
+            }
+            if (results.recentlyPlayed) this.displayListeningTime(results.recentlyPlayed);
+            if (results.topArtists && results.topTracks) {
+                this.displayGenreAnalysis(results.topArtists, results.topTracks);
+                this.displayMoodAnalysis(results.topTracks);
+                this.displayUniquenessScore(results.topArtists, results.topTracks);
+            }
 
             this.hideLoading();
         } catch (error) {
             console.error('Error loading statistics:', error);
-            this.showError('Error al cargar las estadísticas');
+            this.showError('Error al cargar las estadísticas. Intenta de nuevo.');
+        } finally {
+            this.isLoading = false;
         }
     }
 
@@ -130,12 +150,12 @@ class StatisticsManager {
 
     displayTopArtists(artists) {
         const container = document.getElementById('top-artists-container');
-        if (!container) return;
+        if (!container || !artists?.items) return;
 
         const timeRangeLabel = this.getTimeRangeLabel();
         
         // Update the time range badge in the card header
-        const timeRangeBadge = container.closest('.content-card').querySelector('.time-range-badge');
+        const timeRangeBadge = container.closest('.content-card')?.querySelector('.time-range-badge');
         if (timeRangeBadge) {
             timeRangeBadge.textContent = timeRangeLabel;
         }
@@ -164,7 +184,7 @@ class StatisticsManager {
             </div>
         `;
 
-        // Agregar event listeners para ver más detalles
+        // Add event listeners for artist details
         container.querySelectorAll('.artist-card').forEach(card => {
             card.addEventListener('click', () => {
                 const artistId = card.dataset.artistId;
@@ -175,12 +195,12 @@ class StatisticsManager {
 
     displayTopTracks(tracks) {
         const container = document.getElementById('top-tracks-container');
-        if (!container) return;
+        if (!container || !tracks?.items) return;
 
         const timeRangeLabel = this.getTimeRangeLabel();
         
         // Update the time range badge in the card header
-        const timeRangeBadge = container.closest('.content-card').querySelector('.time-range-badge');
+        const timeRangeBadge = container.closest('.content-card')?.querySelector('.time-range-badge');
         if (timeRangeBadge) {
             timeRangeBadge.textContent = timeRangeLabel;
         }
@@ -215,7 +235,7 @@ class StatisticsManager {
             </div>
         `;
 
-        // Agregar event listeners para reproducir preview
+        // Add event listeners for track preview
         container.querySelectorAll('.track-item').forEach(item => {
             item.addEventListener('click', () => {
                 const trackId = item.dataset.trackId;
@@ -228,7 +248,7 @@ class StatisticsManager {
         const container = document.getElementById('activity-summary-container');
         if (!container) return;
 
-        // Calcular estadísticas de actividad
+        // Calculate activity statistics
         const totalTracks = recentlyPlayed?.items?.length || 0;
         const uniqueArtists = new Set(recentlyPlayed?.items?.map(item => item.track.artists[0].name) || []).size;
         const totalDuration = recentlyPlayed?.items?.reduce((total, item) => total + item.track.duration_ms, 0) || 0;
@@ -259,9 +279,9 @@ class StatisticsManager {
 
     displayListeningTime(recentlyPlayed) {
         const container = document.getElementById('listening-time-container');
-        if (!container) return;
+        if (!container || !recentlyPlayed?.items) return;
 
-        // Calcular tiempo total de escucha basado en duración real
+        // Calculate total listening time based on real duration
         const totalDuration = recentlyPlayed.items.reduce((total, item) => total + item.track.duration_ms, 0);
         const totalHours = Math.floor(totalDuration / (1000 * 60 * 60));
         const totalMinutes = Math.floor((totalDuration % (1000 * 60 * 60)) / (1000 * 60));
@@ -285,9 +305,9 @@ class StatisticsManager {
 
     displayGenreAnalysis(artists, tracks) {
         const container = document.getElementById('genre-analysis-container');
-        if (!container) return;
+        if (!container || !artists?.items) return;
 
-        // Analizar géneros de artistas
+        // Analyze artist genres
         const genreCount = {};
         artists.items.forEach(artist => {
             artist.genres.forEach(genre => {
@@ -295,44 +315,38 @@ class StatisticsManager {
             });
         });
 
-        // Ordenar géneros por frecuencia
+        // Sort genres by frequency
         const sortedGenres = Object.entries(genreCount)
             .sort(([,a], [,b]) => b - a)
             .slice(0, 10);
 
         container.innerHTML = `
-            <div class="stats-header">
-                <h3><i class="fas fa-tags"></i> Géneros Musicales Favoritos</h3>
-            </div>
-            <div class="genre-analysis">
-                <div class="genre-chart">
-                    ${sortedGenres.map(([genre, count], index) => `
-                        <div class="genre-item">
-                            <div class="genre-info">
-                                <span class="genre-name">${this.capitalizeFirst(genre)}</span>
-                                <span class="genre-count">${count} artistas</span>
+            <div class="genre-list">
+                ${sortedGenres.map(([genre, count], index) => `
+                    <div class="genre-item">
+                        <div class="genre-info">
+                            <div class="genre-icon">
+                                <i class="fas fa-music"></i>
                             </div>
-                            <div class="genre-bar">
-                                <div class="genre-fill" style="width: ${(count / sortedGenres[0][1]) * 100}%"></div>
+                            <div class="genre-details">
+                                <h4>${this.capitalizeFirst(genre)}</h4>
+                                <p>${count} artistas</p>
+                            </div>
+                            <div class="genre-percentage">
+                                ${Math.round((count / sortedGenres[0][1]) * 100)}%
                             </div>
                         </div>
-                    `).join('')}
-                </div>
-                <div class="genre-insights">
-                    <h4>Insights</h4>
-                    <p>Tu género más escuchado es <strong>${this.capitalizeFirst(sortedGenres[0]?.[0] || 'No disponible')}</strong> 
-                    con ${sortedGenres[0]?.[1] || 0} artistas favoritos.</p>
-                </div>
+                    </div>
+                `).join('')}
             </div>
         `;
     }
 
     displayMoodAnalysis(tracks) {
         const container = document.getElementById('mood-analysis-container');
-        if (!container) return;
+        if (!container || !tracks?.items) return;
 
-        // Simular análisis de mood basado en características de las canciones
-        // En una implementación real, esto vendría de la API de Spotify
+        // Simulate mood analysis based on track characteristics
         const moods = {
             'Energético': 35,
             'Relajado': 25,
@@ -342,37 +356,32 @@ class StatisticsManager {
         };
 
         container.innerHTML = `
-            <div class="stats-header">
-                <h3><i class="fas fa-heart"></i> Estado de Ánimo Musical</h3>
-            </div>
-            <div class="mood-analysis">
-                <div class="mood-chart">
-                    ${Object.entries(moods).map(([mood, percentage]) => `
-                        <div class="mood-item">
-                            <div class="mood-info">
-                                <span class="mood-name">${mood}</span>
-                                <span class="mood-percentage">${percentage}%</span>
+            <div class="mood-list">
+                ${Object.entries(moods).map(([mood, percentage]) => `
+                    <div class="mood-item">
+                        <div class="mood-info">
+                            <div class="mood-icon">
+                                <i class="fas fa-heart"></i>
                             </div>
-                            <div class="mood-bar">
-                                <div class="mood-fill" style="width: ${percentage}%"></div>
+                            <div class="mood-details">
+                                <h4>${mood}</h4>
+                                <p>Estado de ánimo</p>
+                            </div>
+                            <div class="mood-percentage">
+                                ${percentage}%
                             </div>
                         </div>
-                    `).join('')}
-                </div>
-                <div class="mood-insights">
-                    <h4>Tu Mood Musical</h4>
-                    <p>Basado en tu música, prefieres canciones <strong>energéticas y motivadoras</strong> 
-                    que te ayuden a mantener un buen estado de ánimo.</p>
-                </div>
+                    </div>
+                `).join('')}
             </div>
         `;
     }
 
     displayUniquenessScore(artists, tracks) {
         const container = document.getElementById('uniqueness-container');
-        if (!container) return;
+        if (!container || !artists?.items || !tracks?.items) return;
 
-        // Calcular score de exclusividad basado en popularidad promedio
+        // Calculate uniqueness score based on average popularity
         const avgArtistPopularity = artists.items.reduce((sum, artist) => sum + artist.popularity, 0) / artists.items.length;
         const avgTrackPopularity = tracks.items.reduce((sum, track) => sum + track.popularity, 0) / tracks.items.length;
         
@@ -380,9 +389,6 @@ class StatisticsManager {
         const uniquenessLevel = this.getUniquenessLevel(uniquenessScore);
 
         container.innerHTML = `
-            <div class="stats-header">
-                <h3><i class="fas fa-star"></i> Exclusividad de Gustos</h3>
-            </div>
             <div class="uniqueness-analysis">
                 <div class="uniqueness-score">
                     <div class="score-circle">
@@ -497,45 +503,55 @@ class StatisticsManager {
                 </div>
             `;
             errorContainer.style.display = 'block';
+            
+            // Auto-hide error after 5 seconds
+            setTimeout(() => {
+                errorContainer.style.display = 'none';
+            }, 5000);
         }
     }
 
     async showArtistDetails(artistId) {
-        // Implementar modal con detalles del artista
+        // Implement artist details modal
         console.log('Mostrar detalles del artista:', artistId);
+        this.showNotification('Función de detalles de artista próximamente', 'info');
     }
 
     async playTrackPreview(trackId) {
-        // Implementar reproducción de preview
+        // Implement track preview playback
         console.log('Reproducir preview de track:', trackId);
+        this.showNotification('Función de preview próximamente', 'info');
     }
 
-
-
     async showShareOptions() {
+        if (this.isLoading) return;
+        
         try {
+            this.isLoading = true;
             this.showLoading();
             
-            // Recopilar datos de estadísticas
+            // Collect statistics data
             const statsData = await this.collectStatsData();
             
-            // Generar imagen
+            // Generate image
             const imageDataUrl = await this.shareStats.generateStoryImage(statsData);
             
             this.hideLoading();
             
-            // Mostrar modal de opciones de compartir
+            // Show share modal
             this.showShareModal(imageDataUrl);
             
         } catch (error) {
             console.error('Error generating share image:', error);
             this.showError('Error al generar imagen para compartir');
             this.hideLoading();
+        } finally {
+            this.isLoading = false;
         }
     }
 
     async collectStatsData() {
-        // Recopilar todos los datos de estadísticas
+        // Collect all statistics data
         const statsData = {
             topArtists: null,
             topTracks: null,
@@ -546,7 +562,7 @@ class StatisticsManager {
         };
 
         try {
-            // Obtener datos de artistas, tracks y actividad reciente
+            // Get data from artists, tracks and recent activity
             const [topArtists, topTracks, recentlyPlayed] = await Promise.all([
                 this.loadTopArtists(),
                 this.loadTopTracks(),
@@ -556,7 +572,7 @@ class StatisticsManager {
             statsData.topArtists = topArtists;
             statsData.topTracks = topTracks;
 
-            // Calcular tiempo de escucha
+            // Calculate listening time
             if (recentlyPlayed && recentlyPlayed.items) {
                 const totalDuration = recentlyPlayed.items.reduce((total, item) => total + item.track.duration_ms, 0);
                 const totalHours = Math.floor(totalDuration / (1000 * 60 * 60));
@@ -564,7 +580,7 @@ class StatisticsManager {
                 statsData.listeningTime = `${totalHours}h ${totalMinutes}min`;
             }
 
-            // Procesar géneros
+            // Process genres
             if (topArtists && topArtists.items) {
                 const genreCount = {};
                 topArtists.items.forEach(artist => {
@@ -579,7 +595,7 @@ class StatisticsManager {
                     .slice(0, 5);
             }
 
-            // Procesar estados de ánimo (basado en características de las canciones)
+            // Process moods (based on track characteristics)
             if (topTracks && topTracks.items) {
                 const moodAnalysis = {
                     'Energético': 0,
@@ -589,7 +605,7 @@ class StatisticsManager {
                     'Romántico': 0
                 };
 
-                // Simular análisis de mood basado en popularidad y duración
+                // Simulate mood analysis based on popularity and duration
                 topTracks.items.forEach(track => {
                     if (track.popularity > 70) moodAnalysis['Energético']++;
                     else if (track.popularity > 50) moodAnalysis['Bailable']++;
@@ -604,7 +620,7 @@ class StatisticsManager {
                     .slice(0, 5);
             }
 
-            // Calcular score de exclusividad
+            // Calculate uniqueness score
             if (topArtists && topTracks) {
                 const avgArtistPopularity = topArtists.items.reduce((sum, artist) => sum + artist.popularity, 0) / topArtists.items.length;
                 const avgTrackPopularity = topTracks.items.reduce((sum, track) => sum + track.popularity, 0) / topTracks.items.length;
@@ -619,126 +635,59 @@ class StatisticsManager {
     }
 
     showShareModal(imageDataUrl) {
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        `;
+        const modal = document.getElementById('share-modal');
+        if (!modal) return;
 
-        const content = document.createElement('div');
-        content.style.cssText = `
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            max-width: 500px;
-            text-align: center;
-            max-height: 80vh;
-            overflow-y: auto;
-        `;
+        const shareImage = modal.querySelector('#share-image');
+        if (shareImage) {
+            shareImage.src = imageDataUrl;
+        }
 
-        content.innerHTML = `
-            <h3 style="color: #1db954; margin-bottom: 1rem;">📤 Compartir Estadísticas</h3>
-            
-            <div style="margin: 1rem 0;">
-                <img src="${imageDataUrl}" alt="Estadísticas" style="max-width: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
-                <button onclick="window.shareStatistics('twitter', '${imageDataUrl}')" style="
-                    background: #1da1f2;
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                ">
-                    <i class="fab fa-twitter"></i>
-                    Twitter
-                </button>
+        modal.style.display = 'flex';
+
+        // Setup share buttons
+        this.setupShareButtons(imageDataUrl);
+    }
+
+    hideShareModal() {
+        const modal = document.getElementById('share-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    setupShareButtons(imageDataUrl) {
+        const shareButtons = document.querySelectorAll('.share-option');
+        
+        shareButtons.forEach(button => {
+            button.onclick = (e) => {
+                e.preventDefault();
+                const platform = button.classList.contains('twitter-share') ? 'twitter' :
+                               button.classList.contains('facebook-share') ? 'facebook' :
+                               button.classList.contains('instagram-share') ? 'instagram' :
+                               button.classList.contains('download-share') ? 'download' : 'native';
                 
-                <button onclick="window.shareStatistics('facebook', '${imageDataUrl}')" style="
-                    background: #1877f2;
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                ">
-                    <i class="fab fa-facebook"></i>
-                    Facebook
-                </button>
-                
-                <button onclick="window.shareStatistics('instagram', '${imageDataUrl}')" style="
-                    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                ">
-                    <i class="fab fa-instagram"></i>
-                    Instagram
-                </button>
-                
-                <button onclick="window.shareStatistics('download', '${imageDataUrl}')" style="
-                    background: #1db954;
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                ">
-                    <i class="fas fa-download"></i>
-                    Descargar
-                </button>
-            </div>
-            
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                background: #666;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 25px;
-                cursor: pointer;
-                margin-top: 1rem;
-            ">Cerrar</button>
-        `;
+                this.shareStats.shareToSocialMedia(imageDataUrl, platform);
+            };
+        });
 
-        modal.appendChild(content);
-        document.body.appendChild(modal);
+        // Setup modal close button
+        const closeButton = document.querySelector('.close-modal');
+        if (closeButton) {
+            closeButton.onclick = () => {
+                this.hideShareModal();
+            };
+        }
 
-        // Hacer la función de compartir global
-        window.shareStatistics = (platform, imageDataUrl) => {
-            this.shareStats.shareToSocialMedia(imageDataUrl, platform);
-        };
+        // Close modal when clicking outside
+        const modal = document.getElementById('share-modal');
+        if (modal) {
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    this.hideShareModal();
+                }
+            };
+        }
     }
 
     showNotification(message, type = 'success') {
@@ -758,13 +707,15 @@ class StatisticsManager {
         setTimeout(() => {
             notification.classList.remove('show');
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
             }, 300);
         }, 3000);
     }
 }
 
-// Inicializar cuando el DOM esté listo
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new StatisticsManager();
 }); 
