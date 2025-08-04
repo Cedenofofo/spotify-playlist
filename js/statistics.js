@@ -550,6 +550,18 @@ class StatisticsManager {
         const uniqueArtists = new Set(artists.items.map(artist => artist.name)).size;
         const uniqueTracks = new Set(tracks.items.map(track => track.name)).size;
 
+        // Calculate genre diversity (real data that changes with filters)
+        const allGenres = [];
+        artists.items.forEach(artist => {
+            if (artist.genres && artist.genres.length > 0) {
+                allGenres.push(...artist.genres);
+            }
+        });
+        const uniqueGenres = new Set(allGenres).size;
+        
+        // Calculate average genres per artist
+        const avgGenresPerArtist = allGenres.length / artists.items.length;
+
         container.innerHTML = `
             <div class="uniqueness-analysis">
                 <div class="uniqueness-visual">
@@ -572,6 +584,11 @@ class StatisticsManager {
                             <div class="metric-icon">🎤</div>
                             <div class="metric-value">${uniqueArtists}</div>
                             <div class="metric-label">Artistas Únicos</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">🎼</div>
+                            <div class="metric-value">${uniqueGenres}</div>
+                            <div class="metric-label">Géneros Únicos</div>
                         </div>
                     </div>
                 </div>

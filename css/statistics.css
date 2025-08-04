@@ -1781,7 +1781,7 @@
 /* ===== RESPONSIVE DESIGN FOR UNIQUENESS CARD ===== */
 @media (max-width: 768px) {
     .uniqueness-metrics {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.8rem;
         max-width: 100%;
     }
@@ -1821,7 +1821,7 @@
 
 @media (max-width: 480px) {
     .uniqueness-metrics {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.8rem;
     }
     
@@ -1859,5 +1859,29 @@
     
     .radar-score {
         font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .uniqueness-metrics {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .metric-item {
+        height: 70px;
+        padding: 0.8rem;
+    }
+    
+    .metric-icon {
+        font-size: 1.2rem;
+    }
+    
+    .metric-value {
+        font-size: 1.2rem;
+    }
+    
+    .metric-label {
+        font-size: 0.7rem;
     }
 } 
