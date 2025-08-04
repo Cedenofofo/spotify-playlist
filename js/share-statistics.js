@@ -321,6 +321,65 @@ class ShareStatistics {
                 this.drawModernMoodItem(mood, index + 1, y);
             });
         }
+        
+        // Agregar cuadros de métricas adicionales
+        this.drawAdditionalMetrics(startY + 580); // Start after moods section
+    }
+    
+    drawAdditionalMetrics(startY) {
+        const cardWidth = 300;
+        const cardHeight = 80;
+        const margin = 40;
+        const totalWidth = (cardWidth * 2) + margin;
+        const startX = (this.canvas.width - totalWidth) / 2;
+        
+        // Cuadro de tiempo de escucha
+        this.drawMetricCard('⏱️ Tiempo de Escucha', this.statsData.listeningTime || '0h 0min', startY, startX, cardWidth, cardHeight, '#1db954');
+        
+        // Cuadro de período seleccionado
+        const timeRangeLabel = this.getTimeRangeLabel();
+        this.drawMetricCard('📅 Período', timeRangeLabel, startY, startX + cardWidth + margin, cardWidth, cardHeight, '#00cfff');
+    }
+    
+    drawMetricCard(title, value, y, x, width, height, color) {
+        // Fondo de la tarjeta con efecto de cristal
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = 2;
+        this.roundRect(x, y, width, height, 15);
+        this.ctx.fill();
+        this.ctx.stroke();
+        
+        // Efecto de brillo en la parte superior
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + height);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        this.ctx.fillStyle = gradient;
+        this.roundRect(x, y, width, height / 2, 15);
+        this.ctx.fill();
+        
+        // Título
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 20px Inter, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(title, x + width / 2, y + 25);
+        
+        // Valor
+        this.ctx.fillStyle = color;
+        this.ctx.font = 'bold 24px Inter, sans-serif';
+        this.ctx.fillText(value, x + width / 2, y + 55);
+    }
+    
+    getTimeRangeLabel() {
+        const timeRange = document.getElementById('time-range-select')?.value || 'short_term';
+        const labels = {
+            'short_term': 'Últimas 4 semanas',
+            'medium_term': 'Últimos 6 meses',
+            'long_term': 'Todo el tiempo',
+            'custom_year': 'Último año',
+            'custom_range': 'Rango personalizado'
+        };
+        return labels[timeRange] || 'Últimas 4 semanas';
     }
 
     drawModernGenreItem(genre, rank, y) {
