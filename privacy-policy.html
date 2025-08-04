@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad y Términos de Uso - Tuneuptify</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:;">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .privacy-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(20, 20, 20, 0.95);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .privacy-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(0, 207, 255, 0.1));
+            border-radius: 12px;
+            border: 1px solid rgba(29, 185, 84, 0.2);
+        }
+        
+        .privacy-title {
+            color: #1db954;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .privacy-subtitle {
+            color: #ffffff;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .privacy-section {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            color: #1db954;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-content {
+            color: #ffffff;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        
+        .section-content h3 {
+            color: #1db954;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.3rem;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .section-content ul {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        .section-content li {
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(0, 207, 255, 0.1));
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .contact-info {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(0, 207, 255, 0.1));
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .contact-info h3 {
+            color: #1db954;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1db954;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-link:hover {
+            background: rgba(29, 185, 84, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .privacy-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .privacy-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .contact-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .back-button {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </button>
+
+    <div class="privacy-container">
+        <div class="privacy-header">
+            <h1 class="privacy-title">🔒 Política de Privacidad y Términos de Uso</h1>
+            <p class="privacy-subtitle">Tuneuptify - Tu seguridad y privacidad son nuestra prioridad</p>
+            <p class="privacy-subtitle">Última actualización: Enero 2025</p>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-shield-alt"></i>
+                Compromiso con la Seguridad
+            </h2>
+            <div class="section-content">
+                <p>En Tuneuptify, nos comprometemos a proteger tu privacidad y mantener la seguridad de tus datos. Esta política describe cómo recopilamos, usamos y protegemos tu información cuando utilizas nuestra aplicación.</p>
+                
+                <div class="highlight-box">
+                    <h3>🛡️ Principios de Seguridad</h3>
+                    <ul>
+                        <li><strong>Encriptación:</strong> Todos los datos se transmiten usando HTTPS y están encriptados</li>
+                        <li><strong>Tokens seguros:</strong> Los tokens de Spotify se almacenan de forma segura en tu dispositivo</li>
+                        <li><strong>Sin almacenamiento:</strong> No guardamos tus datos en nuestros servidores</li>
+                        <li><strong>Acceso limitado:</strong> Solo accedemos a los datos que necesitas para usar la app</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-database"></i>
+                Información que Recopilamos
+            </h2>
+            <div class="section-content">
+                <h3>📊 Datos de Spotify (con tu permiso)</h3>
+                <ul>
+                    <li><strong>Perfil básico:</strong> Nombre de usuario, email, país</li>
+                    <li><strong>Playlists:</strong> Tus playlists públicas y privadas</li>
+                    <li><strong>Estadísticas:</strong> Hábitos de escucha y preferencias musicales</li>
+                    <li><strong>Artistas y canciones:</strong> Tus favoritos y música escuchada</li>
+                </ul>
+
+                <h3>🔧 Datos Técnicos</h3>
+                <ul>
+                    <li><strong>Información del navegador:</strong> Tipo de navegador, sistema operativo</li>
+                    <li><strong>Datos de uso:</strong> Funciones que utilizas en la aplicación</li>
+                    <li><strong>Errores técnicos:</strong> Para mejorar la aplicación</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h3>⚠️ Lo que NO recopilamos</h3>
+                    <ul>
+                        <li>Contraseñas de Spotify (solo tokens de acceso)</li>
+                        <li>Información personal no relacionada con música</li>
+                        <li>Datos de pago o información financiera</li>
+                        <li>Ubicación geográfica específica</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-cogs"></i>
+                Cómo Usamos tu Información
+            </h2>
+            <div class="section-content">
+                <h3>🎵 Funcionalidades Principales</h3>
+                <ul>
+                    <li><strong>Gestión de Playlists:</strong> Crear, editar y organizar tus playlists</li>
+                    <li><strong>Análisis de Estadísticas:</strong> Mostrar tus hábitos de escucha</li>
+                    <li><strong>Recomendaciones:</strong> Sugerir música basada en tus gustos</li>
+                    <li><strong>Personalización:</strong> Adaptar la experiencia a tus preferencias</li>
+                </ul>
+
+                <h3>🔬 Mejoras de la Aplicación</h3>
+                <ul>
+                    <li>Analizar patrones de uso para mejorar la funcionalidad</li>
+                    <li>Identificar y corregir errores técnicos</li>
+                    <li>Desarrollar nuevas características basadas en el feedback</li>
+                    <li>Optimizar el rendimiento de la aplicación</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-share-alt"></i>
+                Compartir Información
+            </h2>
+            <div class="section-content">
+                <p><strong>No vendemos, alquilamos ni compartimos tu información personal con terceros.</strong></p>
+
+                <h3>🤝 Compartir Limitado</h3>
+                <ul>
+                    <li><strong>Spotify API:</strong> Solo para las funciones que solicitas</li>
+                    <li><strong>Servicios técnicos:</strong> Para mantener la aplicación funcionando</li>
+                    <li><strong>Requerimientos legales:</strong> Solo si es legalmente obligatorio</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h3>🔐 Protección de Datos</h3>
+                    <ul>
+                        <li>Todos los datos se transmiten usando encriptación SSL/TLS</li>
+                        <li>Los tokens de acceso se almacenan localmente en tu dispositivo</li>
+                        <li>No tenemos acceso a tu información cuando no usas la app</li>
+                        <li>Puedes revocar el acceso en cualquier momento desde Spotify</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-alt"></i>
+                Retención de Datos
+            </h2>
+            <div class="section-content">
+                <h3>⏰ Política de Retención</h3>
+                <ul>
+                    <li><strong>Datos locales:</strong> Se mantienen en tu dispositivo hasta que los elimines</li>
+                    <li><strong>Tokens de acceso:</strong> Se renuevan automáticamente o expiran</li>
+                    <li><strong>Datos de uso:</strong> Se eliminan después de 30 días</li>
+                    <li><strong>Información de cuenta:</strong> Se elimina cuando revocas el acceso</li>
+                </ul>
+
+                <h3>🗑️ Eliminación de Datos</h3>
+                <p>Puedes eliminar tus datos en cualquier momento:</p>
+                <ul>
+                    <li>Limpiando el almacenamiento local de tu navegador</li>
+                    <li>Revocando el acceso desde tu cuenta de Spotify</li>
+                    <li>Contactándonos para solicitar la eliminación completa</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-user-shield"></i>
+                Tus Derechos
+            </h2>
+            <div class="section-content">
+                <h3>✅ Derechos del Usuario</h3>
+                <ul>
+                    <li><strong>Acceso:</strong> Ver qué datos tenemos sobre ti</li>
+                    <li><strong>Rectificación:</strong> Corregir información incorrecta</li>
+                    <li><strong>Eliminación:</strong> Solicitar que eliminemos tus datos</li>
+                    <li><strong>Portabilidad:</strong> Obtener una copia de tus datos</li>
+                    <li><strong>Oposición:</strong> Oponerte al procesamiento de datos</li>
+                    <li><strong>Limitación:</strong> Limitar cómo usamos tus datos</li>
+                </ul>
+
+                <h3>🔧 Control de tu Información</h3>
+                <ul>
+                    <li>Puedes revocar el acceso a Spotify en cualquier momento</li>
+                    <li>Puedes eliminar datos locales limpiando el caché del navegador</li>
+                    <li>Puedes contactarnos para ejercer tus derechos</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-gavel"></i>
+                Términos de Uso
+            </h2>
+            <div class="section-content">
+                <h3>📋 Condiciones de Uso</h3>
+                <ul>
+                    <li><strong>Uso legítimo:</strong> Solo para uso personal y no comercial</li>
+                    <li><strong>Respeto a derechos:</strong> No infringir derechos de autor</li>
+                    <li><strong>Conducta apropiada:</strong> No usar la app para actividades ilegales</li>
+                    <li><strong>Responsabilidad:</strong> Eres responsable de tu uso de la aplicación</li>
+                </ul>
+
+                <h3>🚫 Restricciones</h3>
+                <ul>
+                    <li>No usar la app para spam o actividades maliciosas</li>
+                    <li>No intentar hackear o comprometer la seguridad</li>
+                    <li>No redistribuir o modificar el código sin permiso</li>
+                    <li>No usar la app para violar términos de Spotify</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h3>⚖️ Limitación de Responsabilidad</h3>
+                    <p>Tuneuptify se proporciona "tal como está" sin garantías. No somos responsables por:</p>
+                    <ul>
+                        <li>Pérdida de datos o interrupciones del servicio</li>
+                        <li>Daños indirectos o consecuenciales</li>
+                        <li>Problemas con la API de Spotify</li>
+                        <li>Uso incorrecto de la aplicación</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="privacy-section">
+            <h2 class="section-title">
+                <i class="fas fa-bell"></i>
+                Cambios en la Política
+            </h2>
+            <div class="section-content">
+                <p>Podemos actualizar esta política ocasionalmente. Te notificaremos sobre cambios importantes:</p>
+                <ul>
+                    <li>Publicando la nueva política en la aplicación</li>
+                    <li>Enviando notificaciones por email (si nos proporcionas uno)</li>
+                    <li>Mostrando un banner en la aplicación</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h3>📅 Fechas Importantes</h3>
+                    <ul>
+                        <li><strong>Fecha de vigencia:</strong> Enero 2025</li>
+                        <li><strong>Última revisión:</strong> Enero 2025</li>
+                        <li><strong>Próxima revisión:</strong> Julio 2025</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-info">
+            <h3>📞 ¿Tienes Preguntas?</h3>
+            <p>Si tienes preguntas sobre esta política o quieres ejercer tus derechos, contáctanos:</p>
+            
+            <div class="contact-links">
+                <a href="mailto:privacy@tuneuptify.com" class="contact-link">
+                    <i class="fas fa-envelope"></i>
+                    Email
+                </a>
+                <a href="https://x.com/cedenofofo" target="_blank" class="contact-link">
+                    <i class="fab fa-x-twitter"></i>
+                    Twitter
+                </a>
+                <a href="https://instagram.com/cedenofofo" target="_blank" class="contact-link">
+                    <i class="fab fa-instagram"></i>
+                    Instagram
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para volver atrás
+        function goBack() {
+            if (document.referrer) {
+                window.history.back();
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Hacer la función global
+        window.goBack = goBack;
+    </script>
+</body>
+</html> 

@@ -130,6 +130,20 @@ function navigateToStatistics() {
     }, 500);
 }
 
+// Navegar a política de privacidad
+function navigateToPrivacyPolicy() {
+    console.log('Navegando a política de privacidad');
+    
+    // Agregar efecto de loading
+    const card = event.currentTarget;
+    card.classList.add('loading');
+    
+    // Redirigir a la página de política de privacidad
+    setTimeout(() => {
+        window.location.href = 'privacy-policy.html';
+    }, 500);
+}
+
 // Función de logout mejorada
 function logout() {
     console.log('Cerrando sesión');
