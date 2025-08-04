@@ -284,38 +284,43 @@ class StatisticsManager {
         // Calculate total listening time based on real duration
         const totalDuration = recentlyPlayed.items.reduce((total, item) => total + item.track.duration_ms, 0);
         
-        // Adjust calculation based on time range to provide more realistic estimates
-        let adjustedDuration = totalDuration;
-        let multiplier = 1;
+        // Calculate realistic listening time based on time range
+        let estimatedDuration = totalDuration;
+        let timeRangeLabel = this.getTimeRangeLabel();
         
         switch (this.currentTimeRange) {
             case 'short_term':
-                // For 4 weeks, use actual data (limited by API to last 50 tracks)
-                multiplier = 1;
+                // For 4 weeks, use actual data but estimate based on daily listening
+                // Assume user listens to ~15 tracks per day on average
+                const daysInShortTerm = 28; // 4 weeks
+                const avgTracksPerDayShort = 15;
+                const totalEstimatedTracks = daysInShortTerm * avgTracksPerDayShort;
+                const avgTrackDuration = totalDuration / recentlyPlayed.items.length;
+                estimatedDuration = totalEstimatedTracks * avgTrackDuration;
                 break;
             case 'medium_term':
                 // For 6 months, estimate based on average daily listening
-                // Assume user listens to ~20 tracks per day on average
-                const daysInPeriod = 180; // 6 months
+                const daysInMediumTerm = 180; // 6 months
                 const avgTracksPerDayMedium = 20;
-                const totalEstimatedTracks = daysInPeriod * avgTracksPerDayMedium;
-                const avgTrackDuration = totalDuration / recentlyPlayed.items.length;
-                adjustedDuration = totalEstimatedTracks * avgTrackDuration;
+                const totalEstimatedTracksMedium = daysInMediumTerm * avgTracksPerDayMedium;
+                const avgTrackDurationMedium = totalDuration / recentlyPlayed.items.length;
+                estimatedDuration = totalEstimatedTracksMedium * avgTrackDurationMedium;
                 break;
             case 'long_term':
                 // For 1 year, estimate based on average daily listening
-                const daysInYear = 365;
-                const avgTracksPerDayLong = 25; // Slightly higher for long term
-                const totalEstimatedTracksYear = daysInYear * avgTracksPerDayLong;
-                const avgTrackDurationYear = totalDuration / recentlyPlayed.items.length;
-                adjustedDuration = totalEstimatedTracksYear * avgTrackDurationYear;
+                const daysInLongTerm = 365; // 1 year
+                const avgTracksPerDayLong = 25;
+                const totalEstimatedTracksLong = daysInLongTerm * avgTracksPerDayLong;
+                const avgTrackDurationLong = totalDuration / recentlyPlayed.items.length;
+                estimatedDuration = totalEstimatedTracksLong * avgTrackDurationLong;
                 break;
         }
-        
-        const totalHours = Math.floor(adjustedDuration / (1000 * 60 * 60));
-        const totalMinutes = Math.floor((adjustedDuration % (1000 * 60 * 60)) / (1000 * 60));
 
-        const timeRangeLabel = this.getTimeRangeLabel();
+        // Convert to hours and minutes
+        const totalHours = Math.floor(estimatedDuration / (1000 * 60 * 60));
+        const totalMinutes = Math.floor((estimatedDuration % (1000 * 60 * 60)) / (1000 * 60));
+
+        const timeValue = totalHours > 0 ? `${totalHours}h ${totalMinutes}min` : `${totalMinutes}min`;
 
         container.innerHTML = `
             <div class="listening-stats">
@@ -326,7 +331,7 @@ class StatisticsManager {
                     <span class="time-unit">min</span>
                 </div>
                 <div class="time-description">
-                    ${this.currentTimeRange === 'short_term' ? 'Basado en' : 'Estimado para'} ${recentlyPlayed.items.length} canciones (${timeRangeLabel})
+                    <p>Estimado para ${timeRangeLabel}</p>
                 </div>
             </div>
         `;
@@ -425,7 +430,6 @@ class StatisticsManager {
                         <div class="score-label">Exclusividad</div>
                     </div>
                     <div class="score-description">
-                        <h4>${uniquenessLevel.title}</h4>
                         <p>${uniquenessLevel.description}</p>
                     </div>
                 </div>

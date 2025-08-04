@@ -186,10 +186,20 @@ class ShareStatistics {
         this.ctx.textAlign = 'left';
         this.ctx.fillText(`#${rank}`, x + 20, y + 40);
         
-        // Nombre del artista
+        // Nombre del artista (truncado si es muy largo)
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 28px Inter, sans-serif';
-        this.ctx.fillText(artist.name, x + 80, y + 40);
+        this.ctx.textAlign = 'left';
+        
+        let artistName = artist.name;
+        const maxWidth = width - 200; // Dejar espacio para ranking y popularidad
+        
+        // Truncar nombre si es muy largo
+        while (this.ctx.measureText(artistName).width > maxWidth && artistName.length > 0) {
+            artistName = artistName.slice(0, -1);
+        }
+        
+        this.ctx.fillText(artistName, x + 80, y + 40);
         
         // Popularidad
         this.ctx.fillStyle = '#1db954';
@@ -213,17 +223,36 @@ class ShareStatistics {
         this.ctx.textAlign = 'left';
         this.ctx.fillText(`#${rank}`, x + 20, y + 35);
         
-        // Nombre de la canción
+        // Nombre de la canción (truncado si es muy largo)
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 24px Inter, sans-serif';
-        this.ctx.fillText(track.name, x + 80, y + 35);
+        this.ctx.textAlign = 'left';
         
-        // Artista (moved to right side)
+        let trackName = track.name;
+        const maxWidth = width - 250; // Dejar espacio para ranking y artista
+        
+        // Truncar nombre si es muy largo
+        while (this.ctx.measureText(trackName).width > maxWidth && trackName.length > 0) {
+            trackName = trackName.slice(0, -1);
+        }
+        
+        this.ctx.fillText(trackName, x + 80, y + 35);
+        
+        // Artista (moved to right side, truncated if too long)
         const artistName = track.artists.map(a => a.name).join(', ');
         this.ctx.fillStyle = '#cccccc';
         this.ctx.font = 'bold 20px Inter, sans-serif';
         this.ctx.textAlign = 'right';
-        this.ctx.fillText(artistName, x + width - 20, y + 40);
+        
+        let displayArtistName = artistName;
+        const artistMaxWidth = width - 200; // Dejar espacio para ranking y track name
+        
+        // Truncar nombre del artista si es muy largo
+        while (this.ctx.measureText(displayArtistName).width > artistMaxWidth && displayArtistName.length > 0) {
+            displayArtistName = displayArtistName.slice(0, -1);
+        }
+        
+        this.ctx.fillText(displayArtistName, x + width - 20, y + 40);
     }
 
     drawGenreAndMoodAnalysis() {
@@ -527,4 +556,4 @@ class ShareStatistics {
             }, 300);
         }, 3000);
     }
-} 
+}
