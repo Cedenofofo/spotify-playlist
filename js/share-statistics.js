@@ -537,15 +537,83 @@ class ShareStatistics {
     }
 
     shareToFacebook(imageDataUrl) {
-        // Para Facebook, descargamos la imagen y damos instrucciones para subir como historia
-        this.downloadImage(imageDataUrl);
-        this.showFacebookInstructions();
+        // Para Facebook, intentamos usar Web Share API para compartir directamente
+        if (navigator.share && navigator.canShare) {
+            // Convertir la imagen a Blob para compartir
+            fetch(imageDataUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: 'Mis Estadísticas de Spotify',
+                            text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
+                            files: [file]
+                        }).then(() => {
+                            this.showNotification('Compartiendo en Facebook...', 'success');
+                        }).catch((error) => {
+                            console.error('Error sharing:', error);
+                            // Fallback a descarga
+                            this.downloadImage(imageDataUrl);
+                            this.showFacebookInstructions();
+                        });
+                    } else {
+                        // Fallback si no se puede compartir archivos
+                        this.downloadImage(imageDataUrl);
+                        this.showFacebookInstructions();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing image:', error);
+                    this.downloadImage(imageDataUrl);
+                    this.showFacebookInstructions();
+                });
+        } else {
+            // Fallback para navegadores que no soportan Web Share API
+            this.downloadImage(imageDataUrl);
+            this.showFacebookInstructions();
+        }
     }
 
     shareToInstagram(imageDataUrl) {
-        // Para Instagram, descargamos la imagen y damos instrucciones para subir como historia
-        this.downloadImage(imageDataUrl);
-        this.showInstagramInstructions();
+        // Para Instagram, intentamos usar Web Share API para compartir directamente
+        if (navigator.share && navigator.canShare) {
+            // Convertir la imagen a Blob para compartir
+            fetch(imageDataUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: 'Mis Estadísticas de Spotify',
+                            text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
+                            files: [file]
+                        }).then(() => {
+                            this.showNotification('Compartiendo en Instagram...', 'success');
+                        }).catch((error) => {
+                            console.error('Error sharing:', error);
+                            // Fallback a descarga
+                            this.downloadImage(imageDataUrl);
+                            this.showInstagramInstructions();
+                        });
+                    } else {
+                        // Fallback si no se puede compartir archivos
+                        this.downloadImage(imageDataUrl);
+                        this.showInstagramInstructions();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing image:', error);
+                    this.downloadImage(imageDataUrl);
+                    this.showInstagramInstructions();
+                });
+        } else {
+            // Fallback para navegadores que no soportan Web Share API
+            this.downloadImage(imageDataUrl);
+            this.showInstagramInstructions();
+        }
     }
 
     downloadImage(imageDataUrl) {
