@@ -283,8 +283,37 @@ class StatisticsManager {
 
         // Calculate total listening time based on real duration
         const totalDuration = recentlyPlayed.items.reduce((total, item) => total + item.track.duration_ms, 0);
-        const totalHours = Math.floor(totalDuration / (1000 * 60 * 60));
-        const totalMinutes = Math.floor((totalDuration % (1000 * 60 * 60)) / (1000 * 60));
+        
+        // Adjust calculation based on time range to provide more realistic estimates
+        let adjustedDuration = totalDuration;
+        let multiplier = 1;
+        
+        switch (this.currentTimeRange) {
+            case 'short_term':
+                // For 4 weeks, use actual data (limited by API to last 50 tracks)
+                multiplier = 1;
+                break;
+            case 'medium_term':
+                // For 6 months, estimate based on average daily listening
+                // Assume user listens to ~20 tracks per day on average
+                const daysInPeriod = 180; // 6 months
+                const avgTracksPerDayMedium = 20;
+                const totalEstimatedTracks = daysInPeriod * avgTracksPerDayMedium;
+                const avgTrackDuration = totalDuration / recentlyPlayed.items.length;
+                adjustedDuration = totalEstimatedTracks * avgTrackDuration;
+                break;
+            case 'long_term':
+                // For 1 year, estimate based on average daily listening
+                const daysInYear = 365;
+                const avgTracksPerDayLong = 25; // Slightly higher for long term
+                const totalEstimatedTracksYear = daysInYear * avgTracksPerDayLong;
+                const avgTrackDurationYear = totalDuration / recentlyPlayed.items.length;
+                adjustedDuration = totalEstimatedTracksYear * avgTrackDurationYear;
+                break;
+        }
+        
+        const totalHours = Math.floor(adjustedDuration / (1000 * 60 * 60));
+        const totalMinutes = Math.floor((adjustedDuration % (1000 * 60 * 60)) / (1000 * 60));
 
         const timeRangeLabel = this.getTimeRangeLabel();
 
@@ -297,7 +326,7 @@ class StatisticsManager {
                     <span class="time-unit">min</span>
                 </div>
                 <div class="time-description">
-                    Basado en ${recentlyPlayed.items.length} canciones (${timeRangeLabel})
+                    ${this.currentTimeRange === 'short_term' ? 'Basado en' : 'Estimado para'} ${recentlyPlayed.items.length} canciones (${timeRangeLabel})
                 </div>
             </div>
         `;
@@ -398,16 +427,6 @@ class StatisticsManager {
                     <div class="score-description">
                         <h4>${uniquenessLevel.title}</h4>
                         <p>${uniquenessLevel.description}</p>
-                    </div>
-                </div>
-                <div class="uniqueness-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Popularidad promedio artistas:</span>
-                        <span class="detail-value">${Math.round(avgArtistPopularity)}%</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Popularidad promedio canciones:</span>
-                        <span class="detail-value">${Math.round(avgTrackPopularity)}%</span>
                     </div>
                 </div>
             </div>

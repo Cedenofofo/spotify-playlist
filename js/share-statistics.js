@@ -115,17 +115,6 @@ class ShareStatistics {
         
         // Tiempo de escucha
         this.drawStatCard('⏱️ Tiempo de Escucha', this.statsData.listeningTime || '0h 0min', startY, 50, cardWidth, '#1db954');
-        
-        // Score de exclusividad
-        this.drawStatCard('⭐ Exclusividad', `${this.statsData.uniquenessScore || 0}%`, startY, 50 + cardWidth + margin, cardWidth, '#00cfff');
-        
-        // Total de canciones
-        const totalTracks = this.statsData.topTracks?.items?.length || 0;
-        this.drawStatCard('🎵 Canciones Analizadas', `${totalTracks} canciones`, startY + cardHeight + margin, 50, cardWidth, '#ff6b35');
-        
-        // Total de artistas
-        const totalArtists = this.statsData.topArtists?.items?.length || 0;
-        this.drawStatCard('🎤 Artistas Únicos', `${totalArtists} artistas`, startY + cardHeight + margin, 50 + cardWidth + margin, cardWidth, '#9c27b0');
     }
 
     drawStatCard(title, value, y, x, width, color) {
@@ -202,14 +191,6 @@ class ShareStatistics {
         this.ctx.font = 'bold 28px Inter, sans-serif';
         this.ctx.fillText(artist.name, x + 80, y + 40);
         
-        // Géneros
-        if (artist.genres && artist.genres.length > 0) {
-            this.ctx.fillStyle = '#cccccc';
-            this.ctx.font = '18px Inter, sans-serif';
-            const genres = artist.genres.slice(0, 2).join(', ');
-            this.ctx.fillText(genres, x + 80, y + 60);
-        }
-        
         // Popularidad
         this.ctx.fillStyle = '#1db954';
         this.ctx.font = 'bold 20px Inter, sans-serif';
@@ -237,18 +218,12 @@ class ShareStatistics {
         this.ctx.font = 'bold 24px Inter, sans-serif';
         this.ctx.fillText(track.name, x + 80, y + 35);
         
-        // Artista
+        // Artista (moved to right side)
         const artistName = track.artists.map(a => a.name).join(', ');
         this.ctx.fillStyle = '#cccccc';
-        this.ctx.font = '18px Inter, sans-serif';
-        this.ctx.fillText(artistName, x + 80, y + 55);
-        
-        // Duración
-        const duration = this.formatDuration(track.duration_ms);
-        this.ctx.fillStyle = '#00cfff';
         this.ctx.font = 'bold 20px Inter, sans-serif';
         this.ctx.textAlign = 'right';
-        this.ctx.fillText(duration, x + width - 20, y + 40);
+        this.ctx.fillText(artistName, x + width - 20, y + 40);
     }
 
     drawGenreAndMoodAnalysis() {
