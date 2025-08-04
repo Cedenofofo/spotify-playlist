@@ -949,7 +949,7 @@ class EditPlaylistManager {
                 suggestionsContainer.style.display = 'none';
                 // Devolver las sugerencias a su contenedor original
                 const originalContainer = artistInput.parentNode;
-                if (suggestionsContainer.parentNode && suggestionsContainer.parentNode.classList.contains('artist-suggestions-portal')) {
+                if (suggestionsContainer.parentNode === document.body) {
                     originalContainer.appendChild(suggestionsContainer);
                 }
                 suggestionsContainer.style.position = 'absolute';
@@ -1058,20 +1058,12 @@ class EditPlaylistManager {
         suggestionsContainer.innerHTML = suggestionsHTML;
         suggestionsContainer.style.display = 'block';
 
-        // SOLUCIÓN DEFINITIVA - Crear un portal que cubra toda la pantalla
-        let portal = document.querySelector('.artist-suggestions-portal');
-        if (!portal) {
-            portal = document.createElement('div');
-            portal.className = 'artist-suggestions-portal';
-            document.body.appendChild(portal);
-        }
-
-        // Mover las sugerencias al portal
-        portal.appendChild(suggestionsContainer);
+        // SOLUCIÓN SIMPLE Y EFECTIVA - Mover al body con z-index máximo
+        document.body.appendChild(suggestionsContainer);
 
         // Posicionar las sugerencias correctamente
         const inputRect = artistInput.getBoundingClientRect();
-        suggestionsContainer.style.position = 'absolute';
+        suggestionsContainer.style.position = 'fixed';
         suggestionsContainer.style.top = (inputRect.bottom + 5) + 'px';
         suggestionsContainer.style.left = inputRect.left + 'px';
         suggestionsContainer.style.width = inputRect.width + 'px';
@@ -1095,7 +1087,7 @@ class EditPlaylistManager {
         
         // Devolver las sugerencias a su contenedor original
         const originalContainer = artistInput.parentNode;
-        if (suggestionsContainer.parentNode && suggestionsContainer.parentNode.classList.contains('artist-suggestions-portal')) {
+        if (suggestionsContainer.parentNode === document.body) {
             originalContainer.appendChild(suggestionsContainer);
         }
         suggestionsContainer.style.position = 'absolute';
