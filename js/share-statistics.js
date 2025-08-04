@@ -122,21 +122,8 @@ class ShareStatistics {
     }
 
     drawMainStatisticsCards() {
-        const startY = 400;
-        const cardHeight = 140;
-        const cardWidth = 300; // Reduced width to fit 3 cards
-        const margin = 30;
-        const totalWidth = (cardWidth * 3) + (margin * 2);
-        const startX = (this.canvas.width - totalWidth) / 2;
-        
-        // Tiempo de escucha
-        this.drawModernStatCard('⏱️ Tiempo', this.statsData.listeningTime || '0h 0min', startY, startX, cardWidth, '#1db954');
-        
-        // Canciones únicas
-        this.drawModernStatCard('🎵 Canciones', this.statsData.uniqueTracks || '0', startY, startX + cardWidth + margin, cardWidth, '#00cfff');
-        
-        // Géneros únicos
-        this.drawModernStatCard('🎼 Géneros', this.statsData.uniqueGenres || '0', startY, startX + (cardWidth + margin) * 2, cardWidth, '#ff6b35');
+        // Removed metric cards to improve visibility of other information
+        // The cards were taking up space and overlapping with other content
     }
 
     drawModernStatCard(title, value, y, x, width, color) {
@@ -169,7 +156,7 @@ class ShareStatistics {
     }
 
     drawTopArtistsAndTracksModern() {
-        const startY = 700; // Increased starting position
+        const startY = 500; // Moved up from 700 since we removed metric cards
         
         // Título de sección con diseño moderno
         this.ctx.fillStyle = '#ffffff';
@@ -304,9 +291,9 @@ class ShareStatistics {
     }
 
     drawGenreAndMoodAnalysisModern() {
-        const startY = 1600; // Moved further down to avoid overlap
+        const startY = 1400; // Moved up from 1600 since we removed metric cards
         
-        // Título de géneros con diseño moderno
+        // Título de géneros
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 44px Inter, sans-serif';
         this.ctx.textAlign = 'center';
@@ -397,7 +384,7 @@ class ShareStatistics {
     }
 
     drawModernFooter() {
-        const startY = 2000; // Moved further down to avoid overlap
+        const startY = 1800; // Moved up from 2000 since we moved other sections up
         
         // Línea separadora con efecto de neón
         this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.6)';
@@ -408,19 +395,20 @@ class ShareStatistics {
         this.ctx.stroke();
         
         // Logo y branding
-        this.ctx.fillStyle = '#1db954';
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 36px Inter, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('🎵 Tuneuptify', this.canvas.width / 2, startY + 60);
         
-        // URL y descripción
-        this.ctx.fillStyle = '#cccccc';
+        // URL
+        this.ctx.fillStyle = '#1db954';
         this.ctx.font = 'bold 24px Inter, sans-serif';
         this.ctx.fillText('tuneuptify.com', this.canvas.width / 2, startY + 100);
         
-        this.ctx.fillStyle = '#888888';
+        // Descripción
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         this.ctx.font = '20px Inter, sans-serif';
-        this.ctx.fillText('Descubre insights únicos sobre tus hábitos de escucha', this.canvas.width / 2, startY + 140);
+        this.ctx.fillText('Descubre tus estadísticas musicales', this.canvas.width / 2, startY + 140);
     }
 
     // Función auxiliar para crear rectángulos redondeados
