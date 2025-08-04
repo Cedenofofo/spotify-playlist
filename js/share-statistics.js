@@ -540,9 +540,281 @@ class ShareStatistics {
         this.shareToSocialApp(imageDataUrl, 'facebook');
     }
 
-    shareToInstagram(imageDataUrl) {
-        // Para Instagram, usar Web Share API con imagen
-        this.shareToSocialApp(imageDataUrl, 'instagram');
+    async shareToInstagram(imageDataUrl) {
+        try {
+            // Convertir la imagen a Blob
+            const response = await fetch(imageDataUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
+            
+            // Intentar usar Web Share API con archivos para Instagram Stories
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                const shareData = {
+                    title: 'Mis Estadísticas de Spotify',
+                    text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
+                    files: [file]
+                };
+                
+                await navigator.share(shareData);
+                this.showNotification('Compartiendo en Instagram Stories...', 'success');
+            } else {
+                // Intentar método alternativo con Instagram API
+                await this.tryInstagramStoriesDirectShare(imageDataUrl);
+            }
+        } catch (error) {
+            console.error('Error sharing to Instagram:', error);
+            // Fallback: intentar abrir Instagram Stories directamente
+            await this.tryInstagramStoriesDirectShare(imageDataUrl);
+        }
+    }
+
+    async tryInstagramDirectShare(imageDataUrl) {
+        try {
+            // Intentar usar el esquema de Instagram para compartir archivos
+            const instagramShareUrl = `instagram://library?AssetPickerSourceType=1&LocalIdentifier=${encodeURIComponent(imageDataUrl)}`;
+            
+            // Crear un enlace temporal para descargar la imagen
+            const link = document.createElement('a');
+            link.download = 'estadisticas-spotify.png';
+            link.href = imageDataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Intentar abrir Instagram con el esquema de compartir
+            window.location.href = instagramShareUrl;
+            
+            // Fallback después de 1 segundo
+            setTimeout(() => {
+                this.openInstagramStoriesDirectly(imageDataUrl);
+            }, 1000);
+            
+            this.showNotification('Abriendo Instagram para compartir...', 'success');
+        } catch (error) {
+            console.error('Error with Instagram direct share:', error);
+            this.openInstagramStoriesDirectly(imageDataUrl);
+        }
+    }
+
+    // Función adicional para intentar compartir directamente con Instagram Stories
+    async tryInstagramStoriesDirectShare(imageDataUrl) {
+        try {
+            // Convertir la imagen a base64 para intentar pasarla directamente
+            const response = await fetch(imageDataUrl);
+            const blob = await response.blob();
+            
+            // Crear un enlace temporal para descargar la imagen
+            const link = document.createElement('a');
+            link.download = 'estadisticas-spotify.png';
+            link.href = imageDataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Intentar múltiples esquemas de Instagram Stories
+            const schemes = [
+                'instagram://stories/create',
+                'instagram://stories',
+                'instagram://library?AssetPickerSourceType=1&MediaType=1',
+                'instagram://library?AssetPickerSourceType=1'
+            ];
+            
+            let opened = false;
+            
+            for (let i = 0; i < schemes.length; i++) {
+                if (!opened) {
+                    try {
+                        window.location.href = schemes[i];
+                        opened = true;
+                        this.showNotification(`Intentando método ${i + 1}...`, 'info');
+                    } catch (error) {
+                        console.log(`Método ${i + 1} falló`);
+                    }
+                }
+                
+                // Esperar un poco antes del siguiente intento
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // Si ningún esquema funcionó, mostrar instrucciones
+            if (!opened) {
+                this.showInstagramInstructions();
+            }
+            
+        } catch (error) {
+            console.error('Error with Instagram Stories direct share:', error);
+            this.showInstagramInstructions();
+        }
+    }
+
+    openInstagramStoriesDirectly(imageDataUrl) {
+        // Intentar múltiples métodos para abrir Instagram Stories
+        
+        // Método 1: Intentar abrir Instagram Stories directamente
+        const instagramStoriesUrl = 'instagram://stories';
+        
+        // Método 2: Intentar con parámetros específicos para stories
+        const instagramStoriesWithParams = 'instagram://stories/create';
+        
+        // Método 3: Intentar con el esquema de Instagram para compartir
+        const instagramShareUrl = 'instagram://library?AssetPickerSourceType=1';
+        
+        // Método 4: Intentar con el esquema específico para stories con imagen
+        const instagramStoriesWithImage = `instagram://stories/create?image=${encodeURIComponent(imageDataUrl)}`;
+        
+        // Método 5: Intentar con el esquema de Instagram para compartir archivos
+        const instagramFileShare = 'instagram://library?AssetPickerSourceType=1&MediaType=1';
+        
+        // Crear un enlace temporal para descargar la imagen
+        const link = document.createElement('a');
+        link.download = 'estadisticas-spotify.png';
+        link.href = imageDataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Mostrar instrucciones al usuario
+        this.showInstagramInstructions();
+        
+        // Intentar abrir Instagram con diferentes URLs
+        let opened = false;
+        
+        // Intentar con el primer método
+        try {
+            window.location.href = instagramStoriesUrl;
+            opened = true;
+        } catch (error) {
+            console.log('Primer método falló, intentando segundo...');
+        }
+        
+        // Si el primer método no funciona, intentar el segundo
+        setTimeout(() => {
+            if (!opened) {
+                try {
+                    window.location.href = instagramStoriesWithParams;
+                    opened = true;
+                } catch (error) {
+                    console.log('Segundo método falló, intentando tercero...');
+                }
+            }
+        }, 500);
+        
+        // Si los métodos anteriores no funcionan, intentar el tercero
+        setTimeout(() => {
+            if (!opened) {
+                try {
+                    window.location.href = instagramShareUrl;
+                    opened = true;
+                } catch (error) {
+                    console.log('Tercer método falló, intentando cuarto...');
+                }
+            }
+        }, 1000);
+        
+        // Si los métodos anteriores no funcionan, intentar el cuarto
+        setTimeout(() => {
+            if (!opened) {
+                try {
+                    window.location.href = instagramStoriesWithImage;
+                    opened = true;
+                } catch (error) {
+                    console.log('Cuarto método falló, intentando quinto...');
+                }
+            }
+        }, 1500);
+        
+        // Si los métodos anteriores no funcionan, intentar el quinto
+        setTimeout(() => {
+            if (!opened) {
+                try {
+                    window.location.href = instagramFileShare;
+                    opened = true;
+                } catch (error) {
+                    console.log('Quinto método falló, usando fallback web...');
+                }
+            }
+        }, 2000);
+        
+        // Fallback final a web después de 3 segundos
+        setTimeout(() => {
+            if (!opened) {
+                window.open('https://www.instagram.com/stories/create', '_blank');
+            }
+        }, 3000);
+        
+        this.showNotification('Abriendo Instagram Stories...', 'success');
+    }
+
+    showInstagramInstructions() {
+        // Crear un modal con instrucciones para el usuario
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        `;
+        
+        modal.innerHTML = `
+            <div style="
+                background: white;
+                padding: 2rem;
+                border-radius: 12px;
+                max-width: 450px;
+                text-align: center;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            ">
+                <h3 style="color: #1db954; margin-bottom: 1rem;">📱 Subir a Instagram Stories</h3>
+                <p style="margin-bottom: 1rem; color: #333;">
+                    La imagen se ha descargado automáticamente. Para subirla a tus historias:
+                </p>
+                <ol style="text-align: left; color: #666; margin-bottom: 1.5rem; line-height: 1.6;">
+                    <li><strong>Abre Instagram</strong> en tu dispositivo</li>
+                    <li><strong>Ve a "Crear historia"</strong> (botón + en la parte superior)</li>
+                    <li><strong>Selecciona la imagen</strong> descargada desde tu galería</li>
+                    <li><strong>Personaliza</strong> con stickers, texto o filtros si quieres</li>
+                    <li><strong>¡Comparte tu estadística!</strong> 🎵</li>
+                </ol>
+                <div style="
+                    background: #f8f9fa;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    margin-bottom: 1.5rem;
+                    border-left: 4px solid #1db954;
+                ">
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                        <strong>💡 Tip:</strong> La imagen se guardó como "estadisticas-spotify.png" en tu carpeta de descargas.
+                    </p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: #1db954;
+                    color: white;
+                    border: none;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    transition: background 0.3s;
+                " onmouseover="this.style.background='#1ed760'" onmouseout="this.style.background='#1db954'">
+                    ¡Entendido!
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Auto-cerrar después de 15 segundos
+        setTimeout(() => {
+            if (document.body.contains(modal)) {
+                modal.remove();
+            }
+        }, 15000);
     }
 
     async shareToSocialApp(imageDataUrl, platform) {

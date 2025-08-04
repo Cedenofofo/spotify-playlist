@@ -6,26 +6,31 @@ class Auth {
             this.setupEventListeners();
             this.checkAuth();
         } else {
-            // Esperar a que config se cargue
-            const checkConfig = () => {
-                if (window.config) {
-                    this.config = window.config;
-                    this.setupEventListeners();
-                    this.checkAuth();
-                } else {
-                    // Si después de 3 segundos no hay config, mostrar error
-                    setTimeout(() => {
-                        if (!window.config) {
-                            console.error('Configuración no disponible después de 3 segundos');
-                            this.showConfigError();
-                        } else {
-                            checkConfig();
-                        }
-                    }, 3000);
-                }
-            };
-            checkConfig();
+            // Esperar a que config se cargue con mejor manejo
+            this.waitForConfig();
         }
+    }
+
+    waitForConfig() {
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        const checkConfig = () => {
+            if (window.config) {
+                this.config = window.config;
+                this.setupEventListeners();
+                this.checkAuth();
+            } else if (attempts < maxAttempts) {
+                attempts++;
+                console.log(`Esperando configuración... Intento ${attempts}/${maxAttempts}`);
+                setTimeout(checkConfig, 500);
+            } else {
+                console.error('Configuración no disponible después de 5 segundos');
+                this.showConfigError();
+            }
+        };
+        
+        checkConfig();
     }
 
     setupEventListeners() {
@@ -83,6 +88,8 @@ class Auth {
 
     async refreshAccessToken(refreshToken) {
         try {
+            console.log('Intentando refrescar token...');
+            
             const response = await fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: {
@@ -97,25 +104,28 @@ class Auth {
 
             if (response.ok) {
                 const data = await response.json();
-                
-                // Guardar nuevo token
-                localStorage.setItem('spotify_access_token', data.access_token);
-                localStorage.setItem('spotify_token_expires', Date.now() + (data.expires_in * 1000));
-                
-                // Si hay nuevo refresh token, actualizarlo
-                if (data.refresh_token) {
-                    localStorage.setItem('spotify_refresh_token', data.refresh_token);
-                }
-
-                // Continuar con la verificación
+                this.saveTokens(data);
+                console.log('Token refrescado exitosamente');
                 this.checkAuth();
             } else {
-                // Error en refresh - limpiar y mostrar login
+                console.error('Error refreshing token:', response.status);
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Error details:', errorData);
                 this.logout();
             }
         } catch (error) {
             console.error('Error refreshing token:', error);
+            this.showNetworkError();
             this.logout();
+        }
+    }
+
+    saveTokens(data) {
+        localStorage.setItem('spotify_access_token', data.access_token);
+        localStorage.setItem('spotify_token_expires', Date.now() + (data.expires_in * 1000));
+        
+        if (data.refresh_token) {
+            localStorage.setItem('spotify_refresh_token', data.refresh_token);
         }
     }
 
@@ -232,11 +242,18 @@ class Auth {
             border-radius: 8px;
             z-index: 10000;
             text-align: center;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         `;
         errorDiv.innerHTML = `
-            <h3>Error de Configuración</h3>
+            <h3>⚠️ Error de Configuración</h3>
             <p>No se pudo cargar la configuración de la aplicación.</p>
-            <p>Por favor, recarga la página.</p>
+            <p>Posibles causas:</p>
+            <ul style="text-align: left; margin: 10px 0;">
+                <li>Archivo config.js no encontrado</li>
+                <li>Error de red al cargar recursos</li>
+                <li>Problema de CORS</li>
+            </ul>
             <button onclick="location.reload()" style="
                 background: white;
                 color: #e74c3c;
@@ -245,9 +262,76 @@ class Auth {
                 border-radius: 4px;
                 cursor: pointer;
                 margin-top: 10px;
-            ">Recargar Página</button>
+            ">🔄 Recargar Página</button>
         `;
         document.body.appendChild(errorDiv);
+    }
+
+    async checkNetworkStatus() {
+        try {
+            const token = this.getAccessToken();
+            if (!token) return false;
+            
+            const response = await fetch('https://api.spotify.com/v1/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.status === 401) {
+                // Token expirado
+                const refreshToken = localStorage.getItem('spotify_refresh_token');
+                if (refreshToken) {
+                    await this.refreshAccessToken(refreshToken);
+                } else {
+                    this.logout();
+                }
+            } else if (response.status === 200) {
+                // Token válido
+                return true;
+            }
+        } catch (error) {
+            console.error('Error checking network status:', error);
+            this.showNetworkError();
+        }
+        return false;
+    }
+
+    showNetworkError() {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f39c12;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 10000;
+            max-width: 300px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        `;
+        errorDiv.innerHTML = `
+            <h4>⚠️ Problema de Conexión</h4>
+            <p>No se pudo conectar con Spotify. Verifica tu conexión a internet.</p>
+            <button onclick="this.parentElement.remove()" style="
+                background: white;
+                color: #f39c12;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+            ">Cerrar</button>
+        `;
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remover después de 10 segundos
+        setTimeout(() => {
+            if (document.body.contains(errorDiv)) {
+                errorDiv.remove();
+            }
+        }, 10000);
     }
 }
 

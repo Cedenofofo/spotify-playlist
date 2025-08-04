@@ -96,13 +96,31 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(`Error ${response.status}: ${errorData.error_description || errorData.error || 'Error desconocido'}`);
+                    let errorMessage = `Error ${response.status}: ${errorData.error_description || errorData.error || 'Error desconocido'}`;
+                    
+                    // Mensajes de error específicos
+                    switch (response.status) {
+                        case 400:
+                            errorMessage = 'Código de autorización inválido o expirado. Por favor, intenta de nuevo.';
+                            break;
+                        case 401:
+                            errorMessage = 'Credenciales de aplicación inválidas. Contacta al administrador.';
+                            break;
+                        case 403:
+                            errorMessage = 'Acceso denegado. Verifica los permisos de la aplicación.';
+                            break;
+                        case 429:
+                            errorMessage = 'Demasiadas solicitudes. Espera un momento antes de intentar de nuevo.';
+                            break;
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
 
                 const data = await response.json();
 
                 if (data.access_token) {
-                    // Guardar el token en localStorage
+                    // Guardar tokens
                     localStorage.setItem('spotify_access_token', data.access_token);
                     localStorage.setItem('spotify_token_expires', Date.now() + (data.expires_in * 1000));
                     
@@ -123,10 +141,10 @@
                 console.error('Error:', error);
                 handleError('Error al obtener el token de acceso: ' + error.message);
                 
-                // Redirigir a la página principal después de 3 segundos
+                // Redirigir a la página principal después de 5 segundos
                 setTimeout(() => {
                     window.location.href = 'index.html';
-                }, 3000);
+                }, 5000);
             }
         }
 
