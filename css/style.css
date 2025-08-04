@@ -306,6 +306,15 @@ body {
 .hero-actions {
   display: flex;
   justify-content: center;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .hero-actions {
+    flex-direction: row;
+  }
 }
 
 .hero-btn {
@@ -326,6 +335,20 @@ body {
 .hero-btn:hover {
   transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(29, 185, 84, 0.3);
+}
+
+.hero-btn.secondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.hero-btn.secondary:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
 }
 
 .btn-content {

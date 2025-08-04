@@ -769,4 +769,23 @@ window.removeArtist = removeArtist;
 window.showNotification = showNotification;
 window.showLoadingAnimation = showLoadingAnimation;
 window.hideLoadingAnimation = hideLoadingAnimation;
-window.displayPlaylistPreview = displayPlaylistPreview; 
+window.displayPlaylistPreview = displayPlaylistPreview;
+
+// ===== NAVEGACIÓN A POLÍTICA DE PRIVACIDAD =====
+function navigateToPrivacyPolicy() {
+    console.log('Navegando a política de privacidad');
+    
+    // Agregar efecto de loading al botón
+    const button = event.currentTarget;
+    if (button) {
+        button.classList.add('loading');
+    }
+    
+    // Redirigir a la página de política de privacidad
+    setTimeout(() => {
+        window.location.href = 'privacy-policy.html';
+    }, 500);
+}
+
+// Hacer la función global
+window.navigateToPrivacyPolicy = navigateToPrivacyPolicy; 
