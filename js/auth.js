@@ -13,7 +13,15 @@ class Auth {
                     this.setupEventListeners();
                     this.checkAuth();
                 } else {
-                    setTimeout(checkConfig, 50);
+                    // Si después de 3 segundos no hay config, mostrar error
+                    setTimeout(() => {
+                        if (!window.config) {
+                            console.error('Configuración no disponible después de 3 segundos');
+                            this.showConfigError();
+                        } else {
+                            checkConfig();
+                        }
+                    }, 3000);
                 }
             };
             checkConfig();
@@ -33,6 +41,7 @@ class Auth {
     checkAuth() {
         const accessToken = localStorage.getItem('spotify_access_token');
         const tokenExpires = localStorage.getItem('spotify_token_expires');
+        const refreshToken = localStorage.getItem('spotify_refresh_token');
 
         if (accessToken && tokenExpires) {
             // Verificar si el token ha expirado
@@ -56,14 +65,58 @@ class Auth {
                     return;
                 }
             } else {
-                // Token expirado - limpiar y mostrar login
-                this.logout();
-                return;
+                // Token expirado - intentar refresh
+                if (refreshToken) {
+                    this.refreshAccessToken(refreshToken);
+                    return;
+                } else {
+                    // No hay refresh token - limpiar y mostrar login
+                    this.logout();
+                    return;
+                }
             }
         }
 
         // No hay token válido - mostrar login
         this.showLoginSection();
+    }
+
+    async refreshAccessToken(refreshToken) {
+        try {
+            const response = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa(this.config.clientId + ':' + this.config.clientSecret)
+                },
+                body: new URLSearchParams({
+                    grant_type: 'refresh_token',
+                    refresh_token: refreshToken
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Guardar nuevo token
+                localStorage.setItem('spotify_access_token', data.access_token);
+                localStorage.setItem('spotify_token_expires', Date.now() + (data.expires_in * 1000));
+                
+                // Si hay nuevo refresh token, actualizarlo
+                if (data.refresh_token) {
+                    localStorage.setItem('spotify_refresh_token', data.refresh_token);
+                }
+
+                // Continuar con la verificación
+                this.checkAuth();
+            } else {
+                // Error en refresh - limpiar y mostrar login
+                this.logout();
+            }
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            this.logout();
+        }
     }
 
     login() {
@@ -163,6 +216,38 @@ class Auth {
 
     getAccessToken() {
         return localStorage.getItem('spotify_access_token');
+    }
+
+    showConfigError() {
+        // Mostrar mensaje de error si la configuración no se carga
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e74c3c;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            text-align: center;
+        `;
+        errorDiv.innerHTML = `
+            <h3>Error de Configuración</h3>
+            <p>No se pudo cargar la configuración de la aplicación.</p>
+            <p>Por favor, recarga la página.</p>
+            <button onclick="location.reload()" style="
+                background: white;
+                color: #e74c3c;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+            ">Recargar Página</button>
+        `;
+        document.body.appendChild(errorDiv);
     }
 }
 

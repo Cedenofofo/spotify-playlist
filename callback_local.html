@@ -82,6 +82,24 @@
             document.getElementById('auth-message').textContent = 'Error en la autenticación';
             document.getElementById('auth-error').textContent = message;
             document.getElementById('auth-error').style.display = 'block';
+            
+            // Agregar botón de reintento
+            const retryButton = document.createElement('button');
+            retryButton.textContent = 'Reintentar';
+            retryButton.style.cssText = `
+                background: #1db954;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-top: 1rem;
+                font-size: 1rem;
+            `;
+            retryButton.onclick = () => {
+                window.location.href = 'index.html';
+            };
+            document.querySelector('.auth-container').appendChild(retryButton);
         }
 
         // Función para intercambiar código por token
@@ -107,7 +125,18 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(`Error ${response.status}: ${errorData.error_description || errorData.error || 'Error desconocido'}`);
+                    let errorMessage = `Error ${response.status}: ${errorData.error_description || errorData.error || 'Error desconocido'}`;
+                    
+                    // Mensajes de error más específicos
+                    if (response.status === 400) {
+                        errorMessage = 'Código de autorización inválido o expirado. Por favor, intenta de nuevo.';
+                    } else if (response.status === 401) {
+                        errorMessage = 'Credenciales de aplicación inválidas. Contacta al administrador.';
+                    } else if (response.status === 403) {
+                        errorMessage = 'Acceso denegado. Verifica los permisos de la aplicación.';
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
 
                 const data = await response.json();
@@ -134,10 +163,10 @@
                 console.error('Error:', error);
                 handleError('Error al obtener el token de acceso: ' + error.message);
                 
-                // Redirigir a la página principal después de 3 segundos
+                // Redirigir a la página principal después de 5 segundos
                 setTimeout(() => {
                     window.location.href = 'index.html';
-                }, 3000);
+                }, 5000);
             }
         }
 
