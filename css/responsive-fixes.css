@@ -452,8 +452,8 @@ body {
   }
   
   .suggestion-item img {
-    width: 35px !important;
-    height: 35px !important;
+    width: 24px !important;
+    height: 24px !important;
     flex-shrink: 0 !important;
   }
   
@@ -610,8 +610,8 @@ body {
   }
   
   .suggestion-item img {
-    width: 30px !important;
-    height: 30px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
   
   .notification {
@@ -766,8 +766,8 @@ body {
   }
   
   .suggestion-item img {
-    width: 25px !important;
-    height: 25px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
   
   .notification {
@@ -968,8 +968,8 @@ body {
 }
 
 .suggestion-item img {
-  width: 40px !important;
-  height: 40px !important;
+  width: 24px !important;
+  height: 24px !important;
   border-radius: 4px !important;
   object-fit: cover !important;
   flex-shrink: 0 !important;
