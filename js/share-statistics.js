@@ -537,24 +537,22 @@ class ShareStatistics {
     }
 
     shareToFacebook(imageDataUrl) {
-        // Para Facebook, intentamos usar Web Share API para compartir directamente
+        // Para Facebook, redirigir a la app/página con la imagen lista
         if (navigator.share && navigator.canShare) {
             this.prepareAndShareImage(imageDataUrl, 'facebook');
         } else {
-            // Fallback: copiar al portapapeles y dar instrucciones
-            this.copyImageToClipboard(imageDataUrl);
-            this.showFacebookInstructions();
+            // Redirigir a Facebook Stories
+            this.redirectToFacebookStories(imageDataUrl);
         }
     }
 
     shareToInstagram(imageDataUrl) {
-        // Para Instagram, intentamos usar Web Share API para compartir directamente
+        // Para Instagram, redirigir a la app/página con la imagen lista
         if (navigator.share && navigator.canShare) {
             this.prepareAndShareImage(imageDataUrl, 'instagram');
         } else {
-            // Fallback: copiar al portapapeles y dar instrucciones
-            this.copyImageToClipboard(imageDataUrl);
-            this.showInstagramInstructions();
+            // Redirigir a Instagram Stories
+            this.redirectToInstagramStories(imageDataUrl);
         }
     }
 
@@ -789,5 +787,43 @@ class ShareStatistics {
                 }
             }, 300);
         }, 3000);
+    }
+
+    redirectToFacebookStories(imageDataUrl) {
+        // Intentar abrir la app de Facebook Stories
+        const facebookStoriesUrl = 'fb://stories';
+        const facebookWebUrl = 'https://www.facebook.com/stories/create';
+        
+        // Primero intentar abrir la app
+        window.location.href = facebookStoriesUrl;
+        
+        // Fallback después de un tiempo si no se abre la app
+        setTimeout(() => {
+            // Si no se abrió la app, abrir en web
+            window.open(facebookWebUrl, '_blank');
+        }, 1000);
+        
+        // Copiar la imagen al portapapeles para que esté lista
+        this.copyImageToClipboard(imageDataUrl);
+        this.showNotification('Redirigiendo a Facebook Stories...', 'success');
+    }
+
+    redirectToInstagramStories(imageDataUrl) {
+        // Intentar abrir la app de Instagram Stories
+        const instagramStoriesUrl = 'instagram://stories';
+        const instagramWebUrl = 'https://www.instagram.com/stories/create';
+        
+        // Primero intentar abrir la app
+        window.location.href = instagramStoriesUrl;
+        
+        // Fallback después de un tiempo si no se abre la app
+        setTimeout(() => {
+            // Si no se abrió la app, abrir en web
+            window.open(instagramWebUrl, '_blank');
+        }, 1000);
+        
+        // Copiar la imagen al portapapeles para que esté lista
+        this.copyImageToClipboard(imageDataUrl);
+        this.showNotification('Redirigiendo a Instagram Stories...', 'success');
     }
 }
