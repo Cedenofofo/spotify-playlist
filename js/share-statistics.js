@@ -156,33 +156,34 @@ class ShareStatistics {
     }
 
     drawTopArtistsAndTracksModern() {
-        const startY = 450; // Moved up slightly
+        const startY = 450;
         
-        // Título de sección con diseño moderno
+        // Título de artistas
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 36px Inter, sans-serif'; // Reduced font size
+        this.ctx.font = 'bold 36px Inter, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('🎤 Top 3 Artistas', this.canvas.width / 2, startY);
         
-        // Top 3 Artistas con diseño de tarjetas modernas
+        // Top 3 Artistas
         if (this.statsData.topArtists?.items) {
-            const artists = this.statsData.topArtists.items.slice(0, 3); // Changed from 5 to 3
+            const artists = this.statsData.topArtists.items.slice(0, 3);
             artists.forEach((artist, index) => {
-                const y = startY + 60 + (index * 70); // Reduced spacing between items
+                const y = startY + 60 + (index * 70);
                 this.drawModernArtistItem(artist, index + 1, y);
             });
         }
         
-        // Título de canciones - moved further down to avoid overlap
+        // Título de canciones - espaciado uniforme
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 36px Inter, sans-serif'; // Reduced font size
-        this.ctx.fillText('🎵 Top 3 Canciones', this.canvas.width / 2, startY + 400); // Increased spacing
+        this.ctx.font = 'bold 36px Inter, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('🎵 Top 3 Canciones', this.canvas.width / 2, startY + 350); // Espaciado uniforme
         
-        // Top 3 Canciones con diseño de tarjetas modernas
+        // Top 3 Canciones
         if (this.statsData.topTracks?.items) {
-            const tracks = this.statsData.topTracks.items.slice(0, 3); // Changed from 5 to 3
+            const tracks = this.statsData.topTracks.items.slice(0, 3);
             tracks.forEach((track, index) => {
-                const y = startY + 460 + (index * 70); // Increased spacing between items
+                const y = startY + 410 + (index * 70); // Espaciado uniforme
                 this.drawModernTrackItem(track, index + 1, y);
             });
         }
@@ -291,7 +292,7 @@ class ShareStatistics {
     }
 
     drawGenreAndMoodAnalysisModern() {
-        const startY = 1400; // Moved down to avoid overlap with songs section
+        const startY = 1200; // Espaciado uniforme desde canciones
         
         // Título de géneros
         this.ctx.fillStyle = '#ffffff';
@@ -299,7 +300,7 @@ class ShareStatistics {
         this.ctx.textAlign = 'center';
         this.ctx.fillText('🎼 Top 3 Géneros', this.canvas.width / 2, startY);
         
-        // Top 3 Géneros con diseño de gráficos circulares
+        // Top 3 Géneros
         if (this.statsData.genres && this.statsData.genres.length > 0) {
             const genres = this.statsData.genres.slice(0, 3);
             genres.forEach((genre, index) => {
@@ -308,23 +309,23 @@ class ShareStatistics {
             });
         }
         
-        // Título de mood - moved further down
+        // Título de mood - espaciado uniforme
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 32px Inter, sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('💫 Top 3 Estados de Ánimo', this.canvas.width / 2, startY + 280);
+        this.ctx.fillText('💫 Top 3 Estados de Ánimo', this.canvas.width / 2, startY + 350); // Espaciado uniforme
         
-        // Top 3 Estados de ánimo con diseño de gráficos circulares
+        // Top 3 Estados de ánimo
         if (this.statsData.moods && this.statsData.moods.length > 0) {
             const moods = this.statsData.moods.slice(0, 3);
             moods.forEach((mood, index) => {
-                const y = startY + 330 + (index * 60);
+                const y = startY + 400 + (index * 60); // Espaciado uniforme
                 this.drawModernMoodItem(mood, index + 1, y);
             });
         }
         
-        // Agregar cuadros de métricas adicionales
-        this.drawAdditionalMetrics(startY + 580);
+        // Métricas adicionales - espaciado uniforme
+        this.drawAdditionalMetrics(startY + 650); // Espaciado uniforme
     }
     
     drawAdditionalMetrics(startY) {
