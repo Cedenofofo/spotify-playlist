@@ -279,6 +279,14 @@ async function searchArtists(query, suggestionsDiv, artistInput) {
 function displayArtistResults(artists, suggestionsDiv, artistInput) {
     suggestionsDiv.innerHTML = '';
     
+    // Agregar mensaje informativo
+    if (artists.length > 0) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'suggestion-info-message';
+        infoDiv.innerHTML = '<i class="fas fa-info-circle"></i> Mostrando los 5 mejores resultados';
+        suggestionsDiv.appendChild(infoDiv);
+    }
+    
     artists.forEach(artist => {
         const artistDiv = document.createElement('div');
         artistDiv.className = 'autocomplete-suggestion';

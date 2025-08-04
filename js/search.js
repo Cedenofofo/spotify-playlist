@@ -74,6 +74,14 @@ class SearchManager {
     displayResults(tracks, suggestionsDiv, searchInput) {
         suggestionsDiv.innerHTML = '';
 
+        // Agregar mensaje informativo
+        if (tracks.length > 0) {
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'suggestion-info-message';
+            infoDiv.innerHTML = '<i class="fas fa-info-circle"></i> Mostrando los 5 mejores resultados';
+            suggestionsDiv.appendChild(infoDiv);
+        }
+
         tracks.forEach(track => {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'autocomplete-suggestion';

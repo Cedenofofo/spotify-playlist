@@ -441,6 +441,42 @@ body {
     z-index: 1000;
 }
 
+/* Contenedor con altura fija para evitar superposiciones */
+.autocomplete-container {
+    position: relative;
+    z-index: 1000;
+    margin-bottom: 220px; /* Espacio reservado para sugerencias */
+}
+
+/* Garantizar que los elementos del formulario no se superpongan */
+.form-group {
+    position: relative;
+    z-index: 1;
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group:has(.autocomplete-container) {
+    margin-bottom: 240px; /* Espacio extra para grupos con autocomplete */
+}
+
+/* Asegurar que las sugerencias estén siempre por encima */
+.autocomplete-suggestions {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    height: 200px; /* Altura fija en lugar de max-height */
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    margin-top: 0.5rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 99999;
+}
+
 .autocomplete-suggestions {
     position: absolute;
     top: 100%;
@@ -449,13 +485,18 @@ body {
     background: var(--bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
-    max-height: 300px;
+    height: 200px; /* Altura fija en lugar de max-height */
     overflow-y: auto;
     box-shadow: var(--shadow-xl);
     margin-top: 0.5rem;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     z-index: 99999;
+    /* Garantizar que esté siempre por encima */
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
 }
 
 .suggestion-item {
@@ -504,6 +545,24 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Mensaje informativo en las sugerencias */
+.suggestion-info-message {
+    padding: 0.75rem 1rem;
+    background: rgba(99, 102, 241, 0.1);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.suggestion-info-message i {
+    font-size: 0.9rem;
 }
 
 /* ===== BOTONES DE ACCIÓN ===== */
