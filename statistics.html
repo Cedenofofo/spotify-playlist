@@ -38,58 +38,40 @@
                     </div>
                     <div class="btn-ripple"></div>
                 </button>
+                <div class="time-range-selector">
+                    <label for="time-range-select">Período:</label>
+                    <select id="time-range-select">
+                        <option value="short_term">Últimas 4 semanas</option>
+                        <option value="medium_term">Últimos 6 meses</option>
+                        <option value="long_term">Todo el tiempo</option>
+                        <option value="custom_year">Último año</option>
+                        <option value="custom_range">Rango personalizado</option>
+                    </select>
+                </div>
+                <button id="share-stats-button" class="share-button">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Compartir</span>
+                </button>
             </nav>
         </div>
     </header>
 
+    <!-- Custom Date Range Container -->
+    <div class="custom-date-range" id="custom-date-range" style="display: none;">
+        <div class="date-inputs">
+            <div class="date-input">
+                <label for="start-date">Desde:</label>
+                <input type="date" id="start-date">
+            </div>
+            <div class="date-input">
+                <label for="end-date">Hasta:</label>
+                <input type="date" id="end-date">
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="stats-container">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h2 class="hero-title">
-                        <i class="fas fa-chart-line"></i>
-                        Tu Música en Números
-                    </h2>
-                    <p class="hero-subtitle">Descubre insights únicos sobre tus hábitos de escucha</p>
-                </div>
-                
-                <div class="hero-controls">
-                    <div class="controls-group">
-                        <div class="time-range-selector">
-                            <label for="time-range-select">Período:</label>
-                            <select id="time-range-select">
-                                <option value="short_term">Últimas 4 semanas</option>
-                                <option value="medium_term">Últimos 6 meses</option>
-                                <option value="long_term">Todo el tiempo</option>
-                                <option value="custom_year">Último año</option>
-                                <option value="custom_range">Rango personalizado</option>
-                            </select>
-                        </div>
-                        
-                        <button id="share-stats-button" class="share-button">
-                            <i class="fas fa-share-alt"></i>
-                            <span>Compartir</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="custom-date-range" id="custom-date-range" style="display: none;">
-                <div class="date-inputs">
-                    <div class="date-input">
-                        <label for="start-date">Desde:</label>
-                        <input type="date" id="start-date">
-                    </div>
-                    <div class="date-input">
-                        <label for="end-date">Hasta:</label>
-                        <input type="date" id="end-date">
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Error Container -->
         <div id="error-container" class="error-container"></div>
 
