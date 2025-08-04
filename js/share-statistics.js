@@ -384,31 +384,7 @@ class ShareStatistics {
     }
 
     drawModernFooter() {
-        const startY = 1400; // Moved up from 1600 to fit better
-        
-        // Línea separadora con efecto de neón
-        this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.6)';
-        this.ctx.lineWidth = 3;
-        this.ctx.beginPath();
-        this.ctx.moveTo(100, startY);
-        this.ctx.lineTo(this.canvas.width - 100, startY);
-        this.ctx.stroke();
-        
-        // Logo y branding
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 32px Inter, sans-serif'; // Reduced font size
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('🎵 Tuneuptify', this.canvas.width / 2, startY + 50);
-        
-        // URL
-        this.ctx.fillStyle = '#1db954';
-        this.ctx.font = 'bold 20px Inter, sans-serif'; // Reduced font size
-        this.ctx.fillText('tuneuptify.com', this.canvas.width / 2, startY + 80);
-        
-        // Descripción
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        this.ctx.font = '18px Inter, sans-serif'; // Reduced font size
-        this.ctx.fillText('Descubre tus estadísticas musicales', this.canvas.width / 2, startY + 110);
+        // Footer removed to clean up the design
     }
 
     // Función auxiliar para crear rectángulos redondeados
