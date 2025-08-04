@@ -174,43 +174,7 @@
                                 <div id="search-results" class="search-results" style="display: none;"></div>
                             </div>
 
-                            <!-- Opción 2: Búsqueda por artistas -->
-                            <div class="search-option">
-                                <h5>Agregar canciones por artista</h5>
-                                <div class="artist-search">
-                                    <div class="artist-inputs">
-                                        <div class="artist-input-group">
-                                            <div class="search-input-container">
-                                                <input type="text" class="artist-input form-input" 
-                                                       placeholder="Nombre del artista..." autocomplete="off">
-                                                <div class="artist-suggestions" style="display: none;"></div>
-                                            </div>
-                                            <button type="button" class="remove-artist-btn" onclick="editPlaylistManager.removeArtist(this)">×</button>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="add-artist-btn" onclick="editPlaylistManager.addArtistInput()">
-                                        <i class="fas fa-plus"></i>
-                                        Agregar otro artista
-                                    </button>
-                                    <div class="form-group">
-                                        <label for="tracks-per-artist" class="form-label">
-                                            <i class="fas fa-list-ol"></i>
-                                            <span>Canciones por artista</span>
-                                        </label>
-                                        <select id="tracks-per-artist" class="form-input">
-                                            <option value="3">3 canciones</option>
-                                            <option value="5" selected>5 canciones</option>
-                                            <option value="10">10 canciones</option>
-                                            <option value="15">15 canciones</option>
-                                        </select>
-                                    </div>
-                                    <button type="button" id="search-by-artists-btn" class="action-btn primary">
-                                        <i class="fas fa-search"></i>
-                                        Buscar canciones por artistas
-                                    </button>
-                                </div>
-                                <div id="artist-results" class="search-results" style="display: none;"></div>
-                            </div>
+
                         </div>
 
                         <!-- Canciones actuales en la playlist -->
