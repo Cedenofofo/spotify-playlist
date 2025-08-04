@@ -1,5 +1,0 @@
-[33mf32aae7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix configuration loading issues and add favicon - Update auth.js and search.js to use new config structure
-[33m3cac13f[m Fix artist autocomplete for additional artists and improve error handling - Add demo mode for GitHub Pages
-[33m9424793[m Fix PHP errors and improve error handling - Add troubleshooting guide
-[33m818da52[m Update project files
-[33m7cb14da[m Fix: Corregir problemas de superposición y layout - Agregar z-index apropiados para evitar superposición - Mejorar layout de imágenes de perfil - Corregir posicionamiento de elementos de autocompletado - Mejorar estilos para artistas adicionales - Agregar estilos específicos para formularios - Corregir responsive design para móviles - Eliminar superposición de texto e imágenes

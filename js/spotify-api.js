@@ -9,10 +9,8 @@ class SpotifyAPI {
             return null;
         }
 
-        // Verificar si el token ha expirado
         const tokenExpires = localStorage.getItem('spotify_token_expires');
         if (tokenExpires && Date.now() > parseInt(tokenExpires)) {
-            // Token expirado, intentar refrescar
             return await this.refreshToken();
         }
 
@@ -79,7 +77,6 @@ class SpotifyAPI {
         
         if (!response.ok) {
             if (response.status === 401) {
-                // Token inválido, intentar refrescar
                 const newToken = await this.refreshToken();
                 if (newToken) {
                     finalOptions.headers.Authorization = `Bearer ${newToken}`;
@@ -139,57 +136,43 @@ class SpotifyAPI {
     async createPlaylist(name, description = '', isPublic = true) {
         const userProfile = await this.getUserProfile();
         
-        const playlistData = {
-            name: name,
-            description: description,
-            public: isPublic
-        };
-
-        const createResponse = await this.makeRequest(
-            `https://api.spotify.com/v1/users/${userProfile.id}/playlists`,
-            {
-                method: 'POST',
-                body: JSON.stringify(playlistData)
-            }
-        );
-
-        return createResponse;
+        return await this.makeRequest(`https://api.spotify.com/v1/users/${userProfile.id}/playlists`, {
+            method: 'POST',
+            body: JSON.stringify({
+                name: name,
+                description: description,
+                public: isPublic
+            })
+        });
     }
 
     async addTracksToPlaylist(playlistId, trackUris) {
-        return await this.makeRequest(
-            `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    uris: trackUris
-                })
-            }
-        );
+        return await this.makeRequest(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            method: 'POST',
+            body: JSON.stringify({
+                uris: trackUris
+            })
+        });
     }
 
     async removeTracksFromPlaylist(playlistId, trackUris) {
-        return await this.makeRequest(
-            `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-            {
-                method: 'DELETE',
-                body: JSON.stringify({
-                    uris: trackUris
-                })
-            }
-        );
+        return await this.makeRequest(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            method: 'DELETE',
+            body: JSON.stringify({
+                tracks: trackUris.map(uri => ({ uri: uri }))
+            })
+        });
     }
 
     async updatePlaylistDetails(playlistId, name, description = '') {
-        return await this.makeRequest(
-            `https://api.spotify.com/v1/playlists/${playlistId}`,
-            {
-                method: 'PUT',
-                body: JSON.stringify({
-                    name: name,
-                    description: description
-                })
-            }
-        );
+        return await this.makeRequest(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: name,
+                description: description
+            })
+        });
     }
-} 
+}
+
+window.SpotifyAPI = SpotifyAPI; 

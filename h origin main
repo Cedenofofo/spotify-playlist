@@ -1,5 +1,0 @@
-[33ma2db668[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix: agregar environment configuration para GitHub Pages deployment
-[33m83fe805[m fix: actualizar workflow de GitHub Pages para usar actions oficiales y corregir permisos
-[33mba157e5[m feat: agregar archivos PHP adicionales y mejorar estructura del proyecto
-[33m56a78d7[m  Agregar logs detallados para depurar problema con code_verifier en localStorage
-[33mf69c28a[m  Confirmar que la autenticación funciona - Agregar logs para verificar guardado de token y redirección
