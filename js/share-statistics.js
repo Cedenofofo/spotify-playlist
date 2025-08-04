@@ -537,23 +537,63 @@ class ShareStatistics {
     }
 
     shareToFacebook(imageDataUrl) {
-        // Para Facebook, redirigir a la app/página con la imagen lista
-        if (navigator.share && navigator.canShare) {
-            this.prepareAndShareImage(imageDataUrl, 'facebook');
-        } else {
-            // Redirigir a Facebook Stories
-            this.redirectToFacebookStories(imageDataUrl);
-        }
+        // Para Facebook, usar Web Share API nativo como Spotify
+        this.shareToSocialApp(imageDataUrl, 'facebook');
     }
 
     shareToInstagram(imageDataUrl) {
-        // Para Instagram, redirigir a la app/página con la imagen lista
-        if (navigator.share && navigator.canShare) {
-            this.prepareAndShareImage(imageDataUrl, 'instagram');
-        } else {
-            // Redirigir a Instagram Stories
-            this.redirectToInstagramStories(imageDataUrl);
+        // Para Instagram, usar Web Share API nativo como Spotify
+        this.shareToSocialApp(imageDataUrl, 'instagram');
+    }
+
+    async shareToSocialApp(imageDataUrl, platform) {
+        try {
+            // Convertir la imagen a Blob
+            const response = await fetch(imageDataUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'estadisticas-spotify.png', { type: 'image/png' });
+            
+            // Verificar si el navegador soporta compartir archivos
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                // Compartir directamente usando Web Share API
+                await navigator.share({
+                    title: 'Mis Estadísticas de Spotify',
+                    text: 'Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify',
+                    files: [file]
+                });
+                
+                this.showNotification(`Compartiendo en ${platform === 'facebook' ? 'Facebook' : 'Instagram'}...`, 'success');
+            } else {
+                // Fallback: intentar abrir la app específica
+                this.openSocialApp(platform, imageDataUrl);
+            }
+        } catch (error) {
+            console.error('Error sharing:', error);
+            // Fallback: abrir la app específica
+            this.openSocialApp(platform, imageDataUrl);
         }
+    }
+
+    openSocialApp(platform, imageDataUrl) {
+        let appUrl, webUrl;
+        
+        if (platform === 'facebook') {
+            appUrl = 'fb://stories';
+            webUrl = 'https://www.facebook.com/stories/create';
+        } else if (platform === 'instagram') {
+            appUrl = 'instagram://stories';
+            webUrl = 'https://www.instagram.com/stories/create';
+        }
+        
+        // Intentar abrir la app nativa
+        window.location.href = appUrl;
+        
+        // Fallback después de un tiempo
+        setTimeout(() => {
+            window.open(webUrl, '_blank');
+        }, 1000);
+        
+        this.showNotification(`Abriendo ${platform === 'facebook' ? 'Facebook' : 'Instagram'}...`, 'success');
     }
 
     async prepareAndShareImage(imageDataUrl, platform) {
@@ -572,46 +612,18 @@ class ShareStatistics {
                 });
                 this.showNotification(`Compartiendo en ${platform === 'facebook' ? 'Facebook' : 'Instagram'}...`, 'success');
             } else {
-                // Si no se puede compartir archivos, copiar al portapapeles
-                this.copyImageToClipboard(imageDataUrl);
-                if (platform === 'facebook') {
-                    this.showFacebookInstructions();
-                } else {
-                    this.showInstagramInstructions();
-                }
+                // Si no se puede compartir archivos, abrir la app
+                this.openSocialApp(platform, imageDataUrl);
             }
         } catch (error) {
             console.error('Error sharing image:', error);
-            // Fallback: copiar al portapapeles
-            this.copyImageToClipboard(imageDataUrl);
-            if (platform === 'facebook') {
-                this.showFacebookInstructions();
-            } else {
-                this.showInstagramInstructions();
-            }
+            // Fallback: abrir la app
+            this.openSocialApp(platform, imageDataUrl);
         }
     }
 
     async copyImageToClipboard(imageDataUrl) {
-        try {
-            // Convertir la imagen a Blob
-            const response = await fetch(imageDataUrl);
-            const blob = await response.blob();
-            
-            // Crear un ClipboardItem
-            const clipboardItem = new ClipboardItem({
-                [blob.type]: blob
-            });
-            
-            // Copiar al portapapeles
-            await navigator.clipboard.write([clipboardItem]);
-            this.showNotification('Imagen copiada al portapapeles', 'success');
-        } catch (error) {
-            console.error('Error copying to clipboard:', error);
-            // Fallback: descargar la imagen
-            this.downloadImage(imageDataUrl);
-            this.showNotification('Imagen descargada como fallback', 'info');
-        }
+        // Función eliminada - ya no se usa portapapeles
     }
 
     downloadImage(imageDataUrl) {
@@ -644,107 +656,11 @@ class ShareStatistics {
     }
 
     showFacebookInstructions() {
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        `;
-
-        const content = document.createElement('div');
-        content.style.cssText = `
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        `;
-
-        content.innerHTML = `
-            <h3 style="color: #1877f2; margin-bottom: 1rem;">📘 Compartir en Facebook</h3>
-            <p style="margin-bottom: 1rem; color: #333;">
-                La imagen ya está lista en tu portapapeles. Para compartir en Facebook:
-            </p>
-            <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
-                <li>Abre la app de Facebook</li>
-                <li>Ve a "Crear historia"</li>
-                <li>Pega la imagen desde tu portapapeles</li>
-                <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
-                <li>Publica tu historia</li>
-            </ol>
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                background: #1877f2;
-                color: white;
-                border: none;
-                padding: 0.8rem 1.5rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
-            ">Entendido</button>
-        `;
-
-        modal.appendChild(content);
-        document.body.appendChild(modal);
+        // Función eliminada - ya no se necesitan instrucciones
     }
 
     showInstagramInstructions() {
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        `;
-
-        const content = document.createElement('div');
-        content.style.cssText = `
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        `;
-
-        content.innerHTML = `
-            <h3 style="color: #e4405f; margin-bottom: 1rem;">📷 Compartir en Instagram</h3>
-            <p style="margin-bottom: 1rem; color: #333;">
-                La imagen ya está lista en tu portapapeles. Para compartir en Instagram:
-            </p>
-            <ol style="text-align: left; color: #333; margin-bottom: 1.5rem;">
-                <li>Abre la app de Instagram</li>
-                <li>Ve a "Crear historia"</li>
-                <li>Pega la imagen desde tu portapapeles</li>
-                <li>Agrega el texto: "Descubrí tus estadísticas de Spotify y gestiona tus playlist con Tuneuptify"</li>
-                <li>Publica tu historia</li>
-            </ol>
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-                color: white;
-                border: none;
-                padding: 0.8rem 1.5rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
-            ">Entendido</button>
-        `;
-
-        modal.appendChild(content);
-        document.body.appendChild(modal);
+        // Función eliminada - ya no se necesitan instrucciones
     }
 
     copyToClipboard(text) {
@@ -790,40 +706,10 @@ class ShareStatistics {
     }
 
     redirectToFacebookStories(imageDataUrl) {
-        // Intentar abrir la app de Facebook Stories
-        const facebookStoriesUrl = 'fb://stories';
-        const facebookWebUrl = 'https://www.facebook.com/stories/create';
-        
-        // Primero intentar abrir la app
-        window.location.href = facebookStoriesUrl;
-        
-        // Fallback después de un tiempo si no se abre la app
-        setTimeout(() => {
-            // Si no se abrió la app, abrir en web
-            window.open(facebookWebUrl, '_blank');
-        }, 1000);
-        
-        // Copiar la imagen al portapapeles para que esté lista
-        this.copyImageToClipboard(imageDataUrl);
-        this.showNotification('Redirigiendo a Facebook Stories...', 'success');
+        // Función eliminada - ahora usa shareToSocialApp
     }
 
     redirectToInstagramStories(imageDataUrl) {
-        // Intentar abrir la app de Instagram Stories
-        const instagramStoriesUrl = 'instagram://stories';
-        const instagramWebUrl = 'https://www.instagram.com/stories/create';
-        
-        // Primero intentar abrir la app
-        window.location.href = instagramStoriesUrl;
-        
-        // Fallback después de un tiempo si no se abre la app
-        setTimeout(() => {
-            // Si no se abrió la app, abrir en web
-            window.open(instagramWebUrl, '_blank');
-        }, 1000);
-        
-        // Copiar la imagen al portapapeles para que esté lista
-        this.copyImageToClipboard(imageDataUrl);
-        this.showNotification('Redirigiendo a Instagram Stories...', 'success');
+        // Función eliminada - ahora usa shareToSocialApp
     }
 }
