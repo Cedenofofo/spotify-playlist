@@ -1,58 +1,54 @@
 class Auth {
     constructor() {
-        console.log('Auth constructor iniciado');
-        console.log('window.config disponible:', !!window.config);
-        
-        // Esperar un poco para asegurar que config.js se haya cargado
-        setTimeout(() => {
-            if (!window.config) {
-                console.error('Configuración no disponible después de timeout');
-                return;
-            }
-            console.log('Configuración cargada correctamente');
+        // Inicializar inmediatamente si config está disponible
+        if (window.config) {
             this.config = window.config;
             this.setupEventListeners();
             this.checkAuth();
-        }, 100);
+        } else {
+            // Esperar a que config se cargue
+            const checkConfig = () => {
+                if (window.config) {
+                    this.config = window.config;
+                    this.setupEventListeners();
+                    this.checkAuth();
+                } else {
+                    setTimeout(checkConfig, 50);
+                }
+            };
+            checkConfig();
+        }
     }
 
     setupEventListeners() {
         const loginButton = document.getElementById('login-button');
-        console.log('Buscando botón de login:', loginButton);
         
         if (loginButton) {
-            console.log('Botón de login encontrado, agregando event listener');
             loginButton.addEventListener('click', () => {
-                console.log('Botón de login clickeado');
                 this.login();
             });
-        } else {
-            console.error('No se encontró el botón de login');
         }
     }
 
     checkAuth() {
-        // Verificar si ya tenemos un token válido en localStorage
         const accessToken = localStorage.getItem('spotify_access_token');
         const tokenExpires = localStorage.getItem('spotify_token_expires');
 
         if (accessToken && tokenExpires) {
             // Verificar si el token ha expirado
             if (Date.now() < parseInt(tokenExpires)) {
-                // Token válido - verificar si viene del dashboard con hash específico
+                // Token válido
                 if (window.location.pathname.endsWith('index.html') || 
                     window.location.pathname.endsWith('/') || 
                     window.location.pathname === '') {
                     
-                    // Si hay un hash #playlist-section, mostrar el formulario en lugar de redirigir
+                    // Si hay un hash #playlist-section, mostrar el formulario
                     if (window.location.hash === '#playlist-section') {
-                        console.log('Detectado hash #playlist-section, mostrando formulario de crear playlist');
                         this.showPlaylistSection();
                         return;
                     }
                     
-                    // Si no hay hash específico, mantener en la página principal
-                    console.log('Usuario autenticado, manteniendo en página principal');
+                    // Mantener en la página principal
                     return;
                 } else {
                     // Si estamos en otra página, mostrar la sección de playlist
@@ -71,14 +67,9 @@ class Auth {
     }
 
     login() {
-        console.log('Función login llamada');
-        
         if (!this.config) {
-            console.error('Configuración no disponible');
             return;
         }
-
-        console.log('Configuración disponible:', this.config);
         
         const state = this.generateState();
         localStorage.setItem('spotify_auth_state', state);
@@ -93,16 +84,18 @@ class Auth {
         });
 
         const authUrl = `${this.config.authUrl}?${params.toString()}`;
-        console.log('Redirigiendo a:', authUrl);
-        
         window.location.href = authUrl;
     }
 
     logout() {
+        // Limpiar localStorage
         localStorage.removeItem('spotify_access_token');
         localStorage.removeItem('spotify_token_expires');
         localStorage.removeItem('spotify_refresh_token');
         localStorage.removeItem('spotify_auth_state');
+        
+        // Limpiar sessionStorage también
+        sessionStorage.clear();
         
         // Redirigir a la página principal
         if (window.location.pathname !== 'index.html' && 

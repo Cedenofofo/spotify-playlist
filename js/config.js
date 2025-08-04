@@ -1,4 +1,3 @@
-console.log('Config.js cargándose...');
 window.config = {
     // Detectar si estamos en GitHub Pages o en local
     isGitHubPages: window.location.hostname.includes('github.io'),
@@ -28,5 +27,4 @@ window.config = {
         'user-read-private',
         'user-read-email'
     ]
-};
-console.log('Config.js cargado correctamente'); 
+}; 
