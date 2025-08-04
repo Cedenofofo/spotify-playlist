@@ -13,7 +13,8 @@ class Auth {
 
     waitForConfig() {
         let attempts = 0;
-        const maxAttempts = 10;
+        const maxAttempts = this.config?.maxRetries || 10;
+        const retryDelay = this.config?.retryDelay || 500;
         
         const checkConfig = () => {
             if (window.config) {
@@ -23,9 +24,9 @@ class Auth {
             } else if (attempts < maxAttempts) {
                 attempts++;
                 console.log(`Esperando configuración... Intento ${attempts}/${maxAttempts}`);
-                setTimeout(checkConfig, 500);
+                setTimeout(checkConfig, retryDelay);
             } else {
-                console.error('Configuración no disponible después de 5 segundos');
+                console.error(`Configuración no disponible después de ${maxAttempts * retryDelay / 1000} segundos`);
                 this.showConfigError();
             }
         };
@@ -90,6 +91,14 @@ class Auth {
         try {
             console.log('Intentando refrescar token...');
             
+            // Verificar conectividad antes de hacer la petición
+            if (!await this.checkNetworkStatus()) {
+                throw new Error('Sin conexión a internet');
+            }
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), this.config?.requestTimeout || 10000);
+            
             const response = await fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: {
@@ -99,8 +108,11 @@ class Auth {
                 body: new URLSearchParams({
                     grant_type: 'refresh_token',
                     refresh_token: refreshToken
-                })
+                }),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (response.ok) {
                 const data = await response.json();
@@ -111,11 +123,25 @@ class Auth {
                 console.error('Error refreshing token:', response.status);
                 const errorData = await response.json().catch(() => ({}));
                 console.error('Error details:', errorData);
+                
+                // Manejar errores específicos
+                if (response.status === 401) {
+                    console.log('Token de refresh inválido, limpiando sesión');
+                } else if (response.status === 429) {
+                    console.log('Demasiadas solicitudes, esperando...');
+                    setTimeout(() => this.refreshAccessToken(refreshToken), 5000);
+                    return;
+                }
+                
                 this.logout();
             }
         } catch (error) {
             console.error('Error refreshing token:', error);
-            this.showNetworkError();
+            if (error.name === 'AbortError') {
+                this.showNetworkError('Timeout en la solicitud');
+            } else {
+                this.showNetworkError();
+            }
             this.logout();
         }
     }
@@ -129,25 +155,39 @@ class Auth {
         }
     }
 
-    login() {
+    async login() {
         if (!this.config) {
+            console.error('Configuración no disponible');
+            this.showConfigError();
             return;
         }
         
-        const state = this.generateState();
-        localStorage.setItem('spotify_auth_state', state);
+        try {
+            // Verificar conectividad antes de iniciar login
+            if (!await this.checkNetworkStatus()) {
+                this.showNetworkError();
+                return;
+            }
+            
+            const state = this.generateState();
+            localStorage.setItem('spotify_auth_state', state);
 
-        const params = new URLSearchParams({
-            client_id: this.config.clientId,
-            response_type: 'code',
-            redirect_uri: this.config.redirectUri,
-            state: state,
-            scope: this.config.scopes.join(' '),
-            show_dialog: 'true'
-        });
+            const params = new URLSearchParams({
+                client_id: this.config.clientId,
+                response_type: 'code',
+                redirect_uri: this.config.redirectUri,
+                state: state,
+                scope: this.config.scopes.join(' '),
+                show_dialog: 'true'
+            });
 
-        const authUrl = `${this.config.authUrl}?${params.toString()}`;
-        window.location.href = authUrl;
+            const authUrl = `${this.config.authUrl}?${params.toString()}`;
+            console.log('Redirigiendo a Spotify Auth:', authUrl);
+            window.location.href = authUrl;
+        } catch (error) {
+            console.error('Error al iniciar login:', error);
+            this.showNetworkError();
+        }
     }
 
     logout() {
@@ -269,35 +309,50 @@ class Auth {
 
     async checkNetworkStatus() {
         try {
-            const token = this.getAccessToken();
-            if (!token) return false;
-            
-            const response = await fetch('https://api.spotify.com/v1/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            // Primero verificar conectividad básica
+            const testResponse = await fetch('https://api.spotify.com/v1', {
+                method: 'HEAD',
+                signal: AbortSignal.timeout(5000)
             });
             
-            if (response.status === 401) {
-                // Token expirado
-                const refreshToken = localStorage.getItem('spotify_refresh_token');
-                if (refreshToken) {
-                    await this.refreshAccessToken(refreshToken);
-                } else {
-                    this.logout();
-                }
-            } else if (response.status === 200) {
-                // Token válido
-                return true;
+            if (!testResponse.ok && testResponse.status !== 401) {
+                return false;
             }
+            
+            // Si hay token, verificar que sea válido
+            const token = this.getAccessToken();
+            if (token) {
+                const response = await fetch('https://api.spotify.com/v1/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    signal: AbortSignal.timeout(5000)
+                });
+                
+                if (response.status === 401) {
+                    // Token expirado
+                    const refreshToken = localStorage.getItem('spotify_refresh_token');
+                    if (refreshToken) {
+                        await this.refreshAccessToken(refreshToken);
+                        return true;
+                    } else {
+                        this.logout();
+                        return false;
+                    }
+                } else if (response.status === 200) {
+                    // Token válido
+                    return true;
+                }
+            }
+            
+            return true; // Conexión disponible, pero sin token válido
         } catch (error) {
             console.error('Error checking network status:', error);
-            this.showNetworkError();
+            return false;
         }
-        return false;
     }
 
-    showNetworkError() {
+    showNetworkError(message = 'No se pudo conectar con Spotify. Verifica tu conexión a internet.') {
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = `
             position: fixed;
@@ -310,23 +365,34 @@ class Auth {
             z-index: 10000;
             max-width: 300px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
         `;
         errorDiv.innerHTML = `
             <h4>⚠️ Problema de Conexión</h4>
-            <p>No se pudo conectar con Spotify. Verifica tu conexión a internet.</p>
-            <button onclick="this.parentElement.remove()" style="
-                background: white;
-                color: #f39c12;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 4px;
-                cursor: pointer;
-                margin-top: 10px;
-            ">Cerrar</button>
+            <p>${message}</p>
+            <div style="margin-top: 10px;">
+                <button onclick="this.parentElement.remove()" style="
+                    background: white;
+                    color: #f39c12;
+                    border: none;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    margin-right: 5px;
+                ">Cerrar</button>
+                <button onclick="window.location.reload()" style="
+                    background: #1db954;
+                    color: white;
+                    border: none;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                ">Reintentar</button>
+            </div>
         `;
         document.body.appendChild(errorDiv);
         
-        // Auto-remover después de 10 segundos
+        // Auto-remover después de 15 segundos
         setTimeout(() => {
             if (document.body.contains(errorDiv)) {
                 errorDiv.remove();
