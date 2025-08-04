@@ -1,0 +1,68 @@
+/* ===== CORRECCIONES ESPECÍFICAS PARA ELEMENTOS SUPERPUESTOS ===== */
+
+/* Corregir posicionamiento de botones de selección múltiple */
+.multi-select-container {
+    margin: 1rem 0 !important;
+    padding: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    position: relative !important;
+    z-index: 10 !important;
+    clear: both !important;
+}
+
+/* Asegurar que el contenedor de tracks esté separado */
+.selected-tracks-container {
+    margin-top: 1rem !important;
+    position: relative !important;
+    z-index: 1 !important;
+    clear: both !important;
+}
+
+/* Corregir posicionamiento de sugerencias de búsqueda */
+.autocomplete-suggestions {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(20, 20, 20, 0.95) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    z-index: 1000 !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    margin-top: 0.5rem !important;
+}
+
+/* Asegurar que el contenedor de búsqueda esté correctamente posicionado */
+.autocomplete-container {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+/* Asegurar que el input-wrapper esté correctamente posicionado */
+.input-wrapper {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Asegurar que el form-group tenga el layout correcto */
+.form-group {
+    margin-bottom: 2rem !important;
+    position: relative !important;
+    clear: both !important;
+    overflow: visible !important;
+}
+
+/* Asegurar que el label esté correctamente posicionado */
+.form-group .form-label {
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 1 !important;
+    clear: both !important;
+} 
