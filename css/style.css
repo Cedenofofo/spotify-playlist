@@ -2516,8 +2516,20 @@ body {
 
 /* Asegurar que las sugerencias estén siempre por encima */
 .autocomplete-suggestions {
-    z-index: 9999 !important;
+    z-index: 99999 !important;
     position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    margin-top: 0.5rem !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
 }
 
 /* Bajar z-index de otros elementos del formulario */
@@ -2529,6 +2541,17 @@ body {
 .input-wrapper {
     position: relative !important;
     z-index: 1 !important;
+}
+
+/* Forzar que todos los elementos del formulario estén por debajo */
+.elegant-form * {
+    z-index: 1 !important;
+}
+
+/* Excepción solo para las sugerencias */
+.autocomplete-suggestions,
+.autocomplete-suggestions * {
+    z-index: 99999 !important;
 }
 
 /* Elementos de sugerencia sin superposición */
@@ -3296,6 +3319,16 @@ body {
 
 /* ===== CORRECCIONES PARA BOTÓN FLOTANTE Y TÍTULOS ===== */
 
+/* Contenedor de botones de navegación */
+.navigation-buttons {
+    position: fixed !important;
+    top: 2rem !important;
+    left: 2rem !important;
+    display: flex !important;
+    gap: 1rem !important;
+    z-index: 1000 !important;
+}
+
 /* Corregir el botón "Volver al Dashboard" */
 .elegant-back-btn {
     position: relative !important;
@@ -3315,6 +3348,34 @@ body {
     -webkit-backdrop-filter: blur(20px) !important;
     box-shadow: 0 4px 16px rgba(29, 185, 84, 0.2) !important;
     z-index: 10 !important;
+}
+
+/* Botón de Dashboard */
+.dashboard-btn {
+    position: relative !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.2)) !important;
+    border: 2px solid rgba(102, 126, 234, 0.3) !important;
+    border-radius: 16px !important;
+    padding: 0.75rem 1.5rem !important;
+    color: #667eea !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2) !important;
+    z-index: 10 !important;
+}
+
+.dashboard-btn:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.3)) !important;
+    border-color: rgba(102, 126, 234, 0.5) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3) !important;
 }
 
 .elegant-back-btn:hover {

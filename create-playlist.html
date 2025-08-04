@@ -46,11 +46,18 @@
         </div>
     </header>
 
-    <!-- Botón de regreso -->
-    <button class="elegant-back-btn" onclick="goBack()">
-        <i class="fas fa-arrow-left"></i>
-        <span>Volver</span>
-    </button>
+    <!-- Botones de navegación -->
+    <div class="navigation-buttons">
+        <button class="elegant-back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver</span>
+        </button>
+        
+        <button class="dashboard-btn" onclick="goToDashboard()">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </button>
+    </div>
 
     <!-- Contenido principal -->
     <main class="elegant-main">
@@ -285,8 +292,15 @@
             }
         }
 
-        // Hacer la función global
+        // Función para ir al dashboard
+        function goToDashboard() {
+            console.log('Navegando al dashboard');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Hacer las funciones globales
         window.goBack = goBack;
+        window.goToDashboard = goToDashboard;
     </script>
 </body>
 </html> 
