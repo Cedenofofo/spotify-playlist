@@ -440,9 +440,9 @@
   justify-content: space-between;
   margin-top: var(--space-lg);
   padding: var(--space-md);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -451,13 +451,19 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: var(--text-sm);
   flex: 1;
+  opacity: 0.7;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
 }
 
 .preview-info i {
-  color: var(--primary-color);
+  color: var(--text-muted);
+  opacity: 0.6;
 }
 
 .action-btn {
@@ -466,39 +472,45 @@
   transition: all var(--transition-normal);
   border: none;
   font-weight: 600;
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-md) var(--space-xl);
   border-radius: var(--radius-lg);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-size: var(--text-sm);
-  min-width: 140px;
+  font-size: var(--text-base);
+  min-width: 160px;
   justify-content: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
 }
 
 .action-btn.secondary {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
+  background: linear-gradient(135deg, #4b5563, #374151);
   color: white;
-  box-shadow: 0 8px 25px rgba(107, 114, 128, 0.2);
+  box-shadow: 0 10px 30px rgba(75, 85, 99, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .action-btn.secondary:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(107, 114, 128, 0.3);
-  background: linear-gradient(135deg, #4b5563, #374151);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(75, 85, 99, 0.4);
+  background: linear-gradient(135deg, #374151, #1f2937);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .action-btn.primary {
   background: linear-gradient(135deg, #1db954, #1ed760);
   color: white;
-  box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2);
+  box-shadow: 0 15px 40px rgba(29, 185, 84, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .action-btn.primary:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 20px 40px rgba(29, 185, 84, 0.3);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 25px 50px rgba(29, 185, 84, 0.4);
   background: linear-gradient(135deg, #1ed760, #1db954);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .action-btn.primary.pulse {
@@ -514,9 +526,10 @@
 .action-btn .btn-content {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
   position: relative;
   z-index: 1;
+  font-weight: 700;
 }
 
 .action-btn .btn-ripple {
@@ -531,45 +544,49 @@
 /* ===== MEJORAS EN EL BOTÓN DE EXPORTAR ===== */
 .export-section {
   margin-top: var(--space-lg);
-  padding: var(--space-lg);
-  background: rgba(29, 185, 84, 0.05);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(29, 185, 84, 0.2);
+  padding: var(--space-xl);
+  background: rgba(29, 185, 84, 0.08);
+  border-radius: var(--radius-xl);
+  border: 2px solid rgba(29, 185, 84, 0.2);
   text-align: center;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   animation: slideInUp 0.5s ease-out;
+  box-shadow: 0 20px 60px rgba(29, 185, 84, 0.1);
 }
 
 .export-header {
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
 .export-header h4 {
   color: var(--text-primary);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  margin: 0 0 var(--space-xs) 0;
+  font-size: var(--text-xl);
+  font-weight: 800;
+  margin: 0 0 var(--space-sm) 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .export-header p {
   color: var(--text-secondary);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   margin: 0;
-  opacity: 0.8;
+  opacity: 0.9;
+  font-weight: 500;
 }
 
 .export-section .action-btn.primary {
   background: linear-gradient(135deg, #1db954, #1ed760);
   color: white;
-  font-weight: 700;
-  padding: var(--space-md) var(--space-xl);
-  font-size: var(--text-base);
-  box-shadow: 0 15px 40px rgba(29, 185, 84, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  font-weight: 800;
+  padding: var(--space-lg) var(--space-2xl);
+  font-size: var(--text-lg);
+  box-shadow: 0 20px 50px rgba(29, 185, 84, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+  min-width: 200px;
 }
 
 .export-section .action-btn.primary::before {
@@ -579,8 +596,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.6s;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.8s;
 }
 
 .export-section .action-btn.primary:hover::before {
@@ -588,9 +605,10 @@
 }
 
 .export-section .action-btn.primary:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 25px 50px rgba(29, 185, 84, 0.4);
+  transform: translateY(-5px) scale(1.08);
+  box-shadow: 0 30px 70px rgba(29, 185, 84, 0.5);
   background: linear-gradient(135deg, #1ed760, #1db954);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .export-info {
@@ -598,13 +616,18 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: var(--text-sm);
-  opacity: 0.8;
+  opacity: 0.7;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .export-info i {
-  color: var(--primary-color);
+  color: var(--text-muted);
+  opacity: 0.6;
 }
 
 /* ===== ANIMACIONES MEJORADAS ===== */
