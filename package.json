@@ -1,0 +1,46 @@
+{
+  "name": "tuneuptify",
+  "version": "1.0.0",
+  "description": "Un gestor de playlists de Spotify que te permite crear, gestionar y exportar playlists personalizadas",
+  "main": "index.html",
+  "scripts": {
+    "start": "php -S localhost:8000",
+    "dev": "npm run update-versions && php -S localhost:8000",
+    "update-versions": "node update-version.js",
+    "build": "npm run update-versions",
+    "deploy": "npm run update-versions && git add . && git commit -m \"Auto-update versions\" && git push origin main"
+  },
+  "keywords": [
+    "spotify",
+    "playlist",
+    "music",
+    "php",
+    "javascript",
+    "oauth",
+    "api"
+  ],
+  "author": {
+    "name": "cedenofofo",
+    "url": "https://github.com/cedenofofo"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cedenofofo/spotify-playlist-desktop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cedenofofo/spotify-playlist-desktop/issues"
+  },
+  "homepage": "https://cedenofofo.github.io/spotify-playlist-desktop",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+} 

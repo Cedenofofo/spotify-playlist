@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuneuptify - Cerrar Sesión</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .logout-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+        }
+        .logout-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(29, 185, 84, 0.3);
+            border-top: 4px solid #1db954;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .logout-message {
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <div class="logout-spinner"></div>
+        <div class="logout-message" id="logout-message">Cerrando sesión...</div>
+    </div>
+
+    <script>
+        function logout() {
+            // Limpiar todos los datos de autenticación
+            localStorage.removeItem('spotify_access_token');
+            localStorage.removeItem('spotify_token_expires');
+            localStorage.removeItem('spotify_refresh_token');
+            localStorage.removeItem('spotify_auth_state');
+            
+            // Limpiar sessionStorage también
+            sessionStorage.clear();
+            
+            // Redirigir a la página principal
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        // Ejecutar logout cuando la página cargue
+        document.addEventListener('DOMContentLoaded', logout);
+    </script>
+</body>
+</html> 
