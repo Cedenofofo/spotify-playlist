@@ -1194,7 +1194,25 @@ body {
 }
 
 .artist-row .autocomplete-suggestions {
-    margin-bottom: 5rem; /* Mismo margen que las otras sugerencias */
+    margin-bottom: 8rem; /* Aumentado de 5rem a 8rem para más espacio */
+}
+
+.add-artist-btn {
+    background: var(--bg-glass);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    padding: 1rem 1.5rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1;
+    margin-top: 2rem; /* Agregar margen superior para separación */
 }
 
 .remove-artist-btn {
