@@ -32,32 +32,21 @@
             </div>
             
             <nav class="header-nav">
-                <div class="nav-stats">
-                    <div class="stat-pill">
-                        <i class="fas fa-users"></i>
-                        <span>1.2k Usuarios</span>
-                    </div>
-                    <div class="stat-pill">
-                        <i class="fas fa-music"></i>
-                        <span>50k+ Playlists</span>
-                    </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn back-btn" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </button>
+                    <button class="nav-btn dashboard-btn" onclick="goToDashboard()">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </button>
                 </div>
             </nav>
         </div>
     </header>
 
-    <!-- Botones de navegación -->
-    <div class="navigation-buttons">
-        <button class="elegant-back-btn" onclick="goBack()">
-            <i class="fas fa-arrow-left"></i>
-            <span>Volver</span>
-        </button>
-        
-        <button class="dashboard-btn" onclick="goToDashboard()">
-            <i class="fas fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-        </button>
-    </div>
+
 
     <!-- Contenido principal -->
     <main class="elegant-main">

@@ -115,32 +115,48 @@ body {
   background-clip: text;
 }
 
-.nav-stats {
+.nav-buttons {
   display: flex;
-    gap: var(--spacing-sm);
+  gap: var(--spacing-sm);
+  align-items: center;
 }
 
-.stat-pill {
+.nav-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-    background: var(--bg-glass);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
+  background: var(--bg-glass);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-secondary);
-    transition: all 0.3s ease;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  font-family: inherit;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-.stat-pill:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  border-color: var(--primary-color);
 }
 
-.stat-pill i {
-    color: var(--primary-color);
+.nav-btn.back-btn:hover {
+  border-color: var(--primary-color);
+}
+
+.nav-btn.dashboard-btn:hover {
+  border-color: var(--secondary-color);
+}
+
+.nav-btn i {
+  color: var(--primary-color);
 }
 
 /* ===== MAIN CONTENT ===== */
@@ -960,67 +976,7 @@ body {
     color: var(--primary-color);
 }
 
-/* ===== NAVIGATION BUTTONS ===== */
-.navigation-buttons {
-    position: fixed;
-    top: 2rem;
-    left: 2rem;
-    display: flex;
-    gap: var(--spacing-sm);
-    z-index: 1000;
-}
 
-.elegant-back-btn {
-    background: var(--bg-glass);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    padding: 0.75rem 1.5rem;
-    color: var(--text-primary);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-md);
-    z-index: 10;
-}
-
-.elegant-back-btn:hover {
-    border-color: var(--primary-color);
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.dashboard-btn {
-    background: var(--bg-glass);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    padding: 0.75rem 1.5rem;
-    color: var(--text-primary);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-md);
-    z-index: 10;
-}
-
-.dashboard-btn:hover {
-    border-color: var(--secondary-color);
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
@@ -1045,17 +1001,7 @@ body {
         grid-template-columns: 1fr;
     }
     
-    .navigation-buttons {
-        top: 1rem;
-        left: 1rem;
-        flex-direction: column;
-    }
-    
-    .elegant-back-btn,
-    .dashboard-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
+
     
     .playlist-form-container {
         padding: var(--spacing-lg);
@@ -1075,8 +1021,13 @@ body {
         font-size: 1.25rem;
     }
     
-    .nav-stats {
-        display: none;
+    .nav-buttons {
+        gap: 0.5rem;
+    }
+    
+    .nav-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
     }
     
     .welcome-card {
