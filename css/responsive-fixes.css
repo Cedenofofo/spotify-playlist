@@ -1314,7 +1314,7 @@ body {
 }
 
 .artist-row .autocomplete-suggestions {
-  margin-bottom: 8rem !important; /* Aumentado de 5rem a 8rem para más espacio */
+  margin-bottom: 12rem !important; /* Aumentado de 8rem a 12rem para más espacio */
 }
 
 .remove-artist-btn {
@@ -1359,5 +1359,5 @@ body {
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
   z-index: 1 !important;
-  margin-top: 2rem !important; /* Agregar margen superior para separación */
+  margin-top: 4rem !important; /* Aumentado de 2rem a 4rem para más espacio */
 } 
