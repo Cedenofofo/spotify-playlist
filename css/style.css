@@ -505,7 +505,7 @@ body {
     overflow-y: auto;
     box-shadow: var(--shadow-xl);
     margin-top: 0.5rem;
-    margin-bottom: 3rem; /* Aumentado de 2rem a 3rem */
+    margin-bottom: 5rem; /* Aumentado de 3rem a 5rem solo para más espacio */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     z-index: 999999; /* Aumentado significativamente */

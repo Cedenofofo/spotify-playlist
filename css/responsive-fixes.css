@@ -207,7 +207,7 @@ body {
   max-height: 200px !important;
   overflow-y: auto !important;
   margin-top: 0.5rem !important;
-  margin-bottom: 3rem !important; /* Aumentado de 2rem a 3rem */
+  margin-bottom: 5rem !important; /* Aumentado de 3rem a 5rem solo para más espacio */
 }
 
 /* Fix para elementos de sugerencia con más espacio */
