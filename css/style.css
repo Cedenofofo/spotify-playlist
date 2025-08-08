@@ -408,12 +408,18 @@ body {
 
 /* Agregar margen superior extra a grupos que vienen después de sugerencias */
 .form-group:has(+ .form-group) {
-    margin-top: 1rem;
+    margin-top: 2rem; /* Aumentado de 1rem a 2rem */
 }
 
 /* Margen superior extra para grupos específicos que vienen después de sugerencias */
 .form-group:has(.autocomplete-container) + .form-group {
-    margin-top: 3rem; /* Aumentado de 2rem a 3rem */
+    margin-top: 4rem; /* Aumentado de 3rem a 4rem */
+}
+
+/* Margen superior extra para todos los grupos de formulario */
+.form-group {
+    margin-bottom: 1.5rem;
+    margin-top: 1rem; /* Agregar margen superior base */
 }
 
 .input-wrapper {

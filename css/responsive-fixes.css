@@ -168,16 +168,17 @@ body {
   position: relative !important;
   z-index: 3 !important;
   margin-bottom: 1.5rem !important;
+  margin-top: 1rem !important; /* Agregar margen superior base */
 }
 
 /* Agregar margen superior extra a grupos que vienen después de sugerencias */
 .form-group:has(+ .form-group) {
-  margin-top: 1rem !important;
+  margin-top: 2rem !important; /* Aumentado de 1rem a 2rem */
 }
 
 /* Margen superior extra para grupos específicos que vienen después de sugerencias */
 .form-group:has(.autocomplete-container) + .form-group {
-  margin-top: 3rem !important; /* Aumentado de 2rem a 3rem */
+  margin-top: 4rem !important; /* Aumentado de 3rem a 4rem */
 }
 
 .input-wrapper {
