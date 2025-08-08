@@ -1167,3 +1167,59 @@ body {
         --bg-secondary: #1a1a1a;
     }
 }
+
+/* ===== ARTISTAS ADICIONALES ===== */
+.artist-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.artist-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.artist-row .autocomplete-container {
+    flex: 1;
+    position: relative;
+}
+
+.artist-row .form-input {
+    width: 100%;
+    margin-bottom: 0; /* Eliminar margen inferior para mantener consistencia */
+}
+
+.artist-row .autocomplete-suggestions {
+    margin-bottom: 5rem; /* Mismo margen que las otras sugerencias */
+}
+
+.remove-artist-btn {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--border-radius);
+    padding: 0.75rem;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.remove-artist-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    transform: scale(1.05);
+}
+
+.remove-artist-btn i {
+    font-size: 1rem;
+}
