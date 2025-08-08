@@ -170,6 +170,16 @@ body {
   margin-bottom: 1.5rem !important;
 }
 
+/* Agregar margen superior extra a grupos que vienen después de sugerencias */
+.form-group:has(+ .form-group) {
+  margin-top: 1rem !important;
+}
+
+/* Margen superior extra para grupos específicos que vienen después de sugerencias */
+.form-group:has(.autocomplete-container) + .form-group {
+  margin-top: 2rem !important; /* Espacio extra después de sugerencias */
+}
+
 .input-wrapper {
   position: relative !important;
   z-index: 4 !important;
@@ -194,6 +204,8 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
   max-height: 200px !important;
   overflow-y: auto !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 2rem !important; /* Agregar margen inferior para más espacio */
 }
 
 /* Fix para elementos de sugerencia con más espacio */
