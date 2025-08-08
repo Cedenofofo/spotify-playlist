@@ -3,8 +3,7 @@ class SearchManager {
         console.log('SearchManager constructor iniciado');
         this.config = window.config;
         console.log('Config cargado:', this.config ? 'Sí' : 'No');
-        // Temporarily comment out Auth to test if it's causing issues
-        // this.auth = new Auth();
+        this.auth = new Auth();
         console.log('Auth inicializado');
         this.setupEventListeners();
         console.log('SearchManager inicializado');

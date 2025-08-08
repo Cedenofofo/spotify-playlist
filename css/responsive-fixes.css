@@ -201,8 +201,8 @@ body {
 .autocomplete-suggestion {
   display: flex !important;
   align-items: center !important;
-  gap: 0.75rem !important;
-  padding: 0.75rem !important;
+  gap: 1rem !important; /* Aumentado de 0.75rem a 1rem */
+  padding: 1rem !important; /* Aumentado de 0.75rem a 1rem */
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
@@ -222,7 +222,7 @@ body {
   min-width: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 0.25rem !important;
+  gap: 0.5rem !important; /* Aumentado de 0.25rem a 0.5rem */
 }
 
 .suggestion-item .suggestion-name,
@@ -232,11 +232,12 @@ body {
   font-weight: 500 !important;
   color: #ffffff !important;
   font-size: 0.9rem !important;
-  line-height: 1.3 !important;
+  line-height: 1.4 !important; /* Aumentado de 1.3 a 1.4 */
   margin: 0 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
+  padding: 0.125rem 0 !important; /* Agregar padding vertical */
 }
 
 .suggestion-item .suggestion-artist,
@@ -245,11 +246,12 @@ body {
 .autocomplete-suggestion .track-artist {
   font-size: 0.8rem !important;
   color: #b3b3b3 !important;
-  line-height: 1.2 !important;
+  line-height: 1.3 !important; /* Aumentado de 1.2 a 1.3 */
   margin: 0 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
+  padding: 0.125rem 0 !important; /* Agregar padding vertical */
 }
 
 /* Fix para notificaciones */
@@ -487,8 +489,8 @@ body {
   .suggestion-item,
   .autocomplete-suggestion {
     min-height: 55px !important;
-    padding: 0.65rem !important;
-    gap: 0.65rem !important;
+    padding: 0.75rem !important; /* Aumentado de 0.65rem a 0.75rem */
+    gap: 0.75rem !important; /* Aumentado de 0.65rem a 0.75rem */
   }
   
   .suggestion-item .suggestion-name,
@@ -496,7 +498,8 @@ body {
   .suggestion-item .track-name,
   .autocomplete-suggestion .track-name {
     font-size: 0.85rem !important;
-    line-height: 1.3 !important;
+    line-height: 1.4 !important; /* Aumentado de 1.3 a 1.4 */
+    padding: 0.125rem 0 !important; /* Agregar padding vertical */
   }
   
   .suggestion-item .suggestion-artist,
@@ -504,7 +507,8 @@ body {
   .suggestion-item .track-artist,
   .autocomplete-suggestion .track-artist {
     font-size: 0.75rem !important;
-    line-height: 1.2 !important;
+    line-height: 1.3 !important; /* Aumentado de 1.2 a 1.3 */
+    padding: 0.125rem 0 !important; /* Agregar padding vertical */
   }
   
   /* Fix para evitar contenido cortado en tablets */
@@ -679,8 +683,8 @@ body {
   .suggestion-item,
   .autocomplete-suggestion {
     min-height: 50px !important;
-    padding: 0.6rem !important;
-    gap: 0.6rem !important;
+    padding: 0.7rem !important; /* Aumentado de 0.6rem a 0.7rem */
+    gap: 0.7rem !important; /* Aumentado de 0.6rem a 0.7rem */
   }
   
   .suggestion-item .suggestion-name,
@@ -688,7 +692,8 @@ body {
   .suggestion-item .track-name,
   .autocomplete-suggestion .track-name {
     font-size: 0.8rem !important;
-    line-height: 1.25 !important;
+    line-height: 1.3 !important; /* Aumentado de 1.25 a 1.3 */
+    padding: 0.125rem 0 !important; /* Agregar padding vertical */
   }
   
   .suggestion-item .suggestion-artist,
@@ -696,7 +701,8 @@ body {
   .suggestion-item .track-artist,
   .autocomplete-suggestion .track-artist {
     font-size: 0.7rem !important;
-    line-height: 1.2 !important;
+    line-height: 1.25 !important; /* Aumentado de 1.2 a 1.25 */
+    padding: 0.125rem 0 !important; /* Agregar padding vertical */
   }
   
   /* Fix para evitar contenido cortado en móviles */
@@ -862,8 +868,8 @@ body {
   .suggestion-item,
   .autocomplete-suggestion {
     min-height: 45px !important;
-    padding: 0.5rem !important;
-    gap: 0.5rem !important;
+    padding: 0.6rem !important; /* Aumentado de 0.5rem a 0.6rem */
+    gap: 0.6rem !important; /* Aumentado de 0.5rem a 0.6rem */
   }
   
   .suggestion-item .suggestion-name,
@@ -871,7 +877,8 @@ body {
   .suggestion-item .track-name,
   .autocomplete-suggestion .track-name {
     font-size: 0.75rem !important;
-    line-height: 1.2 !important;
+    line-height: 1.25 !important; /* Aumentado de 1.2 a 1.25 */
+    padding: 0.125rem 0 !important; /* Agregar padding vertical */
   }
   
   .suggestion-item .suggestion-artist,
@@ -879,7 +886,8 @@ body {
   .suggestion-item .track-artist,
   .autocomplete-suggestion .track-artist {
     font-size: 0.65rem !important;
-    line-height: 1.1 !important;
+    line-height: 1.2 !important; /* Aumentado de 1.1 a 1.2 */
+    padding: 0.125rem 0 !important; /* Agregar padding vertical */
   }
   
   /* Fix para evitar contenido cortado en pantallas muy pequeñas */
