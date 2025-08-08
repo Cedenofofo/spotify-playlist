@@ -163,6 +163,14 @@ class Auth {
         }
         
         try {
+            console.log('Iniciando proceso de login...');
+            console.log('Configuración actual:', {
+                clientId: this.config.clientId,
+                redirectUri: this.config.redirectUri,
+                authUrl: this.config.authUrl,
+                scopes: this.config.scopes
+            });
+            
             // Verificar conectividad antes de iniciar login
             if (!await this.checkNetworkStatus()) {
                 this.showNetworkError();
@@ -183,10 +191,19 @@ class Auth {
 
             const authUrl = `${this.config.authUrl}?${params.toString()}`;
             console.log('Redirigiendo a Spotify Auth:', authUrl);
+            
+            // Verificar que la URL sea válida
+            try {
+                new URL(authUrl);
+            } catch (urlError) {
+                console.error('URL de autenticación inválida:', authUrl);
+                throw new Error('URL de autenticación inválida');
+            }
+            
             window.location.href = authUrl;
         } catch (error) {
             console.error('Error al iniciar login:', error);
-            this.showNetworkError();
+            this.showNetworkError(`Error de inicio de sesión: ${error.message}`);
         }
     }
 
