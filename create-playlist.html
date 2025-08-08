@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Playlist - Tuneuptify</title>
     <meta name="description" content="Crea playlists personalizadas de Spotify con Tuneuptify">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; style-src 'self' 'unsafe-inline' https: data: blob:; font-src 'self' https: data: blob:; img-src 'self' data: https: blob:; connect-src 'self' https: data: blob: ws: wss:; frame-src 'self' https: data: blob:; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <!-- CSP eliminado temporalmente para resolver problemas de conexión -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -239,6 +239,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/cache-cleaner.js?v=1.0.1"></script>
     <script src="js/error-blocker.js"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
