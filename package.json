@@ -5,11 +5,10 @@
   "main": "index.html",
   "scripts": {
     "start": "php -S localhost:8000",
-    "dev": "php -S localhost:8000",
-    "build": "echo 'No build step required for this project'",
-    "test": "echo 'No tests specified'",
-    "lint": "echo 'No linting configured'",
-    "format": "echo 'No formatting configured'"
+    "dev": "npm run update-versions && php -S localhost:8000",
+    "update-versions": "node update-version.js",
+    "build": "npm run update-versions",
+    "deploy": "npm run update-versions && git add . && git commit -m \"Auto-update versions\" && git push origin main"
   },
   "keywords": [
     "spotify",
