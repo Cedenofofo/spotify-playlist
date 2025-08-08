@@ -1,7 +1,10 @@
 class SearchManager {
     constructor() {
+        console.log('SearchManager constructor iniciado');
         this.config = window.config;
+        console.log('Config cargado:', this.config ? 'Sí' : 'No');
         this.auth = new Auth();
+        console.log('Auth inicializado');
         this.setupEventListeners();
         console.log('SearchManager inicializado');
         
@@ -18,10 +21,13 @@ class SearchManager {
         
         if (searchInput && suggestionsDiv) {
             console.log('Configurando event listeners para búsqueda de canciones');
+            console.log('Search input encontrado:', searchInput);
+            console.log('Suggestions div encontrado:', suggestionsDiv);
             let debounceTimeout;
             
             searchInput.addEventListener('input', () => {
                 const query = searchInput.value.trim();
+                console.log('Input event triggered, query:', query);
                 if (query.length < 1) {
                     suggestionsDiv.innerHTML = '';
                     suggestionsDiv.classList.remove('show');
@@ -50,6 +56,8 @@ class SearchManager {
             });
         } else {
             console.warn('No se encontraron elementos para búsqueda de canciones');
+            console.error('searchInput:', searchInput);
+            console.error('suggestionsDiv:', suggestionsDiv);
         }
     }
 
@@ -98,6 +106,7 @@ class SearchManager {
     async searchTracks(query, suggestionsDiv, searchInput) {
         try {
             const token = localStorage.getItem('spotify_access_token');
+            console.log('Token encontrado:', token ? 'Sí' : 'No');
             if (!token) {
                 console.error('No hay token de acceso para búsqueda de canciones');
                 suggestionsDiv.innerHTML = '<div class="error">No hay token de acceso</div>';
@@ -105,6 +114,7 @@ class SearchManager {
             }
 
             console.log('Buscando canciones:', query);
+            console.log('URL de búsqueda:', `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`);
             
             // Mostrar indicador de carga
             suggestionsDiv.innerHTML = '<div class="search-loading"><div class="spinner"></div>Buscando canciones...</div>';
@@ -116,20 +126,28 @@ class SearchManager {
                 }
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             if (!response.ok) {
-                throw new Error(`Error en la API: ${response.status}`);
+                const errorText = await response.text();
+                console.error('Error response:', errorText);
+                throw new Error(`Error en la API: ${response.status} - ${errorText}`);
             }
 
             const data = await response.json();
+            console.log('API response data:', data);
 
             if (data.tracks && data.tracks.items) {
+                console.log('Tracks encontrados:', data.tracks.items.length);
                 this.displayResults(data.tracks.items, suggestionsDiv, searchInput);
             } else {
+                console.log('No se encontraron tracks en la respuesta');
                 suggestionsDiv.innerHTML = '<div class="no-results">No se encontraron canciones</div>';
             }
         } catch (error) {
             console.error('Error al buscar canciones:', error);
-            suggestionsDiv.innerHTML = '<div class="error">Error al buscar canciones</div>';
+            suggestionsDiv.innerHTML = '<div class="error">Error al buscar canciones: ' + error.message + '</div>';
         }
     }
 
@@ -452,9 +470,15 @@ class SearchManager {
 
 // Inicializar el gestor de búsqueda cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded event triggered');
+    console.log('window.searchManager exists:', !!window.searchManager);
     // Solo inicializar si no existe ya una instancia
     if (!window.searchManager) {
+        console.log('Creating new SearchManager instance');
         window.searchManager = new SearchManager();
+        console.log('SearchManager instance created:', window.searchManager);
+    } else {
+        console.log('SearchManager already exists, skipping initialization');
     }
 });
 
