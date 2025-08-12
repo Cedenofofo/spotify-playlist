@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Login - Spotify Playlist Manager</title>
+    <link rel="stylesheet" href="css/responsive-fixes.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .btn {
+            background: #1db954;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+        }
+        .result {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .success {
+            background: rgba(46, 204, 113, 0.2);
+            border-left: 4px solid #2ecc71;
+        }
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid #e74c3c;
+        }
+        .info {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid #3498db;
+        }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test de Login de Spotify</h1>
+        
+        <div class="test-section">
+            <h3>📋 Información del Problema</h3>
+            <p><strong>Problema:</strong> No puedes iniciar sesión después de crear la página de edición.</p>
+            <p><strong>Posibles causas:</strong></p>
+            <ul>
+                <li>Configuración incorrecta de URLs de redirección</li>
+                <li>Problemas con el archivo de callback</li>
+                <li>Conflictos en el código de autenticación</li>
+                <li>Problemas con los scopes</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Configuración Actual</h3>
+            <div id="config-info" class="result info">
+                <p>Cargando configuración...</p>
+            </div>
+            <button class="btn" onclick="checkConfig()">Verificar Configuración</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Estado de Autenticación</h3>
+            <div id="auth-status" class="result info">
+                <p>Verificando estado de autenticación...</p>
+            </div>
+            <button class="btn" onclick="checkAuthStatus()">Verificar Auth</button>
+            <button class="btn" onclick="clearAuth()">Limpiar Auth</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🚀 Test de Login</h3>
+            <div id="login-test" class="result info">
+                <p>Haz clic en "Probar Login" para intentar iniciar sesión.</p>
+            </div>
+            <button class="btn" onclick="testLogin()">Probar Login</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 URLs de Redirección</h3>
+            <div id="redirect-info" class="result info">
+                <p>Verificando URLs de redirección...</p>
+            </div>
+            <button class="btn" onclick="checkRedirectUrls()">Verificar URLs</button>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Resultados</h3>
+            <div id="results" class="result info">
+                <p>Los resultados aparecerán aquí después de ejecutar las pruebas.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        // Función para verificar configuración
+        function checkConfig() {
+            const configDiv = document.getElementById('config-info');
+            
+            if (!window.config) {
+                configDiv.innerHTML = '<p class="error">❌ Configuración no disponible</p>';
+                return;
+            }
+            
+            configDiv.innerHTML = `
+                <p class="success">✅ Configuración cargada</p>
+                <p><strong>Client ID:</strong> ${window.config.clientId}</p>
+                <p><strong>Redirect URI:</strong> ${window.config.redirectUri}</p>
+                <p><strong>Auth URL:</strong> ${window.config.authUrl}</p>
+                <p><strong>Es GitHub Pages:</strong> ${window.config.isGitHubPages ? 'SÍ' : 'NO'}</p>
+                <p><strong>Scopes:</strong> ${window.config.scopes.join(', ')}</p>
+            `;
+        }
+
+        // Función para verificar estado de autenticación
+        function checkAuthStatus() {
+            const statusDiv = document.getElementById('auth-status');
+            
+            const token = localStorage.getItem('spotify_access_token');
+            const expires = localStorage.getItem('spotify_token_expires');
+            const refreshToken = localStorage.getItem('spotify_refresh_token');
+            
+            if (!token) {
+                statusDiv.innerHTML = `
+                    <p class="error">❌ No hay token de acceso</p>
+                    <p>Necesitas iniciar sesión con Spotify.</p>
+                `;
+                return;
+            }
+            
+            if (Date.now() > parseInt(expires)) {
+                statusDiv.innerHTML = `
+                    <p class="error">❌ Token expirado</p>
+                    <p>El token ha expirado. Necesitas re-autenticarte.</p>
+                `;
+                return;
+            }
+            
+            statusDiv.innerHTML = `
+                <p class="success">✅ Token válido encontrado</p>
+                <p><strong>Expira en:</strong> ${new Date(parseInt(expires)).toLocaleString()}</p>
+                <p><strong>Refresh Token:</strong> ${refreshToken ? 'Disponible' : 'No disponible'}</p>
+            `;
+        }
+
+        // Función para limpiar autenticación
+        function clearAuth() {
+            localStorage.removeItem('spotify_access_token');
+            localStorage.removeItem('spotify_token_expires');
+            localStorage.removeItem('spotify_refresh_token');
+            localStorage.removeItem('spotify_auth_state');
+            
+            document.getElementById('auth-status').innerHTML = `
+                <p class="success">✅ Datos de autenticación limpiados</p>
+                <p>Ahora puedes volver a autenticarte.</p>
+            `;
+        }
+
+        // Función para probar login
+        function testLogin() {
+            const testDiv = document.getElementById('login-test');
+            testDiv.innerHTML = '<p>Iniciando proceso de login...</p>';
+            
+            if (!window.config) {
+                testDiv.innerHTML = '<p class="error">❌ Configuración no disponible</p>';
+                return;
+            }
+            
+            // Generar estado
+            const state = Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('spotify_auth_state', state);
+            
+            // Construir URL de autorización
+            const params = new URLSearchParams({
+                client_id: window.config.clientId,
+                response_type: 'code',
+                redirect_uri: window.config.redirectUri,
+                state: state,
+                scope: window.config.scopes.join(' '),
+                show_dialog: 'true'
+            });
+            
+            const authUrl = `${window.config.authUrl}?${params.toString()}`;
+            
+            testDiv.innerHTML = `
+                <p class="success">✅ URL de autorización generada</p>
+                <p><strong>URL:</strong> ${authUrl}</p>
+                <p>Redirigiendo a Spotify...</p>
+            `;
+            
+            // Redirigir después de 2 segundos
+            setTimeout(() => {
+                window.location.href = authUrl;
+            }, 2000);
+        }
+
+        // Función para verificar URLs de redirección
+        function checkRedirectUrls() {
+            const redirectDiv = document.getElementById('redirect-info');
+            
+            const currentUrl = window.location.href;
+            const hostname = window.location.hostname;
+            const isLocal = hostname === '127.0.0.1' || hostname === 'localhost';
+            
+            redirectDiv.innerHTML = `
+                <p class="success">✅ Información de URLs</p>
+                <p><strong>URL actual:</strong> ${currentUrl}</p>
+                <p><strong>Hostname:</strong> ${hostname}</p>
+                <p><strong>Es local:</strong> ${isLocal ? 'SÍ' : 'NO'}</p>
+                <p><strong>Redirect URI configurado:</strong> ${window.config ? window.config.redirectUri : 'No disponible'}</p>
+                <p><strong>Recomendación:</strong> ${isLocal ? 'Usar callback_local.html' : 'Usar callback.html'}</p>
+            `;
+        }
+
+        // Ejecutar verificaciones iniciales
+        document.addEventListener('DOMContentLoaded', () => {
+            checkConfig();
+            checkAuthStatus();
+            checkRedirectUrls();
+        });
+    </script>
+</body>
+</html> 
