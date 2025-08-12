@@ -530,7 +530,7 @@ class ModifyPlaylistsManager {
     }
 
     async deletePlaylist(playlistId, playlistName) {
-        const confirmed = confirm(`¿Estás seguro de que quieres eliminar la playlist "${playlistName}"?`);
+        const confirmed = confirm(`¿Estás seguro de que quieres remover la playlist "${playlistName}" de tu biblioteca?\n\nNota: Esto no elimina la playlist de Spotify, solo la remueve de tu biblioteca personal.`);
         if (!confirmed) return;
 
         try {
@@ -583,7 +583,8 @@ class ModifyPlaylistsManager {
                 }
             } else {
                 // Si es del usuario, eliminar la playlist completamente
-                const deleteResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+                // Spotify no permite eliminar playlists directamente, solo podemos dejar de seguirla
+                const deleteResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -597,9 +598,9 @@ class ModifyPlaylistsManager {
                     this.selectedPlaylists.delete(playlistId);
                     
                     this.displayPlaylists();
-                    this.showNotification(`Playlist "${playlistName}" eliminada completamente`, 'success');
+                    this.showNotification(`Playlist "${playlistName}" removida de tu biblioteca`, 'success');
                 } else {
-                    throw new Error(`Error al eliminar playlist: ${deleteResponse.status}`);
+                    throw new Error(`Error al remover playlist: ${deleteResponse.status}`);
                 }
             }
 
@@ -640,7 +641,7 @@ class ModifyPlaylistsManager {
             return;
         }
 
-        const confirmed = confirm(`¿Estás seguro de que quieres eliminar ${this.selectedPlaylists.size} playlist(s)?`);
+        const confirmed = confirm(`¿Estás seguro de que quieres remover ${this.selectedPlaylists.size} playlist(s) de tu biblioteca?\n\nNota: Esto no elimina las playlists de Spotify, solo las remueve de tu biblioteca personal.`);
         if (!confirmed) return;
 
         try {
@@ -671,8 +672,8 @@ class ModifyPlaylistsManager {
                         const playlistData = await playlistResponse.json();
                         
                         if (playlistData.owner.id === userId) {
-                            // Si es del usuario, eliminar completamente
-                            const deleteResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+                            // Si es del usuario, remover de la biblioteca (Spotify no permite eliminar playlists directamente)
+                            const deleteResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
                                 method: 'DELETE',
                                 headers: {
                                     'Authorization': `Bearer ${token}`
@@ -711,13 +712,13 @@ class ModifyPlaylistsManager {
             
             // Mostrar mensaje apropiado
             if (deletedCount > 0 && unfollowedCount > 0) {
-                this.showNotification(`${deletedCount} playlist(s) eliminada(s) y ${unfollowedCount} dejada(s) de seguir`, 'success');
+                this.showNotification(`${deletedCount} playlist(s) removida(s) de tu biblioteca y ${unfollowedCount} dejada(s) de seguir`, 'success');
             } else if (deletedCount > 0) {
-                this.showNotification(`${deletedCount} playlist(s) eliminada(s) completamente`, 'success');
+                this.showNotification(`${deletedCount} playlist(s) removida(s) de tu biblioteca`, 'success');
             } else if (unfollowedCount > 0) {
                 this.showNotification(`${unfollowedCount} playlist(s) dejada(s) de seguir`, 'success');
             } else {
-                this.showNotification('No se pudo eliminar ninguna playlist', 'warning');
+                this.showNotification('No se pudo remover ninguna playlist', 'warning');
             }
 
         } catch (error) {
