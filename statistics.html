@@ -232,6 +232,10 @@
                         <div class="insight-text">
                             <h4>Diversidad Musical</h4>
                             <p>Basado en tus estadísticas, tienes una excelente diversidad en tus gustos musicales. Esto te ayuda a descubrir nuevos artistas y géneros.</p>
+                            <div class="spotify-link">
+                                <i class="fab fa-spotify"></i>
+                                <a href="#" onclick="openSpotify()" class="spotify-official-link">ABRIR SPOTIFY</a>
+                            </div>
                         </div>
                     </div>
                     
@@ -301,5 +305,18 @@
     <script src="js/spotify-api.js"></script>
     <script src="js/share-statistics.js"></script>
     <script src="js/statistics.js"></script>
+    
+    <script>
+        // Función para abrir Spotify según directrices oficiales
+        function openSpotify() {
+            // Intentar abrir la app de Spotify
+            window.location.href = 'spotify:';
+            
+            // Como respaldo, abrir en el navegador
+            setTimeout(() => {
+                window.open('https://open.spotify.com', '_blank');
+            }, 500);
+        }
+    </script>
 </body>
 </html> 

@@ -1078,6 +1078,30 @@
     transition: var(--transition-smooth);
 }
 
+.spotify-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(29, 185, 84, 0.1);
+    border: 1px solid rgba(29, 185, 84, 0.3);
+    border-radius: var(--border-radius-small);
+}
+
+.spotify-official-link {
+    color: #1DB954;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+}
+
+.spotify-official-link:hover {
+    color: #1ed760;
+    text-decoration: underline;
+}
+
 .insight-item:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
