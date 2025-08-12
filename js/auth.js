@@ -13,8 +13,8 @@ class Auth {
 
     waitForConfig() {
         let attempts = 0;
-        const maxAttempts = this.config?.maxRetries || 10;
-        const retryDelay = this.config?.retryDelay || 500;
+        const maxAttempts = 10; // Valor fijo en lugar de this.config?.maxRetries
+        const retryDelay = 500; // Valor fijo en lugar de this.config?.retryDelay
         
         const checkConfig = () => {
             if (window.config) {
@@ -97,7 +97,7 @@ class Auth {
             }
             
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), this.config?.requestTimeout || 10000);
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // Valor fijo en lugar de this.config?.requestTimeout
             
             const response = await fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
@@ -171,6 +171,11 @@ class Auth {
                 scopes: this.config.scopes
             });
             
+            // Verificar que todos los campos necesarios estén presentes
+            if (!this.config.clientId || !this.config.redirectUri || !this.config.authUrl || !this.config.scopes) {
+                throw new Error('Configuración incompleta: faltan campos requeridos');
+            }
+            
             // Verificar conectividad antes de iniciar login
             if (!await this.checkNetworkStatus()) {
                 this.showNetworkError();
@@ -198,6 +203,11 @@ class Auth {
             } catch (urlError) {
                 console.error('URL de autenticación inválida:', authUrl);
                 throw new Error('URL de autenticación inválida');
+            }
+            
+            // Verificar que la URL no esté vacía
+            if (!authUrl || authUrl === 'https://accounts.spotify.com/authorize?') {
+                throw new Error('URL de autenticación vacía o incompleta');
             }
             
             window.location.href = authUrl;
