@@ -1159,4 +1159,192 @@
 .search-result:nth-child(2) { animation-delay: 0.2s; }
 .search-result:nth-child(3) { animation-delay: 0.3s; }
 .search-result:nth-child(4) { animation-delay: 0.4s; }
-.search-result:nth-child(5) { animation-delay: 0.5s; } 
+.search-result:nth-child(5) { animation-delay: 0.5s; }
+
+/* ===== SECCIÓN DE EXPORTAR A SPOTIFY PROMINENTE ===== */
+.spotify-export-section {
+  background: linear-gradient(135deg, #1db954 0%, #1ed760 50%, #1db954 100%);
+  padding: 4rem 2rem;
+  margin-top: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.spotify-export-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+.spotify-export-container {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.spotify-export-content {
+  text-align: center;
+  color: white;
+}
+
+.spotify-export-header {
+  margin-bottom: 3rem;
+}
+
+.spotify-logo-large {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.spotify-export-title {
+  font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.spotify-export-subtitle {
+  font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.spotify-export-button-container {
+  margin-bottom: 3rem;
+}
+
+.spotify-export-btn {
+  background: #000000;
+  border: none;
+  border-radius: 50px;
+  padding: 1.25rem 3rem;
+  color: white;
+  font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 280px;
+}
+
+.spotify-export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  background: #1a1a1a;
+}
+
+.spotify-export-btn:active {
+  transform: translateY(0);
+}
+
+.spotify-btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+
+.spotify-btn-content i {
+  font-size: 1.5rem;
+  color: #1db954;
+}
+
+.spotify-btn-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.spotify-export-btn:hover .spotify-btn-glow {
+  left: 100%;
+}
+
+.spotify-export-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.spotify-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.spotify-feature i {
+  font-size: 1.25rem;
+  color: white;
+  width: 24px;
+  text-align: center;
+}
+
+/* Responsive para la sección de exportar */
+@media (max-width: 768px) {
+  .spotify-export-section {
+    padding: 3rem 1rem;
+  }
+  
+  .spotify-export-title {
+    font-size: 2.5rem;
+  }
+  
+  .spotify-export-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .spotify-export-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    min-width: 240px;
+  }
+  
+  .spotify-export-features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .spotify-export-title {
+    font-size: 2rem;
+  }
+  
+  .spotify-export-subtitle {
+    font-size: 1rem;
+  }
+  
+  .spotify-export-btn {
+    padding: 0.875rem 1.5rem;
+    min-width: 200px;
+  }
+} 

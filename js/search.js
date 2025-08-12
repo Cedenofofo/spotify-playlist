@@ -333,19 +333,25 @@ class SearchManager {
         
         const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
         
-        if (selectedTracks.length === 0) {
-            previewDiv.style.display = 'none';
-            return;
-        }
-        
         // Obtener el nombre de la playlist del formulario
         const playlistName = document.getElementById('playlist-name')?.value || 'Mi Playlist';
         
-        // Crear la vista previa con solo las canciones seleccionadas
+        // Preservar las canciones generadas por artista que ya están en la vista previa
+        const artistGeneratedTracks = window.currentPlaylistTracks || [];
+        
+        // Combinar canciones generadas por artista + canciones seleccionadas específicamente
+        const allTracks = [...artistGeneratedTracks, ...selectedTracks];
+        
+        // Eliminar duplicados basándose en el URI
+        const uniqueTracks = allTracks.filter((track, index, self) => 
+            index === self.findIndex(t => t.uri === track.uri)
+        );
+        
+        // Crear la vista previa con todas las canciones
         const data = {
             success: true,
             playlistName: playlistName,
-            tracks: selectedTracks
+            tracks: uniqueTracks
         };
         
         // Llamar a la función global de vista previa
@@ -355,6 +361,20 @@ class SearchManager {
             // Si la función no está disponible, crear una vista previa básica
             this.createBasicPreview(data);
         }
+        
+        // Mostrar la nueva sección de exportar a Spotify
+        const spotifyExportSection = document.querySelector('.spotify-export-section');
+        if (spotifyExportSection) {
+            spotifyExportSection.style.display = 'block';
+            spotifyExportSection.style.opacity = '0';
+            spotifyExportSection.style.transform = 'translateY(50px)';
+            spotifyExportSection.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            setTimeout(() => {
+                spotifyExportSection.style.opacity = '1';
+                spotifyExportSection.style.transform = 'translateY(0)';
+            }, 200);
+        }
     }
 
     createBasicPreview(data) {
@@ -363,14 +383,22 @@ class SearchManager {
         
         if (!previewDiv) return;
         
+        // Calcular estadísticas separadas
+        const artistGeneratedTracks = window.currentPlaylistTracks || [];
+        const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
+        
         previewDiv.innerHTML = `
             <div class="preview-header">
                 <h4>Vista previa: ${data.playlistName}</h4>
-                <p>${data.tracks.length} canciones seleccionadas</p>
+                <p>${data.tracks.length} canciones en total</p>
                 <div class="preview-stats">
                     <span class="stat-item">
+                        <i class="fas fa-music"></i>
+                        ${artistGeneratedTracks.length} generadas
+                    </span>
+                    <span class="stat-item">
                         <i class="fas fa-heart"></i>
-                        ${data.tracks.length} seleccionadas
+                        ${selectedTracks.length} seleccionadas
                     </span>
                 </div>
             </div>

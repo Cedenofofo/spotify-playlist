@@ -174,25 +174,6 @@
                     <!-- Vista previa de playlist -->
                     <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
 
-                    <!-- Botón de exportar -->
-                    <div class="export-section" style="display:none;">
-                        <div class="export-header">
-                            <h4>¡Tu playlist está lista!</h4>
-                            <p>Exporta tu playlist a Spotify para disfrutarla</p>
-                        </div>
-                        <button id="export-spotify" class="action-btn primary">
-                            <div class="btn-content">
-                                <i class="fab fa-spotify"></i>
-                                <span>Exportar a Spotify</span>
-                            </div>
-                            <div class="btn-ripple"></div>
-                        </button>
-                        <div class="export-info">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Tu playlist será privada por defecto</span>
-                        </div>
-                    </div>
-
                     <!-- Loading elegante -->
                     <div id="loading" class="loading-container" style="display: none;">
                         <div class="loading-spinner">
@@ -212,6 +193,46 @@
             </div>
         </section>
     </main>
+
+    <!-- Sección de exportar a Spotify - Prominente y al final -->
+    <section class="spotify-export-section" style="display:none;">
+        <div class="spotify-export-container">
+            <div class="spotify-export-content">
+                <div class="spotify-export-header">
+                    <div class="spotify-logo-large">
+                        <i class="fab fa-spotify"></i>
+                    </div>
+                    <h2 class="spotify-export-title">¡Tu playlist está lista!</h2>
+                    <p class="spotify-export-subtitle">Exporta tu playlist a Spotify para disfrutarla en cualquier dispositivo</p>
+                </div>
+                
+                <div class="spotify-export-button-container">
+                    <button id="export-spotify" class="spotify-export-btn">
+                        <div class="spotify-btn-content">
+                            <i class="fab fa-spotify"></i>
+                            <span>Exportar a Spotify</span>
+                        </div>
+                        <div class="spotify-btn-glow"></div>
+                    </button>
+                </div>
+                
+                <div class="spotify-export-features">
+                    <div class="spotify-feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Playlist privada por defecto</span>
+                    </div>
+                    <div class="spotify-feature">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Sincronización automática</span>
+                    </div>
+                    <div class="spotify-feature">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Disponible en todos tus dispositivos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer elegante -->
     <footer class="elegant-footer">

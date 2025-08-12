@@ -616,20 +616,21 @@ function displayPlaylistPreview(data) {
     
     previewDiv.style.display = 'block';
     
-    // Mostrar la sección de exportar con animación
-    if (exportSection) {
-        exportSection.style.display = 'block';
-        exportSection.style.opacity = '0';
-        exportSection.style.transform = 'translateY(20px)';
-        exportSection.style.transition = 'all 0.5s ease';
+    // Mostrar la nueva sección de exportar a Spotify con animación
+    const spotifyExportSection = document.querySelector('.spotify-export-section');
+    if (spotifyExportSection) {
+        spotifyExportSection.style.display = 'block';
+        spotifyExportSection.style.opacity = '0';
+        spotifyExportSection.style.transform = 'translateY(50px)';
+        spotifyExportSection.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
         
         setTimeout(() => {
-            exportSection.style.opacity = '1';
-            exportSection.style.transform = 'translateY(0)';
-        }, 100);
+            spotifyExportSection.style.opacity = '1';
+            spotifyExportSection.style.transform = 'translateY(0)';
+        }, 200);
         
         // Activar el efecto de pulso en el botón
-        const exportButton = exportSection.querySelector('.action-btn.primary');
+        const exportButton = spotifyExportSection.querySelector('.spotify-export-btn');
         if (exportButton) {
             exportButton.classList.add('pulse');
             exportButton.style.animation = 'exportPulse 2s infinite';
