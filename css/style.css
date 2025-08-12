@@ -1197,7 +1197,12 @@ body {
 }
 
 .artist-row .autocomplete-suggestions {
-    margin-bottom: 27rem; /* Aumentado de 18rem a 27rem (agregando la mitad de lo quitado) */
+    margin-bottom: 0;
+    transition: margin-bottom 0.3s ease;
+}
+
+.artist-row .autocomplete-suggestions.has-suggestions {
+    margin-bottom: 27rem;
 }
 
 .add-artist-btn {
@@ -1215,7 +1220,12 @@ body {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 1;
-    margin-top: 10.125rem; /* Aumentado de 6.75rem a 10.125rem (agregando la mitad de lo quitado) */
+    margin-top: 2rem;
+    transition: margin-top 0.3s ease;
+}
+
+.add-artist-btn.needs-spacing {
+    margin-top: 10.125rem;
 }
 
 .remove-artist-btn {
@@ -1243,4 +1253,23 @@ body {
 
 .remove-artist-btn i {
     font-size: 1rem;
+}
+
+/* ===== ESPACIADO DINÁMICO PARA BÚSQUEDA ===== */
+.search-suggestions-container {
+    margin-bottom: 0;
+    transition: margin-bottom 0.3s ease;
+}
+
+.search-suggestions-container.has-suggestions {
+    margin-bottom: 20rem;
+}
+
+.selected-tracks-container {
+    margin-top: 0;
+    transition: margin-top 0.3s ease;
+}
+
+.selected-tracks-container.needs-spacing {
+    margin-top: 2rem;
 }

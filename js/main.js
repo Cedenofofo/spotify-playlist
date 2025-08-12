@@ -423,36 +423,60 @@ async function searchArtists(query, suggestionsDiv, artistInput) {
 function displayArtistResults(artists, suggestionsDiv, artistInput) {
     suggestionsDiv.innerHTML = '';
     
-    // Agregar mensaje informativo
     if (artists.length > 0) {
+        // Mostrar sugerencias y agregar espaciado
+        suggestionsDiv.style.display = 'block';
+        suggestionsDiv.classList.add('has-suggestions');
+        updateArtistSpacing();
+        
+        // Agregar mensaje informativo
         const infoDiv = document.createElement('div');
         infoDiv.className = 'suggestion-info-message';
         infoDiv.innerHTML = '<i class="fas fa-info-circle"></i> Mostrando los 5 mejores resultados';
         suggestionsDiv.appendChild(infoDiv);
-    }
-    
-    artists.forEach(artist => {
-        const artistDiv = document.createElement('div');
-        artistDiv.className = 'autocomplete-suggestion';
-        artistDiv.innerHTML = `
-            <img src="${artist.images[0]?.url || 'https://via.placeholder.com/32?text=🎤'}" alt="${artist.name}">
-            <span>${artist.name}</span>
-        `;
         
-        artistDiv.addEventListener('click', () => {
-            artistInput.value = artist.name;
-            suggestionsDiv.innerHTML = '';
-            suggestionsDiv.classList.remove('show');
+        artists.forEach(artist => {
+            const artistDiv = document.createElement('div');
+            artistDiv.className = 'autocomplete-suggestion';
+            artistDiv.innerHTML = `
+                <img src="${artist.images[0]?.url || 'https://via.placeholder.com/32?text=🎤'}" alt="${artist.name}">
+                <span>${artist.name}</span>
+            `;
+            
+            artistDiv.addEventListener('click', () => {
+                artistInput.value = artist.name;
+                suggestionsDiv.innerHTML = '';
+                suggestionsDiv.style.display = 'none';
+                suggestionsDiv.classList.remove('has-suggestions');
+                updateArtistSpacing();
+            });
+            
+            suggestionsDiv.appendChild(artistDiv);
         });
-        
-        suggestionsDiv.appendChild(artistDiv);
-    });
-
-    // Mostrar las sugerencias
-    if (artists.length > 0) {
-        suggestionsDiv.classList.add('show');
     } else {
-        suggestionsDiv.classList.remove('show');
+        // Ocultar sugerencias y remover espaciado
+        suggestionsDiv.style.display = 'none';
+        suggestionsDiv.classList.remove('has-suggestions');
+        updateArtistSpacing();
+    }
+}
+
+// Función para actualizar el espaciado de artistas
+function updateArtistSpacing() {
+    const artistSuggestions = document.querySelectorAll('.artist-row .autocomplete-suggestions');
+    const addArtistBtn = document.querySelector('.add-artist-btn');
+    
+    if (!addArtistBtn) return;
+    
+    // Verificar si hay alguna sugerencia visible
+    const hasVisibleSuggestions = Array.from(artistSuggestions).some(suggestion => 
+        suggestion.style.display !== 'none' && suggestion.classList.contains('has-suggestions')
+    );
+    
+    if (hasVisibleSuggestions) {
+        addArtistBtn.classList.add('needs-spacing');
+    } else {
+        addArtistBtn.classList.remove('needs-spacing');
     }
 }
 

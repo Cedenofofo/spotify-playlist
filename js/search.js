@@ -154,8 +154,13 @@ class SearchManager {
     displayResults(tracks, suggestionsDiv, searchInput) {
         suggestionsDiv.innerHTML = '';
 
-        // Agregar mensaje informativo
         if (tracks.length > 0) {
+            // Mostrar sugerencias y agregar espaciado
+            suggestionsDiv.style.display = 'block';
+            suggestionsDiv.classList.add('show', 'has-suggestions');
+            this.updateSearchSpacing();
+            
+            // Agregar mensaje informativo
             const infoDiv = document.createElement('div');
             infoDiv.className = 'suggestion-info-message';
             infoDiv.innerHTML = '<i class="fas fa-info-circle"></i> Mostrando los 5 mejores resultados';
@@ -173,8 +178,10 @@ class SearchManager {
             trackDiv.addEventListener('click', () => {
                 this.addTrack(track);
                 suggestionsDiv.innerHTML = '';
-                suggestionsDiv.classList.remove('show');
+                suggestionsDiv.style.display = 'none';
+                suggestionsDiv.classList.remove('show', 'has-suggestions');
                 searchInput.value = '';
+                this.updateSearchSpacing();
                 
                 // Efecto de confirmación
                 this.showAddConfirmation(track.name);
@@ -188,6 +195,8 @@ class SearchManager {
             suggestionsDiv.classList.add('show');
         } else {
             suggestionsDiv.classList.remove('show');
+            suggestionsDiv.classList.remove('has-suggestions');
+            this.updateSearchSpacing();
         }
     }
 
@@ -493,6 +502,24 @@ class SearchManager {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    }
+    
+    // Función para actualizar el espaciado de búsqueda
+    updateSearchSpacing() {
+        const searchSuggestions = document.querySelector('#search-suggestions');
+        const selectedTracksContainer = document.querySelector('#selected-tracks');
+        
+        if (!searchSuggestions || !selectedTracksContainer) return;
+        
+        // Verificar si hay sugerencias visibles
+        const hasVisibleSuggestions = searchSuggestions.style.display !== 'none' && 
+                                    searchSuggestions.classList.contains('has-suggestions');
+        
+        if (hasVisibleSuggestions) {
+            selectedTracksContainer.classList.add('needs-spacing');
+        } else {
+            selectedTracksContainer.classList.remove('needs-spacing');
+        }
     }
 }
 

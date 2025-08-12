@@ -1314,7 +1314,12 @@ body {
 }
 
 .artist-row .autocomplete-suggestions {
-  margin-bottom: 27rem !important; /* Aumentado de 18rem a 27rem (agregando la mitad de lo quitado) */
+  margin-bottom: 0 !important;
+  transition: margin-bottom 0.3s ease !important;
+}
+
+.artist-row .autocomplete-suggestions.has-suggestions {
+  margin-bottom: 27rem !important;
 }
 
 .remove-artist-btn {
@@ -1359,5 +1364,10 @@ body {
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
   z-index: 1 !important;
-  margin-top: 10.125rem !important; /* Aumentado de 6.75rem a 10.125rem (agregando la mitad de lo quitado) */
+  margin-top: 2rem !important;
+  transition: margin-top 0.3s ease !important;
+}
+
+.add-artist-btn.needs-spacing {
+  margin-top: 10.125rem !important;
 } 
