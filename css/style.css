@@ -8,14 +8,14 @@
 }
 
 :root {
-    /* Nueva paleta de colores moderna */
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #a5b4fc;
-    --secondary-color: #10b981;
-    --secondary-dark: #059669;
-    --accent-color: #f59e0b;
-    --accent-dark: #d97706;
+    /* Paleta oficial de colores de Spotify */
+    --primary-color: #1DB954;      /* Spotify Green */
+    --primary-dark: #1ed760;       /* Spotify Green Dark */
+    --primary-light: #1fdf64;      /* Spotify Green Light */
+    --secondary-color: #191414;    /* Spotify Black */
+    --secondary-dark: #000000;     /* Spotify Black Dark */
+    --accent-color: #1DB954;       /* Spotify Green como accent */
+    --accent-dark: #1ed760;        /* Spotify Green Dark como accent */
     
     /* Colores de fondo */
     --bg-primary: #0f172a;

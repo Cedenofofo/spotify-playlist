@@ -1,9 +1,9 @@
 /* ===== NEW VISUAL PROPOSAL - STATISTICS PAGE ===== */
 
 :root {
-    --primary-color: #1db954;
-    --secondary-color: #00cfff;
-    --accent-color: #ff6b35;
+    --primary-color: #1DB954;      /* Spotify Green */
+    --secondary-color: #191414;    /* Spotify Black */
+    --accent-color: #1DB954;       /* Spotify Green como accent */
     --background-dark: #0f0f23;
     --background-light: #1a1a2e;
     --text-primary: #ffffff;
@@ -253,7 +253,7 @@
     left: 0;
     right: 0;
     height: 6px;
-    background: linear-gradient(90deg, #1db954, #00cfff, #ff6b35);
+    background: linear-gradient(90deg, #1DB954, #1ed760, #1fdf64);
     border-radius: 20px 20px 0 0;
     opacity: 0.8;
 }
@@ -294,7 +294,7 @@
 .metric-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #1db954, #00cfff);
+    background: linear-gradient(135deg, #1DB954, #1ed760);
     border-radius: 18px;
     display: flex;
     align-items: center;
@@ -824,7 +824,7 @@
 .time-value {
     font-size: 3.5rem;
     font-weight: 900;
-    background: linear-gradient(135deg, #1db954, #00cfff);
+    background: linear-gradient(135deg, #1DB954, #1ed760);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -841,7 +841,7 @@
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, #1db954, #00cfff);
+    background: linear-gradient(90deg, #1DB954, #1ed760);
     border-radius: 2px;
 }
 
@@ -984,7 +984,7 @@
 
 .metric-icon {
     font-size: 1.8rem;
-    background: linear-gradient(135deg, #1db954, #00cfff);
+    background: linear-gradient(135deg, #1DB954, #1ed760);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1023,7 +1023,7 @@
     font-weight: 700;
     color: var(--text-primary);
     margin: 0 0 1rem 0;
-    background: linear-gradient(135deg, #1db954, #00cfff);
+    background: linear-gradient(135deg, #1DB954, #1ed760);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
