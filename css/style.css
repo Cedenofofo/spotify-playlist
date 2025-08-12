@@ -701,20 +701,21 @@ body {
   display: flex;
   align-items: center;
     gap: 0.5rem;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.5rem 0.75rem;
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.15);
     border-radius: var(--border-radius);
-    color: var(--secondary-color);
-    font-size: 0.9rem;
-    font-weight: 500;
-    max-width: 400px;
+    color: rgba(16, 185, 129, 0.7);
+    font-size: 0.8rem;
+    font-weight: 400;
+    max-width: 350px;
     text-align: center;
+    opacity: 0.8;
 }
 
 .preview-info i {
-    font-size: 1rem;
-    color: var(--secondary-color);
+    font-size: 0.8rem;
+    color: rgba(16, 185, 129, 0.7);
 }
 
 /* ===== SELECTED TRACKS ===== */
@@ -985,9 +986,11 @@ body {
 }
 
 .message-container.warning {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    color: var(--accent-color);
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    color: rgba(245, 158, 11, 0.7);
+    font-size: 0.85rem;
+    opacity: 0.8;
 }
 
 .message-container.info {
