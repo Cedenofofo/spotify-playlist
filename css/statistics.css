@@ -1181,6 +1181,25 @@
 
 /* ===== RESPONSIVE DESIGN FOR NEW ELEMENTS ===== */
 @media (max-width: 1024px) {
+    .stats-container {
+        padding: 1.5rem;
+        padding-top: 5.5rem;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .analysis-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .metric-card {
+        padding: 2rem;
+    }
+    
     .hero-content {
         flex-direction: column;
         gap: 2rem;
@@ -1703,6 +1722,16 @@
     
     .metrics-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .metric-card {
+        padding: 2rem;
+    }
+    
+    .analysis-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
     
     .artists-grid {
@@ -1764,7 +1793,18 @@
         font-size: 0.9rem;
     }
     
-    .metric-card,
+    .metrics-grid {
+        gap: 1rem;
+    }
+    
+    .metric-card {
+        padding: 1.5rem;
+    }
+    
+    .analysis-grid {
+        gap: 1rem;
+    }
+    
     .content-card {
         padding: 1.5rem;
     }
@@ -1907,6 +1947,26 @@
     
     .controls-container {
         padding: 0.8rem;
+    }
+    
+    .metrics-grid {
+        gap: 0.8rem;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
+    
+    .analysis-grid {
+        gap: 0.8rem;
+    }
+    
+    .content-card {
+        padding: 1rem;
+    }
+    
+    .card-content {
+        padding: 1rem;
     }
     
     .insights-section {
