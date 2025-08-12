@@ -484,8 +484,11 @@ class ModifyPlaylistsManager {
         const playlistCards = document.querySelectorAll('.playlist-card');
         playlistCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                // No activar si se hace clic en checkbox o botones
-                if (e.target.closest('.playlist-checkbox') || e.target.closest('.playlist-actions')) {
+                // No activar si se hace clic en checkbox, botones o acciones
+                if (e.target.closest('.playlist-card-checkbox') || 
+                    e.target.closest('.playlist-card-actions') ||
+                    e.target.closest('button') ||
+                    e.target.closest('input')) {
                     return;
                 }
                 
@@ -543,23 +546,61 @@ class ModifyPlaylistsManager {
                 throw new Error('No se pudo obtener el ID de usuario');
             }
 
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
-                method: 'DELETE',
+            // Para eliminar una playlist, necesitamos verificar si es del usuario
+            // Primero obtener información de la playlist
+            const playlistResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
-            if (response.ok) {
-                // Remover de la lista local
-                this.playlists = this.playlists.filter(p => p.id !== playlistId);
-                this.filteredPlaylists = this.filteredPlaylists.filter(p => p.id !== playlistId);
-                this.selectedPlaylists.delete(playlistId);
-                
-                this.displayPlaylists();
-                this.showNotification(`Playlist "${playlistName}" eliminada`, 'success');
+            if (!playlistResponse.ok) {
+                throw new Error(`No se pudo obtener información de la playlist: ${playlistResponse.status}`);
+            }
+
+            const playlistData = await playlistResponse.json();
+            
+            // Verificar si la playlist pertenece al usuario actual
+            if (playlistData.owner.id !== userId) {
+                // Si no es del usuario, solo podemos dejar de seguirla
+                const unfollowResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (unfollowResponse.ok) {
+                    // Remover de la lista local
+                    this.playlists = this.playlists.filter(p => p.id !== playlistId);
+                    this.filteredPlaylists = this.filteredPlaylists.filter(p => p.id !== playlistId);
+                    this.selectedPlaylists.delete(playlistId);
+                    
+                    this.displayPlaylists();
+                    this.showNotification(`Dejaste de seguir la playlist "${playlistName}"`, 'success');
+                } else {
+                    throw new Error(`Error al dejar de seguir playlist: ${unfollowResponse.status}`);
+                }
             } else {
-                throw new Error(`Error al eliminar playlist: ${response.status}`);
+                // Si es del usuario, eliminar la playlist completamente
+                const deleteResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (deleteResponse.ok) {
+                    // Remover de la lista local
+                    this.playlists = this.playlists.filter(p => p.id !== playlistId);
+                    this.filteredPlaylists = this.filteredPlaylists.filter(p => p.id !== playlistId);
+                    this.selectedPlaylists.delete(playlistId);
+                    
+                    this.displayPlaylists();
+                    this.showNotification(`Playlist "${playlistName}" eliminada completamente`, 'success');
+                } else {
+                    throw new Error(`Error al eliminar playlist: ${deleteResponse.status}`);
+                }
             }
 
         } catch (error) {
@@ -615,17 +656,45 @@ class ModifyPlaylistsManager {
             }
 
             let deletedCount = 0;
+            let unfollowedCount = 0;
+
             for (const playlistId of this.selectedPlaylists) {
                 try {
-                    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
-                        method: 'DELETE',
+                    // Primero obtener información de la playlist
+                    const playlistResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
                     });
 
-                    if (response.ok) {
-                        deletedCount++;
+                    if (playlistResponse.ok) {
+                        const playlistData = await playlistResponse.json();
+                        
+                        if (playlistData.owner.id === userId) {
+                            // Si es del usuario, eliminar completamente
+                            const deleteResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+
+                            if (deleteResponse.ok) {
+                                deletedCount++;
+                            }
+                        } else {
+                            // Si no es del usuario, dejar de seguir
+                            const unfollowResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+
+                            if (unfollowResponse.ok) {
+                                unfollowedCount++;
+                            }
+                        }
                     }
                 } catch (error) {
                     console.error(`Error al eliminar playlist ${playlistId}:`, error);
@@ -639,7 +708,17 @@ class ModifyPlaylistsManager {
 
             this.displayPlaylists();
             this.updateMultiSelectButtons();
-            this.showNotification(`${deletedCount} playlist(s) eliminada(s)`, 'success');
+            
+            // Mostrar mensaje apropiado
+            if (deletedCount > 0 && unfollowedCount > 0) {
+                this.showNotification(`${deletedCount} playlist(s) eliminada(s) y ${unfollowedCount} dejada(s) de seguir`, 'success');
+            } else if (deletedCount > 0) {
+                this.showNotification(`${deletedCount} playlist(s) eliminada(s) completamente`, 'success');
+            } else if (unfollowedCount > 0) {
+                this.showNotification(`${unfollowedCount} playlist(s) dejada(s) de seguir`, 'success');
+            } else {
+                this.showNotification('No se pudo eliminar ninguna playlist', 'warning');
+            }
 
         } catch (error) {
             console.error('Error al eliminar playlists seleccionadas:', error);
