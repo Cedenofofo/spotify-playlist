@@ -1273,3 +1273,48 @@ body {
 .selected-tracks-container.needs-spacing {
     margin-top: 2rem;
 }
+
+/* ===== ATRIBUCIÓN OFICIAL DE SPOTIFY ===== */
+.spotify-attribution {
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(25, 20, 20, 0.1) 100%);
+    border-top: 1px solid rgba(29, 185, 84, 0.2);
+    border-bottom: 1px solid rgba(29, 185, 84, 0.2);
+    padding: 2rem 0;
+    margin: 0;
+}
+
+.attribution-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.attribution-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.attribution-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.attribution-text i {
+    color: #1DB954;
+    font-size: 1.2rem;
+}
+
+.attribution-subtext {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: 400;
+}
