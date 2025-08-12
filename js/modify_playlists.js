@@ -500,28 +500,40 @@ class ModifyPlaylistsManager {
 
     async viewPlaylist(playlistId) {
         try {
-            const token = localStorage.getItem('spotify_access_token');
-            if (!token) {
-                this.auth.logout();
-                return;
-            }
-
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            console.log(`Abriendo playlist ${playlistId} en Spotify...`);
+            
+            // Crear un iframe oculto para detectar si Spotify está disponible
+            const testIframe = document.createElement('iframe');
+            testIframe.style.display = 'none';
+            testIframe.src = `spotify:playlist:${playlistId}`;
+            document.body.appendChild(testIframe);
+            
+            // Intentar abrir directamente en Spotify
+            const spotifyUrl = `spotify:playlist:${playlistId}`;
+            window.location.href = spotifyUrl;
+            
+            // Limpiar el iframe de prueba
+            setTimeout(() => {
+                if (document.body.contains(testIframe)) {
+                    document.body.removeChild(testIframe);
                 }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al cargar playlist: ${response.status}`);
-            }
-
-            const playlist = await response.json();
-            this.showPlaylistDetailsModal(playlist);
-
+            }, 1000);
+            
+            // Como respaldo, abrir en el navegador web de Spotify después de un breve delay
+            setTimeout(() => {
+                const webUrl = `https://open.spotify.com/playlist/${playlistId}`;
+                window.open(webUrl, '_blank');
+            }, 500);
+            
+            this.showNotification('Abriendo playlist en Spotify...', 'success');
+            
         } catch (error) {
-            console.error('Error al cargar playlist:', error);
-            this.showNotification('Error al cargar la playlist', 'error');
+            console.error('Error al abrir playlist:', error);
+            this.showNotification('Error al abrir la playlist', 'error');
+            
+            // Como último recurso, abrir en el navegador
+            const webUrl = `https://open.spotify.com/playlist/${playlistId}`;
+            window.open(webUrl, '_blank');
         }
     }
 
