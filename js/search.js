@@ -29,8 +29,7 @@ class SearchManager {
                 const query = searchInput.value.trim();
                 console.log('Input event triggered, query:', query);
                 if (query.length < 1) {
-                    suggestionsDiv.innerHTML = '';
-                    suggestionsDiv.classList.remove('show');
+                    this.hideSuggestions(suggestionsDiv);
                     return;
                 }
                 clearTimeout(debounceTimeout);
@@ -39,8 +38,7 @@ class SearchManager {
             
             searchInput.addEventListener('blur', () => {
                 setTimeout(() => {
-                    suggestionsDiv.innerHTML = '';
-                    suggestionsDiv.classList.remove('show');
+                    this.hideSuggestions(suggestionsDiv);
                 }, 200);
             });
             
@@ -283,6 +281,50 @@ class SearchManager {
                 this.updateExportButtonState();
             }
         }
+    }
+
+    // Función para manejar sugerencias dinámicamente
+    showSuggestions(suggestionsDiv, suggestions) {
+        if (!suggestionsDiv) return;
+        
+        if (suggestions.length === 0) {
+            suggestionsDiv.innerHTML = '';
+            suggestionsDiv.classList.remove('show');
+            return;
+        }
+        
+        // Mostrar sugerencias
+        suggestionsDiv.innerHTML = suggestions;
+        suggestionsDiv.classList.add('show');
+        
+        // Ajustar layout dinámicamente
+        this.adjustLayoutForSuggestions(suggestionsDiv);
+    }
+    
+    hideSuggestions(suggestionsDiv) {
+        if (!suggestionsDiv) return;
+        
+        suggestionsDiv.innerHTML = '';
+        suggestionsDiv.classList.remove('show');
+        
+        // Restaurar layout
+        this.restoreLayout();
+    }
+    
+    adjustLayoutForSuggestions(suggestionsDiv) {
+        // Agregar clase al contenedor padre para ajustar espaciado
+        const container = suggestionsDiv.closest('.form-group');
+        if (container) {
+            container.classList.add('has-active-suggestions');
+        }
+    }
+    
+    restoreLayout() {
+        // Remover clase de todos los contenedores
+        const containers = document.querySelectorAll('.form-group.has-active-suggestions');
+        containers.forEach(container => {
+            container.classList.remove('has-active-suggestions');
+        });
     }
 
     updateSelectedTracksList() {

@@ -177,8 +177,65 @@ try {
             }
         }
 
-        // Convertir a array y limitar al número solicitado
-        $tracks = array_slice(array_values($artistTracks), 0, $tracksPerArtist);
+        // 4. Si aún necesitamos más canciones, hacer búsquedas adicionales
+        if (count($artistTracks) < $tracksPerArtist) {
+            // Buscar por álbumes más antiguos del artista
+            $albumsResult = makeSpotifyRequest(
+                SPOTIFY_API_URL . "/artists/{$artistId}/albums?" . http_build_query([
+                    'market' => 'ES',
+                    'limit' => 20,
+                    'include_groups' => 'album,single,compilation',
+                    'offset' => 5 // Saltar los primeros 5 álbumes ya procesados
+                ])
+            );
+
+            if ($albumsResult['httpCode'] === 200) {
+                foreach ($albumsResult['response']['items'] as $album) {
+                    if (count($artistTracks) >= $tracksPerArtist) break;
+                    
+                    $albumTracksResult = makeSpotifyRequest(
+                        SPOTIFY_API_URL . "/albums/{$album['id']}/tracks?" . http_build_query([
+                            'market' => 'ES',
+                            'limit' => 50
+                        ])
+                    );
+
+                    if ($albumTracksResult['httpCode'] === 200) {
+                        foreach ($albumTracksResult['response']['items'] as $track) {
+                            if (!isset($artistTracks[$track['uri']])) {
+                                $trackInfoResult = makeSpotifyRequest(
+                                    SPOTIFY_API_URL . "/tracks/{$track['id']}?" . http_build_query([
+                                        'market' => 'ES'
+                                    ])
+                                );
+
+                                if ($trackInfoResult['httpCode'] === 200) {
+                                    $artistTracks[$track['uri']] = $trackInfoResult['response'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Ordenar por popularidad (si está disponible) y luego por nombre
+        $sortedTracks = array_values($artistTracks);
+        usort($sortedTracks, function($a, $b) {
+            // Priorizar por popularidad si está disponible
+            $popularityA = isset($a['popularity']) ? $a['popularity'] : 0;
+            $popularityB = isset($b['popularity']) ? $b['popularity'] : 0;
+            
+            if ($popularityA !== $popularityB) {
+                return $popularityB - $popularityA; // Mayor popularidad primero
+            }
+            
+            // Si tienen la misma popularidad, ordenar por nombre
+            return strcmp($a['name'], $b['name']);
+        });
+
+        // Tomar exactamente el número solicitado
+        $tracks = array_slice($sortedTracks, 0, $tracksPerArtist);
         
         foreach ($tracks as $track) {
             $allTracks[] = $track['uri'];
