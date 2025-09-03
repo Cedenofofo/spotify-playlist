@@ -227,7 +227,7 @@
     }
 /* Cuando el dropdown está abierto, desplazar los elementos siguientes */
 .autocomplete-suggestions.show ~ * {
-    transform: translateY(5rem);
+    transform: translateY(12rem);
     transition: transform 0.3s cubic-bezier(.4,2,.6,1);
 }
     .suggestion-item,
