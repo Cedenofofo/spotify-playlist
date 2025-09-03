@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Navegación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-button {
+            background: #1db954;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 1rem;
+            font-size: 1.1rem;
+        }
+        .test-button:hover {
+            background: #1ed760;
+        }
+        .status {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de Navegación a Crear Playlist</h1>
+    
+    <div class="status">
+        <h3>Estado actual:</h3>
+        <p>Hash de URL: <span id="current-hash">-</span></p>
+        <p>URL completa: <span id="current-url">-</span></p>
+    </div>
+    
+    <button class="test-button" onclick="testNavigation()">
+        Probar Navegación a Crear Playlist
+    </button>
+    
+    <button class="test-button" onclick="testDirectHash()">
+        Probar Hash Directo
+    </button>
+    
+    <button class="test-button" onclick="goToIndex()">
+        Ir a index.html
+    </button>
+    
+    <div id="log" style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px;">
+        <h3>Log de eventos:</h3>
+        <div id="log-content"></div>
+    </div>
+
+    <script>
+        // Actualizar información de estado
+        function updateStatus() {
+            document.getElementById('current-hash').textContent = window.location.hash || 'ninguno';
+            document.getElementById('current-url').textContent = window.location.href;
+        }
+        
+        // Función de logging
+        function log(message) {
+            const logContent = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            logContent.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            console.log(message);
+        }
+        
+        // Test de navegación
+        function testNavigation() {
+            log('Iniciando test de navegación...');
+            window.location.href = 'index.html#playlist-section';
+        }
+        
+        // Test de hash directo
+        function testDirectHash() {
+            log('Aplicando hash directo...');
+            window.location.hash = '#playlist-section';
+        }
+        
+        // Ir a index.html
+        function goToIndex() {
+            log('Navegando a index.html...');
+            window.location.href = 'index.html';
+        }
+        
+        // Escuchar cambios en el hash
+        window.addEventListener('hashchange', function() {
+            log('Hash cambiado a: ' + window.location.hash);
+            updateStatus();
+        });
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Página de test cargada');
+            updateStatus();
+        });
+        
+        // Actualizar estado cada segundo
+        setInterval(updateStatus, 1000);
+    </script>
+</body>
+</html> 

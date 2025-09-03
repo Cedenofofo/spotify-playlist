@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuneuptify - Modificar Playlists</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss: https://*.google.com https://*.googleapis.com https://*.gstatic.com; frame-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive-fixes.css">
+    <style>
+        .playlists-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .playlists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        /* NUEVA PROPUESTA - Tarjetas modernas y elegantes */
+        .playlist-card {
+            position: relative !important;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)) !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            overflow: hidden !important;
+            min-height: 320px !important;
+            max-width: 320px !important;
+            margin: 0 auto !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-8px) scale(1.02) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(29, 185, 84, 0.2) !important;
+            border-color: rgba(29, 185, 84, 0.4) !important;
+        }
+
+        /* Header con gradiente */
+        .playlist-card-header {
+            width: 100% !important;
+            height: 120px !important;
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 20px 20px 0 0 !important;
+            overflow: hidden !important;
+        }
+
+        .playlist-card-icon {
+            width: 60px !important;
+            height: 60px !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            backdrop-filter: blur(10px) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .playlist-card-icon i {
+            font-size: 2rem !important;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .playlist-card:hover .playlist-card-header {
+            transform: scale(1.05) !important;
+        }
+
+        /* Checkbox moderno */
+        .playlist-card-checkbox {
+            position: absolute !important;
+            top: 12px !important;
+            left: 12px !important;
+            z-index: 15 !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            border-radius: 8px !important;
+            padding: 6px !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Contenido de la card */
+        .playlist-card-content {
+            padding: 1.5rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 1rem !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+        }
+
+        /* Título moderno */
+        .playlist-card-title {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            font-size: 1.2rem !important;
+            line-height: 1.4 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Descripción mejorada */
+        .playlist-card-description {
+            color: #b3b3b3 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            opacity: 0.8 !important;
+        }
+
+        /* Estadísticas modernas */
+        .playlist-card-stats {
+            display: flex !important;
+            gap: 1rem !important;
+            margin: 0 !important;
+            padding: 0 0.5rem !important;
+        }
+
+        .playlist-card-stat {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.6rem !important;
+            color: #ffffff !important;
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            background: rgba(29, 185, 84, 0.15) !important;
+            padding: 0.6rem 1rem !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(29, 185, 84, 0.2) !important;
+            backdrop-filter: blur(10px) !important;
+            flex: 1 !important;
+            justify-content: center !important;
+        }
+
+        .playlist-card-stat i {
+            color: #1db954 !important;
+            font-size: 0.9rem !important;
+        }
+
+        /* Acciones modernas */
+        .playlist-card-actions {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-top: auto !important;
+            padding: 1rem 1.5rem 1.5rem 1.5rem !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .playlist-card-action {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #b3b3b3 !important;
+            cursor: pointer !important;
+            padding: 0.8rem !important;
+            border-radius: 12px !important;
+            transition: all 0.3s ease !important;
+            font-size: 1.1rem !important;
+            width: 44px !important;
+            height: 44px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            backdrop-filter: blur(10px) !important;
+            margin: 0 0.25rem !important;
+        }
+
+        .playlist-card-action:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .playlist-card-action.edit:hover {
+            background: rgba(29, 185, 84, 0.2) !important;
+            color: #1db954 !important;
+            border-color: rgba(29, 185, 84, 0.4) !important;
+        }
+
+        .playlist-card-action.delete:hover {
+            background: rgba(231, 76, 60, 0.2) !important;
+            color: #e74c3c !important;
+            border-color: rgba(231, 76, 60, 0.4) !important;
+        }
+
+        .playlist-card-action.play:hover {
+            background: rgba(29, 185, 84, 0.2) !important;
+            color: #1db954 !important;
+            border-color: rgba(29, 185, 84, 0.4) !important;
+        }
+
+        /* Responsive para las tarjetas modernas */
+        @media (max-width: 768px) {
+            .playlists-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+                gap: 2rem !important;
+            }
+            
+            .playlist-card {
+                min-height: 280px !important;
+            }
+            
+            .playlist-card-header {
+                height: 100px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .playlists-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+            
+            .playlist-card {
+                min-height: 260px !important;
+            }
+            
+            .playlist-card-header {
+                height: 80px !important;
+            }
+            
+            .playlist-card-content {
+                padding: 1.25rem !important;
+            }
+        }
+
+
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(29, 185, 84, 0.2);
+            border-top: 4px solid #1db954;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #ef4444;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(29, 185, 84, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #b3b3b3;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .create-playlist-btn {
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .create-playlist-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(29, 185, 84, 0.3);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #b3b3b3;
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1db954;
+            box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #b3b3b3;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b3b3b3;
+        }
+
+        /* Estilos elegantes para el botón de volver */
+        .elegant-back-btn {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(29, 185, 84, 0.2));
+            border: 2px solid rgba(29, 185, 84, 0.3);
+            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            color: #1db954;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .elegant-back-btn:hover {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.2), rgba(29, 185, 84, 0.3));
+            border-color: rgba(29, 185, 84, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+        }
+
+        .elegant-back-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.2);
+        }
+
+        .elegant-back-btn .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .elegant-back-btn .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(29, 185, 84, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .elegant-back-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .elegant-back-btn:hover i {
+            transform: translateX(-3px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor personalizado -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-follower"></div>
+
+    <!-- Header elegante -->
+    <header class="elegant-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="brand-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="brand-title">Tuneuptify</h1>
+            </div>
+            
+            <nav class="header-nav">
+                <button class="nav-btn elegant-back-btn" onclick="goBack()">
+                    <div class="btn-content">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver al Dashboard</span>
+                    </div>
+                    <div class="btn-ripple"></div>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="elegant-main">
+        <div class="playlists-container">
+            <!-- Header de la página -->
+            <div class="page-header">
+                <h1 class="page-title">Modificar Playlists</h1>
+                <p class="page-subtitle">Gestiona tus playlists existentes de Spotify</p>
+                
+                <!-- Barra de búsqueda -->
+                <div class="search-container">
+                    <input type="text" id="search-playlists" class="search-input" placeholder="Buscar playlists...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+
+            <!-- Contenedor de playlists -->
+            <div id="playlists-content">
+                <!-- Estado de carga -->
+                <div id="loading-state" class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <h3>Cargando tus playlists...</h3>
+                    <p>Estamos obteniendo tus playlists de Spotify</p>
+                </div>
+
+                <!-- Estado de error -->
+                <div id="error-state" class="error-container" style="display: none;">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>Error al cargar playlists</h3>
+                    <p>No se pudieron cargar tus playlists. Verifica tu conexión y tu sesión de Spotify.</p>
+                    <button class="refresh-btn" onclick="loadPlaylists()">
+                        <i class="fas fa-redo"></i>
+                        Intentar de nuevo
+                    </button>
+                </div>
+
+                <!-- Estado vacío -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3>No tienes playlists</h3>
+                    <p>Crea tu primera playlist para comenzar a organizar tu música.</p>
+                    <a href="index.html#playlist-section" class="create-playlist-btn">
+                        <i class="fas fa-plus"></i>
+                        Crear Playlist
+                    </a>
+                </div>
+
+                <!-- Grid de playlists -->
+                <div id="playlists-grid" class="playlists-grid" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer elegante -->
+    <footer class="elegant-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="footer-logo">
+                    <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en X (Twitter)">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://github.com/Cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Ver en GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/modify_playlists.js"></script>
+</body>
+</html> 

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuneuptify - Estadísticas de Spotify</title>
+    <meta name="description" content="Analiza tus hábitos de escucha y estadísticas musicales con Tuneuptify">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss: https://*.google.com https://*.googleapis.com https://*.gstatic.com; frame-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/statistics.css">
+</head>
+<body class="statistics-page">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="elegant-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="brand-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="brand-title">Tuneuptify</h1>
+            </div>
+            
+            <nav class="header-nav">
+                <button id="back-button" class="elegant-back-btn">
+                    <div class="btn-content">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver al Dashboard</span>
+                    </div>
+                    <div class="btn-ripple"></div>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Title Section -->
+    <section class="title-section">
+        <div class="title-content">
+            <h2 class="page-title">
+                <i class="fas fa-chart-line"></i>
+                Tu Música en Números
+            </h2>
+            <p class="page-subtitle">Descubre insights únicos sobre tus hábitos de escucha</p>
+        </div>
+    </section>
+
+    <!-- Controls Section -->
+    <section class="controls-section">
+        <div class="controls-container">
+            <div class="time-range-selector">
+                <label for="time-range-select">Período:</label>
+                <select id="time-range-select">
+                    <option value="short_term">Últimas 4 semanas</option>
+                    <option value="medium_term">Últimos 6 meses</option>
+                    <option value="long_term">Todo el tiempo</option>
+                    <option value="custom_year">Último año</option>
+                    <option value="custom_range">Rango personalizado</option>
+                </select>
+            </div>
+            <button id="share-stats-button" class="share-button">
+                <i class="fas fa-share-alt"></i>
+                <span>Compartir</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Custom Date Range Container -->
+    <div class="custom-date-range" id="custom-date-range" style="display: none;">
+        <div class="date-inputs">
+            <div class="date-input">
+                <label for="start-date">Desde:</label>
+                <input type="date" id="start-date">
+            </div>
+            <div class="date-input">
+                <label for="end-date">Hasta:</label>
+                <input type="date" id="end-date">
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="stats-container">
+        <!-- Error Container -->
+        <div id="error-container" class="error-container"></div>
+
+        <!-- Key Metrics Section -->
+        <section class="metrics-section">
+            <div class="metrics-grid">
+                <!-- Activity Summary Card -->
+                <div class="metric-card activity-metric" id="activity-summary-container">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Resumen de Actividad</h3>
+                    </div>
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando resumen...</p>
+                    </div>
+                </div>
+
+                <!-- Listening Time Card -->
+                <div class="metric-card time-metric" id="listening-time-container">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Tiempo de Escucha</h3>
+                    </div>
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Calculando tiempo...</p>
+                    </div>
+                </div>
+
+                <!-- Uniqueness Card -->
+                <div class="metric-card uniqueness-metric" id="uniqueness-container">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Exclusividad</h3>
+                    </div>
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Calculando exclusividad...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Sections -->
+        <section class="content-sections">
+            <!-- Top Artists Section -->
+            <div class="content-card artists-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-microphone"></i>
+                        <h3>Artistas Más Escuchados</h3>
+                    </div>
+                    <div class="card-actions">
+                        <span class="time-range-badge">Últimas 4 semanas</span>
+                    </div>
+                </div>
+                <div class="card-content" id="top-artists-container">
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando artistas...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Tracks Section -->
+            <div class="content-card tracks-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-music"></i>
+                        <h3>Canciones Más Reproducidas</h3>
+                    </div>
+                    <div class="card-actions">
+                        <span class="time-range-badge">Últimas 4 semanas</span>
+                    </div>
+                </div>
+                <div class="card-content" id="top-tracks-container">
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando canciones...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div class="analysis-grid">
+                <!-- Genre Analysis -->
+                <div class="content-card genre-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-tags"></i>
+                            <h3>Géneros Favoritos</h3>
+                        </div>
+                    </div>
+                    <div class="card-content" id="genre-analysis-container">
+                        <div class="loading-placeholder">
+                            <div class="loading-spinner"></div>
+                            <p>Analizando géneros...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mood Analysis -->
+                <div class="content-card mood-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-heart"></i>
+                            <h3>Estado de Ánimo</h3>
+                        </div>
+                    </div>
+                    <div class="card-content" id="mood-analysis-container">
+                        <div class="loading-placeholder">
+                            <div class="loading-spinner"></div>
+                            <p>Analizando mood...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Insights Section -->
+        <section class="insights-section">
+            <div class="insights-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>Insights Personalizados</h3>
+                    </div>
+                </div>
+                <div class="insights-content">
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="insight-text">
+                            <h4>Diversidad Musical</h4>
+                            <p>Basado en tus estadísticas, tienes una excelente diversidad en tus gustos musicales. Esto te ayuda a descubrir nuevos artistas y géneros.</p>
+                            <div class="spotify-link">
+                                <i class="fab fa-spotify"></i>
+                                <a href="#" onclick="openSpotify()" class="spotify-official-link">ABRIR SPOTIFY</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-trending-up"></i>
+                        </div>
+                        <div class="insight-text">
+                            <h4>Tendencias de Escucha</h4>
+                            <p>Tu patrón de escucha muestra una preferencia por música energética durante las mañanas y música relajante por las noches.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="insight-text">
+                            <h4>Comunidad Musical</h4>
+                            <p>Comparte tus estadísticas con amigos y descubre música nueva a través de las recomendaciones de la comunidad.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Atribución oficial de Spotify -->
+    <section class="spotify-attribution">
+        <div class="attribution-container">
+            <div class="attribution-content">
+                <p class="attribution-text">
+                    <i class="fab fa-spotify"></i>
+                    Contenido musical proporcionado por Spotify
+                </p>
+                <p class="attribution-subtext">
+                    Tuneuptify utiliza la API de Spotify para analizar tus estadísticas musicales
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Descargar Estadísticas</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="share-image-container">
+                    <img id="share-image" src="" alt="Estadísticas de Spotify">
+                </div>
+                <div class="share-options">
+                    <button class="share-option download-share">
+                        <i class="fas fa-download"></i>
+                        Descargar Imagen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/spotify-api.js"></script>
+    <script src="js/share-statistics.js"></script>
+    <script src="js/statistics.js"></script>
+    
+    <script>
+        // Función para abrir Spotify según directrices oficiales
+        function openSpotify() {
+            // Intentar abrir la app de Spotify
+            window.location.href = 'spotify:';
+            
+            // Como respaldo, abrir en el navegador
+            setTimeout(() => {
+                window.open('https://open.spotify.com', '_blank');
+            }, 500);
+        }
+    </script>
+</body>
+</html> 

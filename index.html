@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuneuptify - Gestor de Playlists de Spotify</title>
+    <meta name="description" content="Crea y gestiona playlists personalizadas de Spotify con Tuneuptify">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss: https://*.google.com https://*.googleapis.com https://*.gstatic.com; frame-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=1.0.1">
+    <link rel="stylesheet" href="css/dashboard.css?v=1.0.1">
+    <link rel="stylesheet" href="css/search.css?v=1.0.1">
+    <link rel="stylesheet" href="css/responsive-fixes.css?v=1.0.1">
+</head>
+<body>
+    <!-- Cursor personalizado -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-follower"></div>
+
+    <!-- Header elegante con glassmorphism -->
+    <header class="elegant-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="brand-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="brand-title">Tuneuptify</h1>
+            </div>
+            
+            <nav class="header-nav">
+                <div class="nav-stats">
+                    <div class="stat-pill">
+                        <i class="fas fa-users"></i>
+                        <span>1.2k Usuarios</span>
+                    </div>
+                    <div class="stat-pill">
+                        <i class="fas fa-music"></i>
+                        <span>50k+ Playlists</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido principal con scroll suave -->
+    <main class="elegant-main">
+        <!-- Hero section con parallax -->
+        <section class="hero-parallax">
+            <div class="hero-bg">
+                <div class="floating-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                    <div class="shape shape-4"></div>
+                </div>
+            </div>
+            
+            <div class="hero-content">
+                <div class="welcome-card">
+                    <div class="welcome-header">
+                        <h2 class="welcome-title">¡Bienvenido a Tuneuptify!</h2>
+                        <p class="welcome-subtitle">Conecta con Spotify y comienza a crear playlists únicas y personalizadas</p>
+                    </div>
+                    
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">IA</div>
+                                <div class="stat-label">Inteligente</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">100%</div>
+                                <div class="stat-label">Personalizado</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">Rápido</div>
+                                <div class="stat-label">& Eficiente</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-actions">
+                        <button id="login-button" class="hero-btn primary" aria-label="Iniciar sesión con Spotify">
+                            <div class="btn-content">
+                                <i class="fab fa-spotify"></i>
+                                <span>Iniciar sesión con Spotify</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                        
+                        <button id="privacy-button" class="hero-btn secondary" aria-label="Ver política de privacidad" onclick="navigateToPrivacyPolicy()">
+                            <div class="btn-content">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Política de Privacidad y Uso</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de características destacadas -->
+        <section class="features-section">
+            <div class="features-container">
+                <div class="section-header">
+                    <h3 class="section-title">¿Por qué elegir Tuneuptify?</h3>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4>IA Inteligente</h4>
+                        <p>Nuestro algoritmo inteligente analiza tus gustos musicales para crear playlists perfectas</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <h4>Personalización Total</h4>
+                        <p>Controla cada aspecto de tus playlists: artistas, canciones, duración y más</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h4>Creación Rápida</h4>
+                        <p>Crea playlists profesionales en segundos con nuestra interfaz optimizada</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Estadísticas Avanzadas</h4>
+                        <p>Analiza tus hábitos de escucha y descubre nuevas tendencias musicales</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de creación de playlist (oculta por defecto) -->
+        <section class="playlist-section" id="playlist-section" style="display: none;">
+            <div class="section-container">
+                <div class="section-header">
+                    <h3 class="section-title">Crear tu Playlist</h3>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div class="playlist-form-container">
+                    <form id="playlist-form" class="elegant-form" aria-label="Formulario para crear playlist">
+                        <!-- Nombre de la playlist -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="playlist-name" class="form-label">
+                                    <i class="fas fa-heading"></i>
+                                    <span>Nombre de la playlist</span>
+                                </label>
+                                <input type="text" id="playlist-name" class="form-input" required 
+                                       placeholder="Mi Playlist personalizada" aria-required="true">
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+
+                        <!-- Artista principal -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="artist-main" class="form-label">
+                                    <i class="fas fa-star"></i>
+                                    <span>Artista principal</span>
+                                </label>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="artist-main" name="artist-main" 
+                                           class="form-input artist-autocomplete" 
+                                           placeholder="Busca tu artista favorito..." 
+                                           autocomplete="off" aria-autocomplete="list" 
+                                           aria-label="Buscar artista principal">
+                                    <div id="artist-main-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                                    <div class="input-glow"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Artistas adicionales -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label class="form-label">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Artistas adicionales</span>
+                                </label>
+                                <div id="artist-inputs" class="artist-inputs"></div>
+                                <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional">
+                                    <div class="btn-content">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Agregar artista</span>
+                                    </div>
+                                    <div class="btn-ripple"></div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Canciones por artista -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="songs-per-artist" class="form-label">
+                                    <i class="fas fa-list-ol"></i>
+                                    <span>Canciones por artista</span>
+                                </label>
+                                <input type="number" id="songs-per-artist" class="form-input" 
+                                       min="1" max="50" value="5" step="1" required aria-required="true">
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+
+                        <!-- Búsqueda de canciones específicas -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label for="track-search" class="form-label">
+                                    <i class="fas fa-search"></i>
+                                    <span>Agregar canciones específicas</span>
+                                </label>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="track-search" class="form-input" 
+                                           placeholder="Busca canciones específicas..." 
+                                           autocomplete="off" aria-autocomplete="list" 
+                                           aria-label="Buscar canciones específicas">
+                                    <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                                    <div class="input-glow"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Canciones seleccionadas -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label class="form-label">
+                                    <i class="fas fa-music"></i>
+                                    <span>Canciones seleccionadas</span>
+                                </label>
+                                <div id="selected-tracks" class="selected-tracks-container"></div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="form-actions">
+                            <button type="button" id="preview-playlist" class="action-btn secondary" aria-label="Vista previa de la playlist">
+                                <div class="btn-content">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Vista previa</span>
+                                </div>
+                                <div class="btn-ripple"></div>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Vista previa de playlist -->
+                    <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
+
+                    <!-- Botón de exportar -->
+                    <div class="export-section">
+                        <button id="export-spotify" class="action-btn primary" style="display:none;">
+                            <div class="btn-content">
+                                <i class="fab fa-spotify"></i>
+                                <span>Exportar a Spotify</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </div>
+
+                    <!-- Loading elegante -->
+                    <div id="loading" class="loading-container" style="display: none;">
+                        <div class="loading-spinner">
+                            <div class="spinner-ring"></div>
+                            <div class="spinner-ring"></div>
+                            <div class="spinner-ring"></div>
+                        </div>
+                        <p class="loading-text">
+                            <i class="fas fa-cog fa-spin"></i>
+                            Creando tu playlist...
+                        </p>
+                    </div>
+
+                    <!-- Mensajes elegantes -->
+                    <div id="success-message" class="message-container" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Atribución oficial de Spotify -->
+    <section class="spotify-attribution">
+        <div class="attribution-container">
+            <div class="attribution-content">
+                <p class="attribution-text">
+                    <i class="fab fa-spotify"></i>
+                    Contenido musical proporcionado por Spotify
+                </p>
+                <p class="attribution-subtext">
+                    Tuneuptify utiliza la API de Spotify para crear y gestionar playlists personalizadas
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer elegante -->
+    <footer class="elegant-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="img/tuneuptify-logo.png" alt="Tuneuptify" class="footer-logo">
+                    <p>&copy; 2025 Tuneuptify. Todos los derechos reservados.</p>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://x.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en X (Twitter)">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Sígueme en Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://github.com/cedenofofo" target="_blank" rel="noopener noreferrer" 
+                       class="social-link" aria-label="Visita mi GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/cache-cleaner.js?v=1.0.1"></script>
+    <script src="js/error-blocker.js?v=1.0.1"></script>
+    <script src="js/config.js?v=1.0.1"></script>
+    <script src="js/auth.js?v=1.0.1"></script>
+    <script src="js/search.js?v=1.0.1"></script>
+    <script src="js/main.js?v=1.0.1"></script>
+    
+    <!-- Filtro de consola para bloquear errores externos -->
+    <script>
+        // BLOQUEAR ERRORES EXTERNOS NO RELEVANTES
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        const originalFetch = window.fetch;
+        
+        // Bloquear fetch externos no deseados
+        window.fetch = function(...args) {
+            const url = args[0];
+            if (typeof url === 'string') {
+                // Bloquear URLs externas problemáticas
+                if (url.includes('google.com/recaptcha') || 
+                    url.includes('indexReact.') ||
+                    url.includes('/login/otc/')) {
+                    return Promise.resolve(new Response('', { status: 200 }));
+                }
+            }
+            return originalFetch.apply(this, args);
+        };
+        
+        console.log = function(...args) {
+            const message = args[0]?.toString() || '';
+            if (message.includes('google.com/recaptcha') || 
+                message.includes('Content Security Policy') ||
+                message.includes('Failed to load resource') ||
+                message.includes('net::ERR_') ||
+                message.includes('indexReact.') ||
+                message.includes('/login/otc/')) {
+                return; // Silenciar logs externos
+            }
+            originalConsoleLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            const message = args[0]?.toString() || '';
+            if (message.includes('google.com/recaptcha') || 
+                message.includes('Content Security Policy') ||
+                message.includes('Failed to load resource') ||
+                message.includes('net::ERR_') ||
+                message.includes('indexReact.') ||
+                message.includes('/login/otc/')) {
+                return; // Silenciar errores externos
+            }
+            originalConsoleError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            const message = args[0]?.toString() || '';
+            if (message.includes('google.com/recaptcha') || 
+                message.includes('Content Security Policy') ||
+                message.includes('Failed to load resource') ||
+                message.includes('net::ERR_') ||
+                message.includes('indexReact.') ||
+                message.includes('/login/otc/')) {
+                return; // Silenciar warnings externos
+            }
+            originalConsoleWarn.apply(console, args);
+        };
+        
+        // Mensaje de confirmación
+        originalConsoleLog('🎵 Tuneuptify cargado correctamente');
+        originalConsoleLog('🔒 Errores externos BLOQUEADOS');
+        originalConsoleLog('🚫 Fetch externos bloqueados');
+    </script>
+</body>
+</html> 
