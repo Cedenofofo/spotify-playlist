@@ -1,18 +1,21 @@
 class SearchManager {
     constructor() {
-        console.log('SearchManager constructor iniciado');
+        console.log('🚀 SearchManager v1.0.2 constructor iniciado');
         this.config = window.config;
         console.log('Config cargado:', this.config ? 'Sí' : 'No');
         this.auth = new Auth();
         console.log('Auth inicializado');
         this.setupEventListeners();
-        console.log('SearchManager inicializado');
+        console.log('✅ SearchManager v1.0.2 inicializado correctamente');
         
         // Verificar si hay canciones seleccionadas al inicializar
         this.checkSelectedTracks();
         
         // Inicializar mejoras visuales
         this.initVisualEnhancements();
+        
+        // Hacer el manager globalmente disponible
+        window.searchManager = this;
     }
 
     setupEventListeners() {
@@ -286,14 +289,20 @@ class SearchManager {
 
     // Función para manejar sugerencias dinámicamente
     showSuggestions(suggestionsDiv, suggestions) {
-        if (!suggestionsDiv) return;
+        console.log('🎯 showSuggestions called with:', suggestions.length, 'suggestions');
+        if (!suggestionsDiv) {
+            console.warn('⚠️ suggestionsDiv not found');
+            return;
+        }
         
         if (suggestions.length === 0) {
+            console.log('📭 No suggestions, hiding');
             suggestionsDiv.innerHTML = '';
             suggestionsDiv.classList.remove('show');
             return;
         }
         
+        console.log('✨ Showing suggestions and positioning');
         // Mostrar sugerencias
         suggestionsDiv.innerHTML = suggestions;
         suggestionsDiv.classList.add('show');
@@ -316,12 +325,17 @@ class SearchManager {
     }
     
     positionSuggestions(suggestionsDiv) {
+        console.log('📍 Positioning suggestions');
         // Obtener el input asociado
         const input = suggestionsDiv.previousElementSibling;
-        if (!input) return;
+        if (!input) {
+            console.warn('⚠️ Input not found for positioning');
+            return;
+        }
         
         // Obtener la posición del input
         const inputRect = input.getBoundingClientRect();
+        console.log('📐 Input position:', inputRect);
         
         // Posicionar las sugerencias debajo del input
         suggestionsDiv.style.position = 'fixed';
@@ -329,6 +343,12 @@ class SearchManager {
         suggestionsDiv.style.left = inputRect.left + 'px';
         suggestionsDiv.style.width = inputRect.width + 'px';
         suggestionsDiv.style.zIndex = '999999';
+        
+        console.log('✅ Suggestions positioned at:', {
+            top: suggestionsDiv.style.top,
+            left: suggestionsDiv.style.left,
+            width: suggestionsDiv.style.width
+        });
     }
     
     adjustLayoutForSuggestions(suggestionsDiv) {
