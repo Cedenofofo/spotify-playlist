@@ -8,6 +8,7 @@
 }
 
 /* Sugerencias que aparecen dinámicamente */
+/* Dropdown de sugerencias con margen inferior extra para no tapar botones */
 .autocomplete-suggestions {
     position: absolute;
     top: 100%;
@@ -24,6 +25,7 @@
     max-height: 300px;
     overflow-y: auto;
     margin-top: 4px;
+    margin-bottom: 2.5rem; /* Espacio extra para no tapar botones */
     animation: fadeInUp 0.2s ease-out;
     width: 100%;
     max-width: 500px;
@@ -206,28 +208,26 @@
 /* Responsive optimizations */
 @media (max-width: 768px) {
     .autocomplete-suggestions {
-        max-height: 250px;
+        max-height: 180px;
+        margin-bottom: 3.5rem; /* Más espacio en móvil */
     }
-    
     .suggestion-item,
     .autocomplete-suggestion {
-        min-height: 55px;
-        padding: 0.75rem;
-        gap: 0.75rem;
+        min-height: 50px;
+        padding: 0.7rem;
+        gap: 0.7rem;
     }
-    
     .suggestion-item .suggestion-name,
     .autocomplete-suggestion .suggestion-name,
     .suggestion-item .track-name,
     .autocomplete-suggestion .track-name {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
-    
     .suggestion-item .suggestion-artist,
     .autocomplete-suggestion .suggestion-artist,
     .suggestion-item .track-artist,
     .autocomplete-suggestion .track-artist {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }
 }
 
