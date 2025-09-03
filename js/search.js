@@ -175,9 +175,7 @@ class SearchManager {
             
             trackDiv.addEventListener('click', () => {
                 this.addTrack(track);
-                suggestionsDiv.innerHTML = '';
-                suggestionsDiv.style.display = 'none';
-                suggestionsDiv.classList.remove('show', 'has-suggestions');
+                this.hideSuggestions(suggestionsDiv);
                 searchInput.value = '';
                 this.updateSearchSpacing();
                 
@@ -248,6 +246,9 @@ class SearchManager {
         // Actualizar automáticamente la vista previa si existe
         this.updatePlaylistPreview();
         
+        // Asegurar que la sección de canciones seleccionadas sea visible
+        this.ensureSelectedTracksVisible();
+        
         // Actualizar el estado del botón de exportar
         this.updateExportButtonState();
     }
@@ -297,6 +298,9 @@ class SearchManager {
         suggestionsDiv.innerHTML = suggestions;
         suggestionsDiv.classList.add('show');
         
+        // Posicionar las sugerencias correctamente
+        this.positionSuggestions(suggestionsDiv);
+        
         // Ajustar layout dinámicamente
         this.adjustLayoutForSuggestions(suggestionsDiv);
     }
@@ -311,12 +315,69 @@ class SearchManager {
         this.restoreLayout();
     }
     
+    positionSuggestions(suggestionsDiv) {
+        // Obtener el input asociado
+        const input = suggestionsDiv.previousElementSibling;
+        if (!input) return;
+        
+        // Obtener la posición del input
+        const inputRect = input.getBoundingClientRect();
+        
+        // Posicionar las sugerencias debajo del input
+        suggestionsDiv.style.position = 'fixed';
+        suggestionsDiv.style.top = (inputRect.bottom + 4) + 'px';
+        suggestionsDiv.style.left = inputRect.left + 'px';
+        suggestionsDiv.style.width = inputRect.width + 'px';
+        suggestionsDiv.style.zIndex = '999999';
+    }
+    
     adjustLayoutForSuggestions(suggestionsDiv) {
         // Agregar clase al contenedor padre para ajustar espaciado
         const container = suggestionsDiv.closest('.form-group');
         if (container) {
             container.classList.add('has-active-suggestions');
         }
+        
+        // Ocultar temporalmente elementos que pueden superponerse
+        this.hideOverlappingElements();
+    }
+    
+    hideOverlappingElements() {
+        // Elementos que pueden superponerse con las sugerencias
+        const overlappingSelectors = [
+            '#add-artist',
+            '.artist-inputs',
+            '#selected-tracks',
+            '#preview-playlist',
+            '.form-group:has(.autocomplete-container) + .form-group'
+        ];
+        
+        overlappingSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                element.style.opacity = '0.3';
+                element.style.pointerEvents = 'none';
+            });
+        });
+    }
+    
+    showOverlappingElements() {
+        // Restaurar visibilidad de elementos
+        const overlappingSelectors = [
+            '#add-artist',
+            '.artist-inputs',
+            '#selected-tracks',
+            '#preview-playlist',
+            '.form-group:has(.autocomplete-container) + .form-group'
+        ];
+        
+        overlappingSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                element.style.opacity = '1';
+                element.style.pointerEvents = 'auto';
+            });
+        });
     }
     
     restoreLayout() {
@@ -325,6 +386,27 @@ class SearchManager {
         containers.forEach(container => {
             container.classList.remove('has-active-suggestions');
         });
+        
+        // Restaurar visibilidad de elementos
+        this.showOverlappingElements();
+    }
+    
+    ensureSelectedTracksVisible() {
+        // Asegurar que la sección de canciones seleccionadas sea visible
+        const selectedTracksDiv = document.getElementById('selected-tracks');
+        if (selectedTracksDiv) {
+            selectedTracksDiv.style.opacity = '1';
+            selectedTracksDiv.style.pointerEvents = 'auto';
+            selectedTracksDiv.style.visibility = 'visible';
+            
+            // Hacer scroll suave hacia la sección si es necesario
+            setTimeout(() => {
+                selectedTracksDiv.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest' 
+                });
+            }, 100);
+        }
     }
 
     updateSelectedTracksList() {
@@ -343,8 +425,12 @@ class SearchManager {
                     <small>Busca y agrega canciones específicas a tu playlist</small>
                 </div>
             `;
+            selectedTracksDiv.classList.remove('has-tracks');
             return;
         }
+        
+        // Agregar clase para indicar que hay canciones seleccionadas
+        selectedTracksDiv.classList.add('has-tracks');
 
         selectedTracks.forEach((track, index) => {
             const trackDiv = document.createElement('div');

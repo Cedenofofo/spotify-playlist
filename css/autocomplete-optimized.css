@@ -9,10 +9,10 @@
 
 /* Sugerencias que aparecen dinámicamente */
 .autocomplete-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
+    position: fixed; /* Cambiar a fixed para evitar superposiciones */
+    top: auto;
+    left: auto;
+    right: auto;
     background: var(--bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
@@ -25,6 +25,8 @@
     overflow-y: auto;
     margin-top: 4px;
     animation: fadeInUp 0.2s ease-out;
+    width: 100%;
+    max-width: 500px;
 }
 
 /* Mostrar solo cuando tenga contenido */
@@ -118,6 +120,29 @@
 /* Ajuste dinámico para contenedores con sugerencias activas */
 .form-group.has-active-suggestions .autocomplete-container {
     margin-bottom: 1rem;
+}
+
+/* Elementos que se ocultan temporalmente cuando hay sugerencias */
+.form-group.has-active-suggestions ~ .form-group,
+#add-artist,
+#selected-tracks,
+#preview-playlist {
+    transition: opacity 0.3s ease, pointer-events 0.3s ease;
+}
+
+/* Asegurar que los elementos seleccionados sean visibles */
+#selected-tracks {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+#selected-tracks.has-tracks {
+    background: rgba(29, 185, 84, 0.1);
+    border: 1px solid rgba(29, 185, 84, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-top: 1rem;
 }
 
 /* Contenedor de artistas dinámico */
