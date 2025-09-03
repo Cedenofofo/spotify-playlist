@@ -9,10 +9,10 @@
 
 /* Sugerencias que aparecen dinámicamente */
 .autocomplete-suggestions {
-    position: fixed; /* Cambiar a fixed para evitar superposiciones */
-    top: auto;
-    left: auto;
-    right: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     background: var(--bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
@@ -125,7 +125,6 @@
 /* Elementos que se ocultan temporalmente cuando hay sugerencias */
 .form-group.has-active-suggestions ~ .form-group,
 #add-artist,
-#selected-tracks,
 #preview-playlist {
     transition: opacity 0.3s ease, pointer-events 0.3s ease;
 }
@@ -135,6 +134,9 @@
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
+    position: relative;
+    z-index: 10;
+    margin-top: 1.5rem;
 }
 
 #selected-tracks.has-tracks {
