@@ -101,18 +101,85 @@ try {
             $artistName = $searchResult['response']['artists']['items'][0]['name'];
         }
 
-        // Obtener las mejores canciones del artista
+        // Obtener canciones del artista usando múltiples métodos
+        $artistTracks = [];
+        
+        // 1. Obtener top tracks (máximo 10 de la API)
         $tracksResult = makeSpotifyRequest(
             SPOTIFY_API_URL . "/artists/{$artistId}/top-tracks?" . http_build_query([
                 'market' => 'ES'
             ])
         );
 
-        if ($tracksResult['httpCode'] !== 200) {
-            continue;
+        if ($tracksResult['httpCode'] === 200) {
+            foreach ($tracksResult['response']['tracks'] as $track) {
+                $artistTracks[$track['uri']] = $track;
+            }
         }
 
-        $tracks = array_slice($tracksResult['response']['tracks'], 0, $tracksPerArtist);
+        // 2. Si necesitamos más canciones, buscar por álbumes del artista
+        if (count($artistTracks) < $tracksPerArtist) {
+            $albumsResult = makeSpotifyRequest(
+                SPOTIFY_API_URL . "/artists/{$artistId}/albums?" . http_build_query([
+                    'market' => 'ES',
+                    'limit' => 5,
+                    'include_groups' => 'album,single'
+                ])
+            );
+
+            if ($albumsResult['httpCode'] === 200) {
+                foreach ($albumsResult['response']['items'] as $album) {
+                    // Obtener tracks del álbum
+                    $albumTracksResult = makeSpotifyRequest(
+                        SPOTIFY_API_URL . "/albums/{$album['id']}/tracks?" . http_build_query([
+                            'market' => 'ES',
+                            'limit' => 50
+                        ])
+                    );
+
+                    if ($albumTracksResult['httpCode'] === 200) {
+                        foreach ($albumTracksResult['response']['items'] as $track) {
+                            if (!isset($artistTracks[$track['uri']])) {
+                                // Obtener información completa de la canción
+                                $trackInfoResult = makeSpotifyRequest(
+                                    SPOTIFY_API_URL . "/tracks/{$track['id']}?" . http_build_query([
+                                        'market' => 'ES'
+                                    ])
+                                );
+
+                                if ($trackInfoResult['httpCode'] === 200) {
+                                    $artistTracks[$track['uri']] = $trackInfoResult['response'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Si aún necesitamos más canciones, buscar por nombre del artista
+        if (count($artistTracks) < $tracksPerArtist) {
+            $searchResult = makeSpotifyRequest(
+                SPOTIFY_API_URL . "/search?" . http_build_query([
+                    'q' => "artist:{$artistName}",
+                    'type' => 'track',
+                    'market' => 'ES',
+                    'limit' => 50
+                ])
+            );
+
+            if ($searchResult['httpCode'] === 200) {
+                foreach ($searchResult['response']['tracks']['items'] as $track) {
+                    if (!isset($artistTracks[$track['uri']])) {
+                        $artistTracks[$track['uri']] = $track;
+                    }
+                }
+            }
+        }
+
+        // Convertir a array y limitar al número solicitado
+        $tracks = array_slice(array_values($artistTracks), 0, $tracksPerArtist);
+        
         foreach ($tracks as $track) {
             $trackDetails[] = [
                 'uri' => $track['uri'],
