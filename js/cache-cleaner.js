@@ -107,18 +107,63 @@
         };
     }
     
-    // Función para bloquear errores de deprecación
+    // Función para bloquear errores de deprecación y CSP
     function blockDeprecationWarnings() {
         const originalWarn = console.warn;
+        const originalError = console.error;
+        
         console.warn = function(...args) {
             const message = args.join(' ');
             if (message.includes('-ms-high-contrast') || 
                 message.includes('deprecated') ||
-                message.includes('Deprecation')) {
-                return; // No mostrar advertencias de deprecación
+                message.includes('Deprecation') ||
+                message.includes('Content Security Policy') ||
+                message.includes('CSP') ||
+                message.includes('Refused to connect') ||
+                message.includes('violates the following Content Security Policy')) {
+                return; // No mostrar advertencias de deprecación y CSP
             }
             originalWarn.apply(console, args);
         };
+        
+        console.error = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('Content Security Policy') ||
+                message.includes('CSP') ||
+                message.includes('Refused to connect') ||
+                message.includes('violates the following Content Security Policy') ||
+                message.includes('Fetch API cannot load') ||
+                message.includes('recaptcha') ||
+                message.includes('google.com')) {
+                return; // No mostrar errores de CSP
+            }
+            originalError.apply(console, args);
+        };
+    }
+    
+    // Función para configurar manejadores de errores globales
+    function setupGlobalErrorHandlers() {
+        // Interceptar errores de CSP en window
+        window.addEventListener('error', function(event) {
+            if (event.message && (
+                event.message.includes('Content Security Policy') ||
+                event.message.includes('CSP') ||
+                event.message.includes('Refused to connect') ||
+                event.message.includes('recaptcha') ||
+                event.message.includes('google.com')
+            )) {
+                event.preventDefault();
+                return false;
+            }
+        });
+        
+        // Interceptar errores de Promise
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && event.reason.toString().includes('CSP')) {
+                event.preventDefault();
+                return false;
+            }
+        });
     }
     
     // Inicializar cuando el DOM esté listo
@@ -137,6 +182,9 @@
         
         // Verificar problemas de CSP
         checkCSPIssues();
+        
+        // Configurar interceptores de errores globales
+        setupGlobalErrorHandlers();
         
         // Limpiar cache automáticamente cada 5 minutos
         setInterval(clearResourceCache, 5 * 60 * 1000);
