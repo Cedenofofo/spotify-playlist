@@ -9,15 +9,16 @@
 
 /* Sugerencias que aparecen dinámicamente */
 /* Dropdown de sugerencias con margen inferior extra para no tapar botones */
+/* Dropdown de sugerencias con fondo más opaco, sombra fuerte y margen inferior grande */
 .autocomplete-suggestions {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--bg-secondary);
+    background: rgba(20, 20, 20, 0.98);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 40px 0 rgba(0,0,0,0.45), 0 2px 8px 0 rgba(29,185,84,0.10);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     z-index: 999999;
@@ -25,7 +26,7 @@
     max-height: 300px;
     overflow-y: auto;
     margin-top: 4px;
-    margin-bottom: 2.5rem; /* Espacio extra para no tapar botones */
+    margin-bottom: 5rem; /* Mucho más espacio para no tapar botones */
     animation: fadeInUp 0.2s ease-out;
     width: 100%;
     max-width: 500px;
@@ -139,6 +140,19 @@
     position: relative;
     z-index: 10;
     margin-top: 1.5rem;
+    min-height: 60px;
+    max-height: 220px;
+    overflow-y: auto;
+    background: rgba(29,185,84,0.07);
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(29,185,84,0.08);
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    transition: box-shadow 0.2s;
+}
+
+#selected-tracks .selected-track.highlight {
+    background: rgba(29,185,84,0.18);
+    transition: background 0.5s;
 }
 
 #selected-tracks.has-tracks {
@@ -208,9 +222,14 @@
 /* Responsive optimizations */
 @media (max-width: 768px) {
     .autocomplete-suggestions {
-        max-height: 180px;
-        margin-bottom: 3.5rem; /* Más espacio en móvil */
+        max-height: 120px;
+        margin-bottom: 7rem; /* Mucho más espacio en móvil */
     }
+/* Cuando el dropdown está abierto, desplazar los elementos siguientes */
+.autocomplete-suggestions.show ~ * {
+    transform: translateY(5rem);
+    transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+}
     .suggestion-item,
     .autocomplete-suggestion {
         min-height: 50px;

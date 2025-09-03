@@ -222,13 +222,11 @@ class SearchManager {
 
     addTrack(track) {
         const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
-        
         // Verificar si la canción ya está en la lista
         if (selectedTracks.some(t => t.uri === track.uri)) {
             showNotification('Esta canción ya está en la lista', 'warning');
             return;
         }
-
         // Agregar la canción a la lista
         const trackData = {
             uri: track.uri,
@@ -239,77 +237,73 @@ class SearchManager {
                 image: track.album.images[0]?.url
             }
         };
-
         selectedTracks.push(trackData);
         localStorage.setItem('selectedTracks', JSON.stringify(selectedTracks));
-        
-        this.updateSelectedTracksList();
+        this.updateSelectedTracksList(() => {
+            // Resaltar y hacer scroll a la última canción agregada
+            const selectedTracksDiv = document.getElementById('selected-tracks');
+            if (selectedTracksDiv) {
+                const lastTrack = selectedTracksDiv.querySelector('.selected-track:last-child');
+                if (lastTrack) {
+                    lastTrack.classList.add('highlight');
+                    lastTrack.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => lastTrack.classList.remove('highlight'), 1200);
+                }
+            }
+        });
         showNotification('Canción agregada a la lista', 'success');
-        
-        // Actualizar automáticamente la vista previa si existe
         this.updatePlaylistPreview();
-        
-        // Asegurar que la sección de canciones seleccionadas sea visible
         this.ensureSelectedTracksVisible();
-        
-        // Actualizar el estado del botón de exportar
         this.updateExportButtonState();
     }
 
-    removeTrack(uri) {
+    updateSelectedTracksList(callback = null) {
+        const selectedTracksDiv = document.getElementById('selected-tracks');
+        if (!selectedTracksDiv) return;
         const selectedTracks = JSON.parse(localStorage.getItem('selectedTracks') || '[]');
-        const trackToRemove = selectedTracks.find(track => track.uri === uri);
-        
-        if (trackToRemove) {
-            // Efecto visual de eliminación
-            const trackElement = document.querySelector(`[data-uri="${uri}"]`);
-            if (trackElement) {
-                trackElement.style.transform = 'translateX(100px)';
-                trackElement.style.opacity = '0';
-                trackElement.style.transition = 'all 0.3s ease';
-                
-                setTimeout(() => {
-                    const updatedTracks = selectedTracks.filter(track => track.uri !== uri);
-                    localStorage.setItem('selectedTracks', JSON.stringify(updatedTracks));
-                    this.updateSelectedTracksList();
-                    showNotification('Canción removida de la lista', 'info');
-                    this.updatePlaylistPreview();
-                    this.updateExportButtonState();
-                }, 300);
-            } else {
-                const updatedTracks = selectedTracks.filter(track => track.uri !== uri);
-                localStorage.setItem('selectedTracks', JSON.stringify(updatedTracks));
-                this.updateSelectedTracksList();
-                showNotification('Canción removida de la lista', 'info');
-                this.updatePlaylistPreview();
-                this.updateExportButtonState();
-            }
+        selectedTracksDiv.innerHTML = '';
+        if (selectedTracks.length === 0) {
+            selectedTracksDiv.innerHTML = `
+                <div class="no-tracks">
+                    <i class="fas fa-music"></i>
+                    <p>No hay canciones seleccionadas</p>
+                    <small>Busca y agrega canciones específicas a tu playlist</small>
+                </div>
+            `;
+            selectedTracksDiv.classList.remove('has-tracks');
+            if (callback) callback();
+            return;
         }
+        // Agregar clase para indicar que hay canciones seleccionadas
+        selectedTracksDiv.classList.add('has-tracks');
+        selectedTracks.forEach((track, index) => {
+            const trackDiv = document.createElement('div');
+            trackDiv.className = 'selected-track';
+            trackDiv.setAttribute('data-uri', track.uri);
+            trackDiv.style.opacity = '0';
+            trackDiv.style.transform = 'translateY(20px)';
+            trackDiv.style.transition = 'all 0.3s ease';
+            trackDiv.innerHTML = `
+                <img src="${track.album.image || 'https://via.placeholder.com/40?text=🎵'}" alt="${track.album.name}">
+                <div class="track-info">
+                    <div class="track-name">${track.name}</div>
+                    <div class="track-artist">${track.artist}</div>
+                </div>
+                <button class="remove-track" data-uri="${track.uri}" title="Eliminar canción">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            const removeButton = trackDiv.querySelector('.remove-track');
+            removeButton.addEventListener('click', () => this.removeTrack(track.uri));
+            selectedTracksDiv.appendChild(trackDiv);
+            // Animación de entrada escalonada
+            setTimeout(() => {
+                trackDiv.style.opacity = '1';
+                trackDiv.style.transform = 'translateY(0)';
+            }, 80 * index);
+        });
+        if (callback) callback();
     }
-
-    // Función para manejar sugerencias dinámicamente
-    showSuggestions(suggestionsDiv, suggestions) {
-        console.log('🎯 showSuggestions called with:', suggestions.length, 'suggestions');
-        if (!suggestionsDiv) {
-            console.warn('⚠️ suggestionsDiv not found');
-            return;
-        }
-        
-        if (suggestions.length === 0) {
-            console.log('📭 No suggestions, hiding');
-            suggestionsDiv.innerHTML = '';
-            suggestionsDiv.classList.remove('show');
-            return;
-        }
-        
-        console.log('✨ Showing suggestions and positioning');
-        // Mostrar sugerencias
-        suggestionsDiv.innerHTML = suggestions;
-        suggestionsDiv.classList.add('show');
-        
-        // Posicionar las sugerencias correctamente
-        this.positionSuggestions(suggestionsDiv);
-        
         // Ajustar layout dinámicamente
         this.adjustLayoutForSuggestions(suggestionsDiv);
     }
