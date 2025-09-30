@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico - Tuneuptify</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive-fixes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="elegant-main">
+        <div class="hero-parallax">
+            <div class="welcome-card">
+                <h1 class="welcome-title">🔍 Diagnóstico de Playlists</h1>
+                <p class="welcome-subtitle">Herramienta para diagnosticar problemas de carga de playlists</p>
+                
+                <div class="diagnostic-container">
+                    <div class="diagnostic-section">
+                        <h3><i class="fas fa-key"></i> Estado de Autenticación</h3>
+                        <div id="auth-status" class="status-indicator">
+                            <span class="loading">Verificando...</span>
+                        </div>
+                    </div>
+
+                    <div class="diagnostic-section">
+                        <h3><i class="fas fa-user"></i> Información de Usuario</h3>
+                        <div id="user-info" class="status-indicator">
+                            <span class="loading">Cargando...</span>
+                        </div>
+                    </div>
+
+                    <div class="diagnostic-section">
+                        <h3><i class="fas fa-music"></i> Test de API de Playlists</h3>
+                        <div id="api-test" class="status-indicator">
+                            <span class="loading">Probando...</span>
+                        </div>
+                    </div>
+
+                    <div class="diagnostic-section">
+                        <h3><i class="fas fa-tools"></i> Acciones</h3>
+                        <div class="action-buttons">
+                            <button id="test-auth" class="action-btn primary">
+                                <i class="fas fa-key"></i>
+                                Probar Autenticación
+                            </button>
+                            <button id="test-api" class="action-btn secondary">
+                                <i class="fas fa-music"></i>
+                                Probar API
+                            </button>
+                            <button id="clear-cache" class="action-btn warning">
+                                <i class="fas fa-trash"></i>
+                                Limpiar Cache
+                            </button>
+                            <button id="go-back" class="action-btn">
+                                <i class="fas fa-arrow-left"></i>
+                                Volver
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="diagnostic-section">
+                        <h3><i class="fas fa-file-alt"></i> Logs</h3>
+                        <div id="logs" class="logs-container">
+                            <div class="log-entry">Iniciando diagnóstico...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+        class PlaylistDiagnostic {
+            constructor() {
+                this.auth = new Auth();
+                this.setupEventListeners();
+                this.runDiagnostic();
+            }
+
+            setupEventListeners() {
+                document.getElementById('test-auth').addEventListener('click', () => this.testAuth());
+                document.getElementById('test-api').addEventListener('click', () => this.testAPI());
+                document.getElementById('clear-cache').addEventListener('click', () => this.clearCache());
+                document.getElementById('go-back').addEventListener('click', () => window.history.back());
+            }
+
+            log(message, type = 'info') {
+                const logsContainer = document.getElementById('logs');
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry ${type}`;
+                logEntry.innerHTML = `<span class="timestamp">${new Date().toLocaleTimeString()}</span> ${message}`;
+                logsContainer.appendChild(logEntry);
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+
+            updateStatus(elementId, status, message) {
+                const element = document.getElementById(elementId);
+                element.className = `status-indicator ${status}`;
+                element.innerHTML = `<span class="${status}">${message}</span>`;
+            }
+
+            async runDiagnostic() {
+                this.log('Iniciando diagnóstico completo...', 'info');
+                
+                // 1. Verificar autenticación
+                await this.checkAuthStatus();
+                
+                // 2. Verificar información de usuario
+                await this.checkUserInfo();
+                
+                // 3. Probar API de playlists
+                await this.testPlaylistAPI();
+                
+                this.log('Diagnóstico completado', 'success');
+            }
+
+            async checkAuthStatus() {
+                this.log('Verificando estado de autenticación...', 'info');
+                
+                const token = localStorage.getItem('spotify_access_token');
+                if (!token) {
+                    this.updateStatus('auth-status', 'error', 'No hay token de acceso');
+                    this.log('❌ No se encontró token de acceso', 'error');
+                    return false;
+                }
+
+                try {
+                    const response = await fetch('https://api.spotify.com/v1/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const userData = await response.json();
+                        this.updateStatus('auth-status', 'success', `Autenticado como ${userData.display_name}`);
+                        this.log(`✅ Autenticado como: ${userData.display_name}`, 'success');
+                        return true;
+                    } else {
+                        this.updateStatus('auth-status', 'error', `Error ${response.status}: ${response.statusText}`);
+                        this.log(`❌ Error de autenticación: ${response.status}`, 'error');
+                        return false;
+                    }
+                } catch (error) {
+                    this.updateStatus('auth-status', 'error', 'Error de conexión');
+                    this.log(`❌ Error de conexión: ${error.message}`, 'error');
+                    return false;
+                }
+            }
+
+            async checkUserInfo() {
+                this.log('Obteniendo información de usuario...', 'info');
+                
+                const token = localStorage.getItem('spotify_access_token');
+                if (!token) {
+                    this.updateStatus('user-info', 'error', 'No hay token disponible');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('https://api.spotify.com/v1/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const userData = await response.json();
+                        const userInfo = `
+                            <strong>ID:</strong> ${userData.id}<br>
+                            <strong>Nombre:</strong> ${userData.display_name}<br>
+                            <strong>Email:</strong> ${userData.email || 'No disponible'}<br>
+                            <strong>País:</strong> ${userData.country || 'No disponible'}<br>
+                            <strong>Plan:</strong> ${userData.product || 'No disponible'}
+                        `;
+                        this.updateStatus('user-info', 'success', userInfo);
+                        this.log(`✅ Información de usuario obtenida`, 'success');
+                    } else {
+                        this.updateStatus('user-info', 'error', `Error ${response.status}`);
+                        this.log(`❌ Error al obtener información de usuario: ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    this.updateStatus('user-info', 'error', 'Error de conexión');
+                    this.log(`❌ Error de conexión: ${error.message}`, 'error');
+                }
+            }
+
+            async testPlaylistAPI() {
+                this.log('Probando API de playlists...', 'info');
+                
+                const token = localStorage.getItem('spotify_access_token');
+                if (!token) {
+                    this.updateStatus('api-test', 'error', 'No hay token disponible');
+                    return;
+                }
+
+                try {
+                    // Primero obtener el ID del usuario
+                    const userResponse = await fetch('https://api.spotify.com/v1/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!userResponse.ok) {
+                        this.updateStatus('api-test', 'error', 'Error al obtener ID de usuario');
+                        return;
+                    }
+
+                    const userData = await userResponse.json();
+                    const userId = userData.id;
+
+                    // Probar endpoint de playlists del usuario
+                    const playlistsResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=5`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (playlistsResponse.ok) {
+                        const playlistsData = await playlistsResponse.json();
+                        this.updateStatus('api-test', 'success', `${playlistsData.total} playlists encontradas`);
+                        this.log(`✅ API de playlists funcionando: ${playlistsData.total} playlists`, 'success');
+                    } else {
+                        this.updateStatus('api-test', 'error', `Error ${playlistsResponse.status}`);
+                        this.log(`❌ Error en API de playlists: ${playlistsResponse.status}`, 'error');
+                    }
+                } catch (error) {
+                    this.updateStatus('api-test', 'error', 'Error de conexión');
+                    this.log(`❌ Error de conexión: ${error.message}`, 'error');
+                }
+            }
+
+            async testAuth() {
+                this.log('Ejecutando test de autenticación...', 'info');
+                await this.checkAuthStatus();
+            }
+
+            async testAPI() {
+                this.log('Ejecutando test de API...', 'info');
+                await this.testPlaylistAPI();
+            }
+
+            clearCache() {
+                this.log('Limpiando cache...', 'info');
+                localStorage.removeItem('spotify_access_token');
+                localStorage.removeItem('spotify_token_expires');
+                this.log('✅ Cache limpiado', 'success');
+                this.updateStatus('auth-status', 'warning', 'Cache limpiado - Reautenticación requerida');
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            new PlaylistDiagnostic();
+        });
+    </script>
+
+    <style>
+        .diagnostic-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .diagnostic-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .diagnostic-section h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .status-indicator.success {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+
+        .status-indicator.error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        .status-indicator.warning {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            color: #f39c12;
+        }
+
+        .status-indicator.loading {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            color: #3498db;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .logs-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .log-entry.success {
+            color: #2ecc71;
+        }
+
+        .log-entry.error {
+            color: #e74c3c;
+        }
+
+        .log-entry.warning {
+            color: #f39c12;
+        }
+
+        .log-entry.info {
+            color: #3498db;
+        }
+
+        .timestamp {
+            color: #b3b3b3;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .diagnostic-container {
+                padding: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+</html> 

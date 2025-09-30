@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Crear Playlist</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+        <h1>Test de Funcionalidad de Crear Playlist</h1>
+        
+        <div class="playlist-form-container">
+            <form id="playlist-form" class="elegant-form">
+                <!-- Nombre de la playlist -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label for="playlist-name" class="form-label">
+                            <i class="fas fa-heading"></i>
+                            <span>Nombre de la playlist</span>
+                        </label>
+                        <input type="text" id="playlist-name" class="form-input" required 
+                               placeholder="Mi Playlist personalizada" aria-required="true">
+                        <div class="input-glow"></div>
+                    </div>
+                </div>
+
+                <!-- Artista principal -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label for="artist-main" class="form-label">
+                            <i class="fas fa-star"></i>
+                            <span>Artista principal</span>
+                        </label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="artist-main" name="artist-main" 
+                                   class="form-input artist-autocomplete" 
+                                   placeholder="Busca tu artista favorito..." 
+                                   autocomplete="off" aria-autocomplete="list" 
+                                   aria-label="Buscar artista principal">
+                            <div id="artist-main-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                            <div class="input-glow"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Artistas adicionales -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label class="form-label">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Artistas adicionales</span>
+                        </label>
+                        <div id="artist-inputs" class="artist-inputs"></div>
+                        <button type="button" id="add-artist" class="add-artist-btn" aria-label="Agregar artista adicional">
+                            <div class="btn-content">
+                                <i class="fas fa-plus"></i>
+                                <span>Agregar artista</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canciones por artista -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label for="songs-per-artist" class="form-label">
+                            <i class="fas fa-list-ol"></i>
+                            <span>Canciones por artista</span>
+                        </label>
+                        <input type="number" id="songs-per-artist" class="form-input" 
+                               min="1" max="50" value="5" step="1" required aria-required="true">
+                        <div class="input-glow"></div>
+                    </div>
+                </div>
+
+                <!-- Búsqueda de canciones específicas -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label for="track-search" class="form-label">
+                            <i class="fas fa-search"></i>
+                            <span>Agregar canciones específicas</span>
+                        </label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="track-search" class="form-input" 
+                                   placeholder="Busca canciones específicas..." 
+                                   autocomplete="off" aria-autocomplete="list" 
+                                   aria-label="Buscar canciones específicas">
+                            <div id="search-suggestions" class="autocomplete-suggestions" role="listbox"></div>
+                            <div class="input-glow"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canciones seleccionadas -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label class="form-label">
+                            <i class="fas fa-music"></i>
+                            <span>Canciones seleccionadas</span>
+                        </label>
+                        <div id="selected-tracks" class="selected-tracks-container"></div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <button type="button" id="preview-playlist" class="action-btn secondary" aria-label="Vista previa de la playlist">
+                        <div class="btn-content">
+                            <i class="fas fa-eye"></i>
+                            <span>Vista previa</span>
+                        </div>
+                        <div class="btn-ripple"></div>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Vista previa de playlist -->
+            <div id="playlist-preview" class="playlist-preview" style="display:none;"></div>
+
+            <!-- Botón de exportar -->
+            <div class="export-section">
+                <button id="export-spotify" class="action-btn primary" style="display:none;">
+                    <div class="btn-content">
+                        <i class="fab fa-spotify"></i>
+                        <span>Exportar a Spotify</span>
+                    </div>
+                    <div class="btn-ripple"></div>
+                </button>
+            </div>
+
+            <!-- Loading elegante -->
+            <div id="loading" class="loading-container" style="display: none;">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <p class="loading-text">
+                    <i class="fas fa-cog fa-spin"></i>
+                    Creando tu playlist...
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Simular token de acceso para pruebas
+        localStorage.setItem('spotify_access_token', 'test_token');
+        
+        // Función de prueba para simular la API
+        window.testAPI = {
+            searchArtists: async function(query) {
+                // Simular respuesta de artistas
+                return {
+                    artists: {
+                        items: [
+                            {
+                                id: '1',
+                                name: 'Bad Bunny',
+                                images: [{ url: 'https://via.placeholder.com/32?text=🎤' }]
+                            },
+                            {
+                                id: '2', 
+                                name: 'Drake',
+                                images: [{ url: 'https://via.placeholder.com/32?text=🎤' }]
+                            },
+                            {
+                                id: '3',
+                                name: 'Taylor Swift',
+                                images: [{ url: 'https://via.placeholder.com/32?text=🎤' }]
+                            }
+                        ]
+                    }
+                };
+            },
+            
+            searchTracks: async function(query) {
+                // Simular respuesta de canciones
+                return {
+                    tracks: {
+                        items: [
+                            {
+                                uri: 'spotify:track:1',
+                                name: 'Test Song 1',
+                                artists: [{ name: 'Test Artist' }],
+                                album: { 
+                                    name: 'Test Album', 
+                                    images: [{ url: 'https://via.placeholder.com/40?text=🎵' }] 
+                                }
+                            },
+                            {
+                                uri: 'spotify:track:2',
+                                name: 'Test Song 2', 
+                                artists: [{ name: 'Test Artist' }],
+                                album: { 
+                                    name: 'Test Album', 
+                                    images: [{ url: 'https://via.placeholder.com/40?text=🎵' }] 
+                                }
+                            }
+                        ]
+                    }
+                };
+            },
+            
+            createPlaylist: async function(data) {
+                // Simular creación de playlist
+                return {
+                    success: true,
+                    playlistName: data.playlistName,
+                    tracks: [
+                        {
+                            name: 'Test Song 1',
+                            artist: 'Test Artist',
+                            album: { name: 'Test Album', image: 'https://via.placeholder.com/40?text=🎵' }
+                        },
+                        {
+                            name: 'Test Song 2', 
+                            artist: 'Test Artist',
+                            album: { name: 'Test Album', image: 'https://via.placeholder.com/40?text=🎵' }
+                        }
+                    ]
+                };
+            }
+        };
+        
+        // Sobrescribir las funciones de búsqueda para pruebas
+        window.searchArtists = async function(query, suggestionsDiv, artistInput) {
+            try {
+                const data = await window.testAPI.searchArtists(query);
+                if (data.artists && data.artists.items) {
+                    displayArtistResults(data.artists.items, suggestionsDiv, artistInput);
+                }
+            } catch (error) {
+                console.error('Error al buscar artistas:', error);
+                suggestionsDiv.innerHTML = '<div class="error">Error al buscar artistas</div>';
+            }
+        };
+        
+        // Sobrescribir la función de búsqueda de canciones
+        if (window.searchManager) {
+            window.searchManager.searchTracks = async function(query, suggestionsDiv, searchInput) {
+                try {
+                    const data = await window.testAPI.searchTracks(query);
+                    if (data.tracks && data.tracks.items) {
+                        this.displayResults(data.tracks.items, suggestionsDiv, searchInput);
+                    } else {
+                        suggestionsDiv.innerHTML = '<div class="no-results">No se encontraron canciones</div>';
+                    }
+                } catch (error) {
+                    console.error('Error al buscar canciones:', error);
+                    suggestionsDiv.innerHTML = '<div class="error">Error al buscar canciones</div>';
+                }
+            };
+        }
+        
+        window.previewPlaylist = async function() {
+            const playlistName = document.getElementById('playlist-name').value;
+            const artistMain = document.getElementById('artist-main').value;
+            const songsPerArtist = document.getElementById('songs-per-artist').value;
+            
+            if (!playlistName || !artistMain) {
+                showNotification('Por favor, completa el nombre de la playlist y el artista principal', 'error');
+                return;
+            }
+            
+            showLoadingAnimation();
+            
+            try {
+                const artists = [artistMain];
+                const additionalArtists = document.querySelectorAll('#artist-inputs input');
+                additionalArtists.forEach(input => {
+                    if (input.value.trim()) {
+                        artists.push(input.value.trim());
+                    }
+                });
+                
+                const data = await window.testAPI.createPlaylist({
+                    playlistName: playlistName,
+                    artists: artists,
+                    trackCount: parseInt(songsPerArtist)
+                });
+                
+                if (data.success) {
+                    displayPlaylistPreview(data);
+                    showNotification('Playlist creada exitosamente', 'success');
+                } else {
+                    showNotification(data.error || 'Error al crear la playlist', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error al crear la playlist', 'error');
+            } finally {
+                hideLoadingAnimation();
+            }
+        };
+        
+        // Inicializar la lista de canciones seleccionadas
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.searchManager) {
+                window.searchManager.updateSelectedTracksList();
+            }
+        });
+    </script>
+</body>
+</html> 
